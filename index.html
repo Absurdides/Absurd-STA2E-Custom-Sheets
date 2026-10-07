@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>STA 2E - Unified Master System Interface Console</title>
+<link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+<form id="unified-master-console-form" autocomplete="off" style="margin:0; padding:0; display:flex; flex-direction:column; align-items:center; width:100%;">
+<!-- Block 4 START -->
+<div id="page-1" class="sheet-page active"><div class="screen-only-view-padding">
+<div class="printable-page-area">
+                <div class="branding-row">
+                    <div class="header-logo-container"><img src="trekstar.png" alt="Starfleet Insignia" class="starfleet-insignia"></div>
+                    <div class="brand-text">
+                        <div class="main-title">Starfleet Command</div>
+                        <div class="subtitle">Personnel Record Division // Service Record</div>
+                        <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Personnel File // Access Active // Cognizant Status Record</span></div>
+                    </div>
+                    <div class="shifted-metadata-block">
+                        <svg width="105" height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 2px;">
+                            <rect x="0" width="3" height="25" fill="black"/><rect x="5" width="1" height="25" fill="black"/><rect x="8" width="2" height="25" fill="black"/><rect x="13" width="4" height="25" fill="black"/><rect x="19" width="1" height="25" fill="black"/><rect x="22" width="3" height="25" fill="black"/><rect x="27" width="2" height="25" fill="black"/><rect x="32" width="1" height="25" fill="black"/><rect x="35" width="4" height="25" fill="black"/><rect x="42" width="2" height="25" fill="black"/><rect x="46" width="1" height="25" fill="black"/><rect x="50" width="3" height="25" fill="black"/><rect x="55" width="5" height="25" fill="black"/><rect x="62" width="1" height="25" fill="black"/><rect x="65" width="2" height="25" fill="black"/><rect x="70" width="4" height="25" fill="black"/><rect x="76" width="1" height="25" fill="black"/><rect x="80" width="3" height="25" fill="black"/><rect x="85" width="2" height="25" fill="black"/><rect x="90" width="1" height="25" fill="black"/><rect x="93" width="4" height="25" fill="black"/><rect x="98" width="2" height="25" fill="black"/>
+                        </svg>
+                        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
+                            <span>FILE ID:</span>
+                            <input type="text" id="metadata-file-id" name="meta_file_id" class="file-id-editable-input" value="2376-[FILE_DEFAULT]">
+                        </div>
+                        <div style="color: #708699;">/ Form STA-2E</div>
+                    </div>
+                    <div class="top-right-portrait-void-area" onclick="document.getElementById('portrait-uploader').click();">
+                        <input type="file" id="portrait-uploader" accept="image/*" style="display: none; position: absolute;">
+                        <img id="portrait-img" src="" alt="Portrait">
+                        <span id="portrait-placeholder">Character<br>Portrait</span>
+                    </div>
+                </div>
+<!-- Block 5 END -->
+<!-- Block 6 START: (Pillar Interface Bars and Core Biographical Fields HTML). -->
+            <div class="lcars-system-wrapper">
+                <div class="lcars-body-grid">
+                    <div class="lcars-left-pillar-wrapper">
+                        <div class="lcars-unified-hockey-stick"></div>
+                        <div class="lcars-pillar-data-tracking">
+                            <div class="internal-tracking-bar"></div>
+                            <div class="pillar-vertical-text">Technical File Technical Recording System // [System: Status: Live]</div>
+                        </div>
+                    </div>
+                    <div class="lcars-right-content-assembly">
+                        <div style="display: flex; width: 100%; height: 26px; margin-bottom: 4px;">
+                            <div class="lcars-orange-banner-main">Confidential // Restricted Access <span class="divider">//</span> Level 7 Access Required</div>
+                            <div style="width: 128px; height: 100%; background-color: transparent; margin-left: 12px;"></div>
+                        </div>
+                        <div class="blank-workspace-canvas">
+                            <div class="dossier-grid">
+                                <div class="dossier-row-1-layout">
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Rank</span><div class="bio-field-underline"><input type="text" name="bio_rank" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Name</span><div class="bio-field-underline"><input type="text" name="bio_name" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Pronouns</span><div class="bio-field-underline"><input type="text" name="bio_pronouns" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Species</span><div class="bio-field-underline"><input type="text" name="bio_species" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule" style="align-items: flex-end; width: max-content;">
+                                        <span class="bio-field-label">Reputation</span>
+                                        <div class="bio-field-underline" style="width: 50px;">
+                                            <input type="text" name="bio_reputation" class="bio-form-input" style="text-align: center; padding: 0;">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dossier-row-2-layout">
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Environment</span><div class="bio-field-underline"><input type="text" name="bio_environment" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Upbringing</span><div class="bio-field-underline"><input type="text" name="bio_upbringing" class="bio-form-input"></div></div>
+                                </div>
+                                <div class="dossier-row-career-layout">
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Career Path</span><div class="bio-field-underline"><input type="text" name="bio_career_path" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Career Event 1</span><div class="bio-field-underline"><input type="text" name="bio_career_event_1" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Career Event 2</span><div class="bio-field-underline"><input type="text" name="bio_career_event_2" class="bio-form-input"></div></div>
+                                </div>
+                                <div class="dossier-row-3-layout">
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Assignment</span><div class="bio-field-underline"><input type="text" name="bio_assignment" class="bio-form-input"></div></div>
+                                    <div class="bio-field-capsule"><span class="bio-field-label">Traits</span><div class="bio-field-underline"><input type="text" name="bio_traits" class="bio-form-input"></div></div>
+                                </div>
+                            </div>
+<!-- Block 6 END: (). -->
+<!-- Block 7 START: (Core Stat Blocks, Checkbox Overrides, and Textarea Notebook Cells HTML). -->
+                            <div class="tactical-stats-container" style="flex-grow: 0;"><div class="lcars-column-strip">
+                                    <div class="lcars-sweeping-header-wrapper"><div class="lcars-sweeping-header-bar">Attributes</div></div>
+                                    <div class="stat-column-panel-segmented">
+                                        <div class="stat-capsule-grid-vertical">
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Control</span><div class="stat-input-score-line"><input type="text" name="attr_control" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Fitness</span><div class="stat-input-score-line"><input type="text" name="attr_fitness" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Daring</span><div class="stat-input-score-line"><input type="text" name="attr_daring" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Insight</span><div class="stat-input-score-line"><input type="text" name="attr_insight" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Presence</span><div class="stat-input-score-line"><input type="text" name="attr_presence" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text">Reason</span><div class="stat-input-score-line"><input type="text" name="attr_reason" maxlength="2" class="score-input"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="lcars-sweeping-header-wrapper"><div class="lcars-sweeping-header-bar">Departments</div></div>
+                                    <div class="stat-column-panel-segmented">
+                                        <div class="stat-capsule-grid-vertical">
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #bd4b4b;">Command</span><div class="stat-input-score-line"><input type="text" name="dept_command" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #bd4b4b;">Conn</span><div class="stat-input-score-line"><input type="text" name="dept_conn" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #c49a45;">Engineering</span><div class="stat-input-score-line"><input type="text" name="dept_engineering" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #c49a45;">Security</span><div class="stat-input-score-line"><input type="text" name="dept_security" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #4b8bbd;">Medicine</span><div class="stat-input-score-line"><input type="text" name="dept_medicine" maxlength="2" class="score-input"></div></div>
+                                            <div class="single-stat-capsule"><span class="stat-label-text" style="color: #4b8bbd;">Science</span><div class="stat-input-score-line"><input type="text" name="dept_science" maxlength="2" class="score-input"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="vital-box-panel-fullwidth" style="margin-top: auto;">
+                                        <div class="vital-header-label">Determination</div>
+                                        <div class="det-boxes-row-large">
+                                            <input type="checkbox" name="determination_1" class="form-matrix-checkbox">
+                                            <input type="checkbox" name="determination_2" class="form-matrix-checkbox">
+                                            <input type="checkbox" name="determination_3" class="form-matrix-checkbox">
+                                        </div>
+                                    </div>
+                                    </div><div class="lcars-column-strip"><div class="lcars-terminal-box" style="margin-top:8px;position:relative;"><span class="box-heading-label">Species Ability</span><select id="species-ability-picker" class="no-print species-picker" title="Choose a species ability"></select><div class="lcars-writein-lines fit-box-wrap" style="height:48px;"><textarea name="ledger_species_ability" class="lcars-form-textarea fit-box"></textarea></div></div><div class="lcars-terminal-box"><span class="box-heading-label">Values</span><div class="lcars-writein-lines" style="height:64px;"><div class="val-row"><span class="val-num">1.</span><input type="text" name="ledger_value_1" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">2.</span><input type="text" name="ledger_value_2" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">3.</span><input type="text" name="ledger_value_3" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">4.</span><input type="text" name="ledger_value_4" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div></div></div><div class="lcars-terminal-box" style="flex:1 1 0;min-height:0;"><span class="box-heading-label">Focuses</span><div class="lcars-writein-lines" style="flex-grow:1;min-height:0;display:grid;grid-template-rows:repeat(6,1fr);background:none;"><input type="text" name="ledger_focus_1" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_2" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_3" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_4" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_5" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_6" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"></div></div></div></div><div class="lcars-terminal-box" style="flex:1 1 0;min-height:0;position:relative;"><span class="box-heading-label">Talents</span><div class="no-print" style="position:absolute;top:2px;right:6px;display:flex;gap:3px;align-items:center;"><input type="text" id="talent-search" placeholder="Search..." style="width:90px;font-size:9px;border:1px solid #708699;border-radius:3px;padding:1px 3px;"><select id="talent-cat" class="species-picker" style="position:static;max-width:110px;" title="Filter by category"><option value="">All categories</option></select><select id="talent-picker" class="species-picker" style="position:static;" title="Add a talent"></select></div><div class="lcars-writein-lines fit-box-wrap" style="min-height:0;" data-balance="1"><textarea name="ledger_talents" class="lcars-form-textarea fit-box"></textarea></div></div><div class="lcars-terminal-box" style="flex:1 1 0;min-height:0;"><span class="box-heading-label">Mission Profile &amp; Active Directives</span><div class="lcars-writein-lines fit-box-wrap" style="min-height:0;" data-balance="1"><textarea name="ledger_mission_directives" class="lcars-form-textarea fit-box"></textarea></div></div><div class="lcars-terminal-box" style=""><span class="box-heading-label">Pastimes</span><div class="lcars-writein-lines fit-box-wrap" style="height:32px;"><textarea name="ledger_background_notes" class="lcars-form-textarea fit-box"></textarea></div></div></div>
+<!-- Block 7 END: (). -->
+<!-- Block 8 START: (Footer Capsules, Appended Bottom Utility Bar, and Filesystem Javascript Core). -->
+                        <div class="unified-footer-capsule">
+                            <div class="foot-block-slate"></div>
+                            <div class="foot-block-center-label">United Federation Of Planets // Personnel Record Master</div>
+                            <div class="foot-block-yellow"></div>
+                            <div class="foot-block-orange"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
+        </div>
+
+         
+</div></div>
+<!-- Block 4 END -->
+<!-- Block 5 START -->
+<div id="page-2" class="sheet-page"><div class="screen-only-view-padding">
+<div class="printable-page-area">
+<div class="branding-row">
+                    <div class="header-logo-container"><img src="trekstar.png" alt="Starfleet Insignia" class="starfleet-insignia"></div>
+                    <div class="brand-text">
+                        <div class="main-title">Starfleet Command</div>
+                        <div class="subtitle">Personnel Record Division // Service Record Annex</div>
+                        <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Tactical Annex // Access Active // Combat Readiness Record</span></div>
+                    </div>
+                    <div class="shifted-metadata-block" style="right: 0;">
+                        
+                        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
+                            <span>FILE ID:</span>
+                            <span class="mirror-file-id file-id-editable-input"></span>
+                        </div>
+                        <div style="color: #708699;">/ Form STA-2E</div>
+                    </div>
+                    </div>
+<div class="lcars-system-wrapper">
+            <div class="lcars-body-grid">
+                <div class="lcars-left-pillar-wrapper">
+                    <div class="lcars-unified-hockey-stick"></div>
+                    <div class="lcars-pillar-data-tracking">
+                        <div class="internal-tracking-bar"></div>
+                        <div class="pillar-vertical-text">AUXILIARY DATA SYSTEM // [SYSTEM: STATUS: LIVE]</div>
+                    </div>
+                </div>
+                <div class="lcars-right-content-assembly">
+                    <div class="lcars-orange-banner-main">TACTICAL OVERVIEW // LEVEL 7 ACCESS REQUIRED</div>
+                    <div class="blank-workspace-canvas">
+                        <div class="tactical-stats-container-3col">
+                            <div class="lcars-column-strip">
+                                <div class="stress-track-panel-block">
+                                    <div class="stress-panel-header-row" style="padding-right: 6px;">
+                                        <div class="vital-header-label">STRESS TRACK</div>
+                                        <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">MAX STRESS <input type="text" name="combat_max_stress" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="stress-bubbles-matrix" style="grid-template-columns: repeat(8, 1fr);">
+                                        <input type="checkbox" name="stress_1" class="form-matrix-checkbox"><input type="checkbox" name="stress_2" class="form-matrix-checkbox"><input type="checkbox" name="stress_3" class="form-matrix-checkbox"><input type="checkbox" name="stress_4" class="form-matrix-checkbox"><input type="checkbox" name="stress_5" class="form-matrix-checkbox"><input type="checkbox" name="stress_6" class="form-matrix-checkbox"><input type="checkbox" name="stress_7" class="form-matrix-checkbox"><input type="checkbox" name="stress_8" class="form-matrix-checkbox">
+                                        <input type="checkbox" name="stress_9" class="form-matrix-checkbox"><input type="checkbox" name="stress_10" class="form-matrix-checkbox"><input type="checkbox" name="stress_11" class="form-matrix-checkbox"><input type="checkbox" name="stress_12" class="form-matrix-checkbox"><input type="checkbox" name="stress_13" class="form-matrix-checkbox"><input type="checkbox" name="stress_14" class="form-matrix-checkbox"><input type="checkbox" name="stress_15" class="form-matrix-checkbox"><input type="checkbox" name="stress_16" class="form-matrix-checkbox">
+                                    </div>
+                                </div>
+                                <div class="stress-track-panel-block" style="padding: 5px; flex-grow: 1; display: flex; flex-direction: column;">
+                                    <div class="stress-panel-header-row" style="padding-right: 6px;">
+                                        <div class="vital-header-label">INJURIES</div>
+                                        <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">PROTECTION <input type="text" name="combat_protection" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-writein-lines" style="flex-grow: 1; margin-top: 4px;"><textarea name="ledger_injuries" class="lcars-form-textarea"></textarea></div>
+                                </div>
+                            </div>
+                            <div class="lcars-column-strip">
+                                <div class="lcars-terminal-box" style="flex-grow: 1; padding-bottom: 4px; position: relative;">
+                                    <span class="box-heading-label">ATTACKS</span><span style="position: absolute; right: 6px; top: 5px; width: 22px; text-align: center; font-size: 7.5px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.3px; line-height: 1;">SEV.</span>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_1_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_1_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_1_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_2_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_2_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_2_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_3_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_3_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_3_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_4_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_4_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_4_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_5_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_5_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_5_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="lcars-column-strip">
+                                <div class="lcars-terminal-box" style="flex-grow: 1; position: relative;"><span class="box-heading-label">EQUIPMENT</span><select id="equipment-picker" class="no-print species-picker" title="Add equipment"></select><div class="lcars-writein-lines" style="height: 176px;"><textarea name="ledger_equipment" class="lcars-form-textarea"></textarea></div></div>
+                            </div>
+                        </div>
+                        <div class="lcars-terminal-box momentum-master-box-layout">
+                            <span class="box-heading-label">MOMENTUM SPENDS, COMBAT</span>
+                            <div class="momentum-inner-columns-grid">
+                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                    <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1+ MOMENTUM: BONUS DAMAGE</span><br>ADD +1 CHALLENGE DIE (&Delta;) TO THE ATTACK'S FLUID DAMAGE ROLL PER MOMENTUM SPENT. THIS OPTION MAY BE REPEATED MULTIPLE TIMES ON A SINGLE ATTACK ACCORDING TO GENERATED MOMENTUM.</div>
+                                    <div><span style="color:#2c3a4d;">1 MOMENTUM: EXTRA MINOR TASK</span><br>PERFORM ONE ADDITIONAL MINOR TASK (SUCH AS AIMING, MOVING, OR DRAWING EQUIPMENT) DURING YOUR ACTIVATION PHASE. A CHARACTER IS STRICTLY LIMITED TO A MAXIMUM OF ONE EXTRA MINOR TASK PER ENCOUNTER TURN.</div>
+                                </div>
+                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                    <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1 MOMENTUM: OBTAIN INFORMATION</span><br>ASK THE GAMEMASTER ONE DIRECT QUESTION ABOUT THE SCENARIO OR ENVIRONMENT. THE GM MUST PROVIDE A TRUTHFUL ANSWER BASED ON ACCESSIBLE DATA AND WHAT THE CHARACTER COULD REASONABLY LOGICALLY DEDUCE.</div>
+                                    <div><span style="color:#2c3a4d;">2 MOMENTUM: KEEP INITIATIVE</span><br>PASS OPERATIONAL ACTIVATION DIRECTLY TO ANOTHER ELIGIBLE ALLY INSTEAD OF GIVING UP THE TURN TO OPPOSING FORCES. CANNOT BE SPENT IF ENEMY INITIATIVE IS MANDATED BY AN ACTIVE COMPLICATION OR ENCOUNTER TRAIT.</div>
+                                </div>
+                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                    <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">2 MOMENTUM: CREATE ADVANTAGE</span><br>ESTABLISH A BRAND-NEW TACTICAL SCENE TRAIT OR ENVIRONMENTAL CONDITION ON THE BATTLEFIELD THAT ADVANTAGEOUSLY ASSISTS ENCOUNTER ALLIES OR CREATES A DIRECT PERFORMANCE PENALTY FOR OPPOSING HOSTILE FORCES.</div>
+                                    <div><span style="color:#2c3a4d;">2 MOMENTUM: DISARM</span><br>A SUCCESSFUL ATTACK WITHIN REACH OR CLOSE RANGE KNOCKS ONE WEAPON OR MANUALLY ACCESSED ITEM HELD BY THE TARGET AWAY TO THE GROUND, FORCEFULLY REQUIRING A MINOR TASK TO RETRIEVE. NARRATIVE SENSE APPLIES.</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="lcars-orange-banner-main" style="margin-top: 10px; margin-bottom: 6px; border-radius: 4px;">CHRONICLE RECOVERY // LOGS &amp; CHARACTER PROGRESSION</div>
+                        <div class="chronicle-stats-container-2col">
+                            <div class="lcars-column-strip"><div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;"><span class="box-heading-label">PERSONAL MISSION LOG</span><div class="lcars-writein-lines" style="flex-grow: 1;"><textarea name="ledger_mission_log" class="lcars-form-textarea"></textarea></div></div></div>
+                            <div class="lcars-column-strip"><div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;"><span class="box-heading-label">SERVICE RECORD</span><div class="lcars-writein-lines" style="flex-grow: 1;"><textarea name="ledger_service_record" class="lcars-form-textarea"></textarea></div></div></div>
+                        </div>
+                    </div>
+                    <div class="unified-footer-capsule">
+                        <div class="foot-block-slate"></div><div class="foot-block-center-label">UNITED FEDERATION OF PLANETS</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="legal-footer-row"><div class="legal-micro-print">UNDER PENALTY OF FEDERATION LAW, UNAUTHORIZED ACCESS IS PROHIBITED.</div></div>
+    </div>
+    
+</div></div>
+<!-- Block 5 END -->
+<!-- Block 6 START -->
+<div id="page-3" class="sheet-page doc-page" data-doc="p3"><div class="screen-only-view-padding">
+<div class="printable-page-area">
+<div class="branding-row">
+                    <div class="header-logo-container"><img src="trekstar.png" alt="Starfleet Insignia" class="starfleet-insignia"></div>
+                    <div class="brand-text">
+                        <div class="main-title">Starfleet Command</div>
+                        <div class="subtitle">Personnel Record Division // Narrative Log</div>
+                        <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Personnel File // <span data-mirror="bio_name"></span></span></div>
+                    </div>
+                    <div class="shifted-metadata-block">
+                        <svg width="105" height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 2px;">
+                            <rect x="0" width="3" height="25" fill="black"/><rect x="5" width="1" height="25" fill="black"/><rect x="8" width="2" height="25" fill="black"/><rect x="13" width="4" height="25" fill="black"/><rect x="19" width="1" height="25" fill="black"/><rect x="22" width="3" height="25" fill="black"/><rect x="27" width="2" height="25" fill="black"/><rect x="32" width="1" height="25" fill="black"/><rect x="35" width="4" height="25" fill="black"/><rect x="42" width="2" height="25" fill="black"/><rect x="46" width="1" height="25" fill="black"/><rect x="50" width="3" height="25" fill="black"/><rect x="55" width="5" height="25" fill="black"/><rect x="62" width="1" height="25" fill="black"/><rect x="65" width="2" height="25" fill="black"/><rect x="70" width="4" height="25" fill="black"/><rect x="76" width="1" height="25" fill="black"/><rect x="80" width="3" height="25" fill="black"/><rect x="85" width="2" height="25" fill="black"/><rect x="90" width="1" height="25" fill="black"/><rect x="93" width="4" height="25" fill="black"/><rect x="98" width="2" height="25" fill="black"/>
+                        </svg>
+                        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
+                            <span>FILE ID:</span>
+                            <span class="mirror-file-id file-id-editable-input"></span>
+                        </div>
+                        <div style="color: #708699;">/ Form STA-2E</div>
+                    </div>
+                    <div class="top-right-portrait-void-area" style="cursor:default;"><img class="mirror-portrait-img" alt="Portrait"><span class="mirror-portrait-ph">Character<br>Portrait</span></div>
+                </div>
+
+<div class="lcars-system-wrapper"><div class="lcars-body-grid">
+<div class="lcars-left-pillar-wrapper"><div class="lcars-unified-hockey-stick"></div><div class="lcars-pillar-data-tracking"><div class="internal-tracking-bar"></div><div class="pillar-vertical-text">Narrative Log // [System: Status: Live]</div></div></div>
+<div class="lcars-right-content-assembly">
+<div style="display: flex; width: 100%; height: 26px; margin-bottom: 4px;"><div class="lcars-orange-banner-main">Confidential // Restricted Access <span class="divider">//</span> Chronicle Entry</div><div style="width: 128px; height: 100%; background-color: transparent; margin-left: 12px;"></div></div>
+<div class="blank-workspace-canvas"><div class="p3-viewport"><div class="dossier-tab-view active" data-tab="1"><div class="p3-vitals"><div class="p3-panel"><div class="p3-panel-h">Vital Statistics</div><div class="p3-vrow"><strong>Name:</strong><input type="text" name="p3_vital_name" data-follow="bio_name"></div><div class="p3-vrow"><strong>Species:</strong><input type="text" name="p3_vital_species" data-follow="bio_species"></div><div class="p3-vrow"><strong>Age:</strong><input type="text" name="p3_vital_age"></div><div class="p3-vrow"><strong>Rank / Role:</strong><input type="text" name="p3_vital_rank" data-follow="bio_rank"></div><div class="p3-vrow"><strong>Assignment:</strong><input type="text" name="p3_vital_assignment" data-follow="bio_assignment"></div><div class="p3-vrow"><strong>Posting:</strong><input type="text" name="p3_vital_posting"></div><div class="p3-vrow"><strong>Education:</strong><input type="text" name="p3_vital_education"></div><div class="p3-vrow"><strong>Career Track:</strong><input type="text" name="p3_vital_career" data-follow="bio_career_path"></div></div><div class="p3-panel orange"><div class="p3-panel-h">Core Character Values</div><div class="p3-val"><span>1.</span><textarea name="p3_value_1" rows="1" data-follow="ledger_value_1"></textarea></div><div class="p3-val"><span>2.</span><textarea name="p3_value_2" rows="1" data-follow="ledger_value_2"></textarea></div><div class="p3-val"><span>3.</span><textarea name="p3_value_3" rows="1" data-follow="ledger_value_3"></textarea></div><div class="p3-val"><span>4.</span><textarea name="p3_value_4" rows="1" data-follow="ledger_value_4"></textarea></div></div></div><div class="p3-blocks" data-tab="1"></div></div></div>
+<div class="p3-pagination single"><span class="p3-pag-h">Data Transmission Path</span><span class="p3-warn">Page full: continue on next section</span><span class="p3-pag-bar">Chronicle Sections: <span class="p3-pag-links"></span></span></div></div>
+<div class="unified-footer-capsule"><div class="foot-block-slate"></div><div class="foot-block-center-label">United Federation Of Planets // Narrative Log</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div></div>
+</div></div></div>
+<div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
+</div>
+</div></div>
+<!-- Block 6 END -->
+<!-- Block 7 START -->
+<div id="page-4" class="sheet-page doc-page" data-doc="p4"><div class="screen-only-view-padding">
+<div class="printable-page-area">
+<div class="branding-row">
+                    <div class="header-logo-container"><img src="trekstar.png" alt="Starfleet Insignia" class="starfleet-insignia"></div>
+                    <div class="brand-text">
+                        <div class="main-title">Starfleet Command</div>
+                        <div class="subtitle">Personnel Record Division // Session Log</div>
+                        <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Personnel File // <span data-mirror="bio_name"></span></span></div>
+                    </div>
+                    <div class="shifted-metadata-block">
+                        <svg width="105" height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 2px;">
+                            <rect x="0" width="3" height="25" fill="black"/><rect x="5" width="1" height="25" fill="black"/><rect x="8" width="2" height="25" fill="black"/><rect x="13" width="4" height="25" fill="black"/><rect x="19" width="1" height="25" fill="black"/><rect x="22" width="3" height="25" fill="black"/><rect x="27" width="2" height="25" fill="black"/><rect x="32" width="1" height="25" fill="black"/><rect x="35" width="4" height="25" fill="black"/><rect x="42" width="2" height="25" fill="black"/><rect x="46" width="1" height="25" fill="black"/><rect x="50" width="3" height="25" fill="black"/><rect x="55" width="5" height="25" fill="black"/><rect x="62" width="1" height="25" fill="black"/><rect x="65" width="2" height="25" fill="black"/><rect x="70" width="4" height="25" fill="black"/><rect x="76" width="1" height="25" fill="black"/><rect x="80" width="3" height="25" fill="black"/><rect x="85" width="2" height="25" fill="black"/><rect x="90" width="1" height="25" fill="black"/><rect x="93" width="4" height="25" fill="black"/><rect x="98" width="2" height="25" fill="black"/>
+                        </svg>
+                        <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
+                            <span>FILE ID:</span>
+                            <span class="mirror-file-id file-id-editable-input"></span>
+                        </div>
+                        <div style="color: #708699;">/ Form STA-2E</div>
+                    </div>
+                    <div class="top-right-portrait-void-area" style="cursor:default;"><img class="mirror-portrait-img" alt="Portrait"><span class="mirror-portrait-ph">Character<br>Portrait</span></div>
+                </div>
+
+<div class="lcars-system-wrapper"><div class="lcars-body-grid">
+<div class="lcars-left-pillar-wrapper"><div class="lcars-unified-hockey-stick"></div><div class="lcars-pillar-data-tracking"><div class="internal-tracking-bar"></div><div class="pillar-vertical-text">Session Log // [System: Status: Live]</div></div></div>
+<div class="lcars-right-content-assembly">
+<div style="display: flex; width: 100%; height: 26px; margin-bottom: 4px;"><div class="lcars-orange-banner-main">Confidential // Restricted Access <span class="divider">//</span> Session Log Entries</div><div style="width: 128px; height: 100%; background-color: transparent; margin-left: 12px;"></div></div>
+<div class="blank-workspace-canvas"><div class="p3-viewport"><div class="dossier-tab-view active" data-tab="1"><div class="p3-blocks" data-tab="1"></div></div></div>
+<div class="p3-pagination single"><span class="p3-pag-h">Data Transmission Path</span><span class="p3-warn">Page full: continue on next section</span><span class="p3-pag-bar">Log Sections: <span class="p3-pag-links"></span></span></div></div>
+<div class="unified-footer-capsule"><div class="foot-block-slate"></div><div class="foot-block-center-label">United Federation Of Planets // Session Log</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div></div>
+</div></div></div>
+<div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
+</div>
+</div></div>
+<!-- Block 7 END -->
+<!-- Block 8 START -->
+<div class="external-utility-bar" style="margin-top: 20px; margin-bottom: 20px;">
+    <div class="bar-group"><span class="bar-label">Pages</span>
+        <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Personnel Dossier</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical Annex</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative Log</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Session Log</button>
+    </div>
+    <div id="p3-tools" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
+        <div class="bar-group"><span class="bar-label">Header bars</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-blue">+ Blue</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-orange" style="background-color: #d96b27;">+ Orange</button>
+        </div>
+        <div class="bar-group"><span class="bar-label">Detail rows</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-orange" style="background-color: #d96b27;">+ Orange</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-slate" style="background-color: #708699;">+ Light Blue</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-navy" style="background-color: #2c3a4d;">+ Navy</button>
+        </div>
+        <div class="bar-group"><span class="bar-label">Text</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-para" style="background-color: #2c3a4d;">+ Paragraph</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-lines" style="background-color: #2c3a4d;">+ Ruled Lines</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-line" style="background-color: #2c3a4d;">+ Ruled Line</button>
+        </div>
+        <div class="bar-group"><span class="bar-label">Sections</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-sec" style="background-color: #708699;">+ Add Section</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-del-sec" style="background-color: #bd4b4b;">- Remove Last Section</button>
+        </div>
+    </div>
+    <div class="bar-group"><span class="bar-label">File</span>
+        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Save As File</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Load File</button>
+        <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
+    </div>
+    <input type="file" id="utility-file-loader" accept=".json" style="display: none;">
+</div>
+<!-- Block 8 END -->
+</form>
+    <!-- Place this section at the very bottom of index.html, right before </body> -->
+    <script src="species_abilities.js"></script>
+    <script src="talents.js"></script>
+    <script src="equipment.js"></script>
+    <script src="console.js"></script>
+</body>
+</html>
