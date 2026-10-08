@@ -361,6 +361,7 @@ function initConsole() {
         form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name) data[el.name] = el.value; });
         form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name) data[el.name] = el.checked; });
         data.docs = { p3: collect('p3'), p4: collect('p4') };
+        data.base_equipment = (baseEquipment !== null) ? baseEquipment : (form.elements['ledger_equipment'] ? form.elements['ledger_equipment'].value : '');
         const pi = document.getElementById('portrait-img');
         if (withPortrait !== false && pi && pi.src && pi.style.display === 'block') data['cached_portrait_data'] = pi.src;
         return data;
@@ -401,7 +402,8 @@ function initConsole() {
         if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
         else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
         if (d['cached_portrait_data']) setPortrait(d['cached_portrait_data']);
-        sync(); growAll();
+        if (d.base_equipment !== undefined) baseEquipment = d.base_equipment;
+        sync(); updateModColors(); growAll();
     }
     const loader = document.getElementById('utility-file-loader');
     const loadBtn = document.getElementById('utility-btn-load');
@@ -603,6 +605,18 @@ function initConsole() {
     const gearList = allEquip.filter(e => !/weapon/i.test(e.type || ''));
     const weaponList = allEquip.filter(e => /weapon/i.test(e.type || ''));
 
+    function updateTotalOpportunityCost() {
+        const base = parseInt(form.elements['logistics_base_cost']?.value, 10) || 0;
+        const mission = parseInt(form.elements['logistics_mission_cost']?.value, 10) || 0;
+        const totalInput = form.elements['logistics_total_cost'];
+        if (totalInput) totalInput.value = (base + mission > 0) ? (base + mission) : '';
+    }
+    form.addEventListener('input', e => {
+        if (e.target && (e.target.name === 'logistics_base_cost' || e.target.name === 'logistics_mission_cost')) {
+            updateTotalOpportunityCost();
+        }
+    });
+
     makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...', e => e.type || 'Other', e => {
         const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
         const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
@@ -610,6 +624,18 @@ function initConsole() {
         return e.name + ' [' + costLabel + ']';
     }, e => {
         return e.name + (e.qualities ? ': ' + e.qualities : '');
+    }, item => {
+        const isStandard = item.standard_issue === true || String(item.standard_issue).toLowerCase() === 'true';
+        const itemCost = isStandard ? 0 : (parseInt(item.opportunity_cost, 10) || 0);
+        if (itemCost > 0) {
+            const targetField = isPlayMode ? 'logistics_mission_cost' : 'logistics_base_cost';
+            const f = form.elements[targetField];
+            if (f) {
+                const cur = parseInt(f.value, 10) || 0;
+                f.value = cur + itemCost;
+                updateTotalOpportunityCost();
+            }
+        }
     });
 
     (function initWeaponPicker() {
@@ -639,7 +665,7 @@ function initConsole() {
             if (wSel.value === '') return;
             const w = weaponList[Number(wSel.value)];
             let filled = false;
-            for (let n = 1; n <= 8; n++) {
+            for (let n = 1; n <= 7; n++) {
                 const t = form.elements['attack_' + n + '_type'], q = form.elements['attack_' + n + '_qual'], sc = form.elements['attack_' + n + '_score'];
                 if (t && !t.value.trim() && !q.value.trim() && !sc.value.trim()) {
                     t.value = w.name;
@@ -649,7 +675,7 @@ function initConsole() {
                     break;
                 }
             }
-            if (!filled) alert('All 8 attack rows are already in use.');
+            if (!filled) alert('All 7 attack rows are already in use.');
             wSel.value = '';
             markDirty(); sync(); growAll();
         });
@@ -680,7 +706,7 @@ function initConsole() {
         if (form.elements['roster_' + i + '_note']) form.elements['roster_' + i + '_note'].value = d.note;
     }
     function shiftRow(type, idx, dir) {
-        const max = type === 'attack' ? 8 : 6;
+        const max = type === 'attack' ? 7 : 6;
         const target = idx + dir;
         if (target < 1 || target > max) return;
         if (type === 'attack') {
@@ -693,7 +719,7 @@ function initConsole() {
         markDirty(); sync(); growAll();
     }
     function deleteAndShiftRow(type, idx) {
-        const max = type === 'attack' ? 8 : 6;
+        const max = type === 'attack' ? 7 : 6;
         const cur = type === 'attack' ? getAttack(idx) : getRoster(idx);
         const hasData = Object.values(cur).some(v => String(v).trim() !== '');
         if (hasData && !confirm('Clear this row and shift remaining rows up?')) return;
@@ -727,6 +753,88 @@ function initConsole() {
             });
         }
     })();
+    // Stat modifier dynamic coloring
+    function updateModColors() {
+        document.querySelectorAll('.mod-input').forEach(input => {
+            const val = input.value.trim();
+            input.classList.toggle('pos', val.startsWith('+'));
+            input.classList.toggle('neg', val.startsWith('-'));
+        });
+    }
+    form.addEventListener('input', e => {
+        if (e.target && e.target.classList.contains('mod-input')) updateModColors();
+    });
+
+    // Play Mode & Mission Baseline logic
+    let isPlayMode = false;
+    let baseEquipment = null;
+
+    function setPlayMode(active) {
+        isPlayMode = active;
+        document.body.classList.toggle('play-mode-active', isPlayMode);
+        const toggleBtn = document.getElementById('btn-mode-toggle');
+        if (toggleBtn) {
+            toggleBtn.textContent = isPlayMode ? 'Mode: Play 🔒' : 'Mode: Edit 🔓';
+            toggleBtn.style.backgroundColor = isPlayMode ? '#d96b27' : '#2c3a4d';
+        }
+        if (isPlayMode && form.elements['ledger_equipment']) {
+            if (baseEquipment === null) baseEquipment = form.elements['ledger_equipment'].value;
+        }
+        const lockNames = [
+            'bio_rank', 'bio_name', 'bio_pronouns', 'bio_species', 'bio_reputation',
+            'bio_environment', 'bio_upbringing', 'bio_career_path', 'bio_career_event_1', 'bio_career_event_2',
+            'bio_assignment', 'bio_traits', 'attr_control', 'attr_fitness', 'attr_daring', 'attr_insight',
+            'attr_presence', 'attr_reason', 'dept_command', 'dept_conn', 'dept_engineering', 'dept_security',
+            'dept_medicine', 'dept_science', 'ledger_species_ability', 'ledger_value_1', 'ledger_value_2',
+            'ledger_value_3', 'ledger_value_4', 'ledger_focus_1', 'ledger_focus_2', 'ledger_focus_3',
+            'ledger_focus_4', 'ledger_focus_5', 'ledger_focus_6', 'ledger_talents', 'ledger_background_notes'
+        ];
+        for (let i = 1; i <= 7; i++) {
+            lockNames.push('attack_' + i + '_type', 'attack_' + i + '_qual', 'attack_' + i + '_score');
+        }
+        lockNames.push('logistics_base_cost');
+        lockNames.forEach(name => {
+            const el = form.elements[name];
+            if (el) el.readOnly = isPlayMode;
+        });
+    }
+
+    const modeBtn = document.getElementById('btn-mode-toggle');
+    if (modeBtn) modeBtn.addEventListener('click', () => setPlayMode(!isPlayMode));
+
+    const resetMissionBtn = document.getElementById('btn-reset-mission');
+    if (resetMissionBtn) {
+        resetMissionBtn.addEventListener('click', () => {
+            if (!confirm('Reset Mission Status?\n\n• Archives Active Directives to Page 4 Session Log\n• Clears Stress Track\n• Clears Stat Modifiers (±)\n• Clears Mission Requisitions & Restores Baseline Equipment')) return;
+
+            const dirBox = form.elements['ledger_mission_directives'];
+            const dirText = dirBox ? dirBox.value.trim() : '';
+            if (dirText) {
+                const sd = typeof getStardateVal === 'function' ? getStardateVal() : 'ARCHIVE';
+                addBlock('p4', activeSec('p4'), 'orange', 'Mission Debrief: Stardate ' + sd);
+                addBlock('p4', activeSec('p4'), 'para', '', dirText);
+                dirBox.value = '';
+            }
+
+            for (let i = 1; i <= 16; i++) {
+                if (form.elements['stress_' + i]) form.elements['stress_' + i].checked = false;
+            }
+
+            document.querySelectorAll('.mod-input').forEach(m => { m.value = ''; });
+            updateModColors();
+
+            if (baseEquipment !== null && form.elements['ledger_equipment']) {
+                form.elements['ledger_equipment'].value = baseEquipment;
+            }
+
+            const missionCostInput = form.elements['logistics_mission_cost'];
+            if (missionCostInput) missionCostInput.value = '';
+            updateTotalOpportunityCost();
+
+            markDirty(); sync(); growAll();
+        });
+    }
+
     Object.keys(DOCS).forEach(defaultDoc);
     try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
     sync();

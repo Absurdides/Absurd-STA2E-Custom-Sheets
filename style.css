@@ -128,9 +128,18 @@ body {
 }
 .stat-column-panel-segmented { border: 1px solid #2c3a4d; border-radius: 4px; padding: 6px; background-color: #ffffff; display: flex; flex-direction: column; margin-bottom: 2px; }
 .stat-capsule-grid-vertical { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin-bottom: 2px; }
-.single-stat-capsule { display: flex; align-items: center; border: 1px solid #c0c8cf; border-radius: 4px; background-color: #fafafa; padding: 4px 8px; height: 24px; justify-content: space-between; }
-.stat-label-text { font-size: 11px; font-weight: 900; color: #555555; letter-spacing: 0.5px; line-height: 1; }
-.stat-input-score-line { width: 20px; border-bottom: 1px solid #2c3a4d; height: 12px; margin-left: 4px; display: flex; align-items: flex-end; transform: translateY(3px); }
+.single-stat-capsule { display: flex; align-items: center; border: 1px solid #c0c8cf; border-radius: 4px; background-color: #fafafa; padding: 4px 5px; height: 24px; justify-content: space-between; }
+.stat-label-text { font-size: 10px; font-weight: 900; color: #555555; letter-spacing: 0.5px; line-height: 1; }
+.stat-values-wrap { display: flex; align-items: center; gap: 3px; }
+.stat-input-score-line { width: 17px; border-bottom: 1px solid #2c3a4d; height: 12px; margin-left: 2px; display: flex; align-items: flex-end; transform: translateY(3px); }
+.stat-input-mod-line { width: 14px; border-bottom: 1px dashed #708699; height: 12px; display: none; align-items: flex-end; transform: translateY(3px); }
+body.play-mode-active .stat-input-mod-line { display: flex; }
+.mod-input { width: 100%; height: 14px; border: none; outline: none; background: transparent; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 12px; font-weight: 900; color: #708699; text-align: center; padding: 0; margin: 0; line-height: 14px; }
+.mod-input::placeholder { color: #b0b8c0; opacity: 0.6; }
+.mod-input.pos { color: #2e7d32 !important; font-weight: 900; }
+.mod-input.neg { color: #bd4b4b !important; font-weight: 900; }
+body.play-mode-active input[readonly], body.play-mode-active textarea[readonly] { background-color: rgba(112, 134, 153, 0.04); cursor: default; }
+body.play-mode-active .no-print.species-picker, body.play-mode-active .row-quick-ctl { display: none !important; }
 .vital-box-panel-fullwidth { border: 1px solid #708699; border-radius: 4px; padding: 6px; background-color: #fcfcfc; display: flex; justify-content: space-between; align-items: center; width: 100%; height: 38px; }
 .vital-header-label { font-size: 11px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.5px; line-height: 1; }
 .det-boxes-row-large { display: flex; gap: 8px; }
@@ -158,7 +167,7 @@ body {
 #page-2 .blank-workspace-canvas {flex-grow: 1; background-color: #ffffff; margin-top: 0px; padding-top: 0px; display: flex; flex-direction: column; gap: 6px;}
 #page-2 .tactical-stats-container-3col {display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; align-items: stretch;}
 #page-2 .tactical-middle-container-2col {display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 100%; flex-grow: 0; align-items: stretch;}
-#page-2 .momentum-master-box-layout {width: 100%; min-height: 255px; flex-grow: 1; margin-top: 0; margin-bottom: 0; display: flex; flex-direction: column;}
+#page-2 .momentum-master-box-layout {width: 100%; min-height: 225px; flex-grow: 1; margin-top: 0; margin-bottom: 0; display: flex; flex-direction: column;}
 #page-2 .momentum-inner-columns-grid {display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; flex-grow: 1;}
 #page-2 .lcars-column-strip {display: flex; flex-direction: column; gap: 6px;}
 #page-2 .lcars-terminal-box {border: 1px solid #2c3a4d; border-radius: 4px; padding: 4px 6px; background-color: #ffffff; display: flex; flex-direction: column; overflow: visible;}
@@ -193,6 +202,13 @@ body {
 #page-2 .attack-label-prefix {font-size: 10px; font-weight: 900; color: #2c3a4d; width: 25px; line-height: 16px; flex-shrink: 0; padding-bottom: 1px;}
 #page-2 .attack-score-box-column {width: 22px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;}
 #page-2 .attack-form-input {width: 100%; height: 100%; border: none; outline: none; background: transparent; font-family: 'Roboto', 'Helvetica Neue', Arial, sans-serif; font-size: 10.5px; color: #000000; padding: 0 2px; box-sizing: border-box; display: block; line-height: 15px;}
+#page-2 .logistics-requisition-panel { flex-shrink: 0; display: flex; flex-direction: column; justify-content: space-between; padding: 6px 8px; min-height: 60px; }
+#page-2 .logistics-header-line { display: flex; justify-content: space-between; align-items: center; width: 100%; border-bottom: 1px solid #f0f2f5; padding-bottom: 3px; }
+#page-2 .logistics-costs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 100%; margin-top: 4px; }
+#page-2 .logistics-stat-card { display: flex; align-items: center; justify-content: space-between; border: 1px solid #c0c8cf; border-radius: 3px; background-color: #fafbfc; padding: 2px 5px; height: 24px; }
+#page-2 .logistics-stat-card.total-card { border-color: #708699; background-color: #f0f4f8; }
+#page-2 .logistics-field-unit { display: flex; align-items: center; gap: 4px; }
+#page-2 .logistics-sublabel { font-size: 10px; font-weight: 900; color: #708699; letter-spacing: 0.4px; line-height: 1; white-space: nowrap; }
 #page-2 .unified-footer-capsule {display: flex; width: 100%; height: 22px; gap: 6px; margin-top: 10px; align-items: flex-end;}
 #page-2 .foot-block-slate {width: 45px; height: 22px; background-color: #708699; border-top-left-radius: 12px;}
 #page-2 .foot-block-center-label {flex-grow: 1; height: 22px; background-color: #2c3a4d; color: #ffffff; font-size: 11px; font-weight: bold; letter-spacing: 3px; display: flex; align-items: center; justify-content: center; border-top-right-radius: 4px; padding-left: 0;}
