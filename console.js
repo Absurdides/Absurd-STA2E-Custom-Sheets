@@ -1,5 +1,4 @@
-
-document.addEventListener('DOMContentLoaded', function() {
+function initConsole() {
     const form = document.getElementById('unified-master-console-form');
     const fileId = document.getElementById('metadata-file-id');
     const DEFAULT_ID = '2376-[FILE_DEFAULT]';
@@ -57,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function() {
         reset();
         if (!over()) return;
         let lh = 16;
-        while (over() && lh > 13.8) { lh -= 0.2; set(11.5, lh); }          // phase 1: tighten line spacing
+        while (over() && lh > 13.8) { lh -= 0.2; set(11.5, lh); }
         if (!over()) return;
-        let lo = 6.5, hi = 11.5;                                            // phase 2: largest font that fits
+        let lo = 6.5, hi = 11.5;
         for (let k = 0; k < 8; k++) { const m = (lo + hi) / 2; set(m, m * 1.2); if (over()) hi = m; else lo = m; }
         set(lo, lo * 1.2);
     }
@@ -136,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
             d.innerHTML = '<textarea class="p3-ruled p3-b-text" data-rows="' + d.dataset.rows + '" placeholder="' + DOCS[id].body + '"></textarea><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove these lines">&times;</button>' + DN + '</div>';
         } else if (type === 'para') {
             d.className = 'p3-block p3-para';
-            d.innerHTML = '<textarea class="p3-text p3-b-text" placeholder="' + DOCS[id].body + '"></textarea><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this text">&times;</button>' + DN + '</div>';
+            d.innerHTML = '<div class="p3-text p3-b-text" contenteditable="true" data-placeholder="' + DOCS[id].body + '"></div><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this text">&times;</button>' + DN + '</div>';
         } else if (type.indexOf('cap-') === 0) {
             d.className = 'p3-block p3-cap ' + type;
             d.innerHTML = '<div class="p3-cap-label-cell"><textarea class="p3-cap-label p3-b-title" rows="1" placeholder="Label"></textarea></div><div class="p3-cap-body"><textarea class="p3-cap-text p3-b-text" placeholder="' + DOCS[id].body + '"></textarea></div><div class="p3-cap-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this row">&times;</button>' + DN + '</div>';
@@ -147,7 +146,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         const t = d.querySelector('.p3-b-title'), x = d.querySelector('.p3-b-text');
         if (t) t.value = title || '';
-        if (x) x.value = text || '';
+        if (x) {
+            if (x.isContentEditable) {
+                if (text && /<[a-z][\s\S]*>/i.test(text)) x.innerHTML = text;
+                else x.textContent = text || '';
+            } else {
+                x.value = text || '';
+            }
+        }
         host.appendChild(d);
         growAll();
     }
@@ -160,13 +166,16 @@ document.addEventListener('DOMContentLoaded', function() {
     function collect(id) {
         return {
             sections: views(id).length,
-            blocks: Array.from(page(id).querySelectorAll('.p3-block')).map(b => ({
-                tab: Number(b.parentElement.dataset.tab),
-                type: b.dataset.type,
-                title: (b.querySelector('.p3-b-title') || {}).value || '',
-                text: (b.querySelector('.p3-b-text') || {}).value || '',
-                rows: b.dataset.rows || ''
-            }))
+            blocks: Array.from(page(id).querySelectorAll('.p3-block')).map(b => {
+                const x = b.querySelector('.p3-b-text');
+                return {
+                    tab: Number(b.parentElement.dataset.tab),
+                    type: b.dataset.type,
+                    title: (b.querySelector('.p3-b-title') || {}).value || '',
+                    text: x ? (x.isContentEditable ? x.innerHTML : x.value) : '',
+                    rows: b.dataset.rows || ''
+                };
+            })
         };
     }
     function restore(id, d) {
@@ -193,7 +202,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         growAll();
     }
-    const tool = (bid, fn) => document.getElementById(bid).addEventListener('click', () => { const id = currentDoc(); if (id) fn(id); });
+    const tool = (bid, fn) => {
+        const el = document.getElementById(bid);
+        if (el) el.addEventListener('click', () => { const id = currentDoc(); if (id) fn(id); });
+    };
     tool('p3-add-blue', id => addBlock(id, activeSec(id), 'blue'));
     tool('p3-add-tan', id => addBlock(id, activeSec(id), 'tan'));
     tool('p3-add-orange', id => addBlock(id, activeSec(id), 'orange'));
@@ -206,11 +218,106 @@ document.addEventListener('DOMContentLoaded', function() {
     tool('p3-add-line', id => addBlock(id, activeSec(id), 'ruled', '', '', 1));
     tool('p3-add-sec', id => { if (!addSection(id)) alert('Maximum of ' + MAX_SECTIONS + ' sections reached.'); });
     tool('p3-del-sec', removeLastSection);
+
+    function runFormat(cmd, val) {
+        document.execCommand('styleWithCSS', false, true);
+        document.execCommand(cmd, false, val || null);
+        markDirty();
+        growAll();
+    }
+    const fmtBtn = (id, fn) => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.addEventListener('mousedown', e => e.preventDefault());
+        btn.addEventListener('click', fn);
+    };
+    fmtBtn('p3-fmt-bold', () => runFormat('bold'));
+    fmtBtn('p3-fmt-italic', () => runFormat('italic'));
+    fmtBtn('p3-fmt-antonio', () => runFormat('fontName', 'Antonio'));
+    fmtBtn('p3-fmt-arial', () => runFormat('fontName', 'Arial'));
+    fmtBtn('p3-fmt-clear', () => runFormat('removeFormat'));
+	
+	// Stardate utility
+    function getStardateVal() {
+        const y = parseInt(document.getElementById('sd-year')?.value, 10) || 2376;
+        const m = parseInt(document.getElementById('sd-month')?.value, 10) || 1;
+        const d = parseInt(document.getElementById('sd-day')?.value, 10) || 1;
+        const start = new Date(y, 0, 1);
+        const cur = new Date(y, m - 1, d);
+        const diff = Math.max(0, Math.floor((cur - start) / 86400000));
+        return Math.floor((y - 2323) * 1000 + (diff / 365.25) * 1000);
+    }
+    function updateStardateDisplay() {
+        const disp = document.getElementById('sd-display');
+        if (disp) disp.textContent = 'STARDATE ' + getStardateVal();
+    }
+    ['sd-year', 'sd-month', 'sd-day'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', updateStardateDisplay);
+    });
+    (function initStardateDefaults() {
+        const now = new Date();
+        const m = document.getElementById('sd-month'), d = document.getElementById('sd-day');
+        if (m) m.value = now.getMonth() + 1;
+        if (d) d.value = now.getDate();
+        const mId = fileId ? fileId.value.match(/^(\d{4})/) : null;
+        const y = document.getElementById('sd-year');
+        if (y && mId) y.value = mId[1];
+        updateStardateDisplay();
+    })();
+    const sdHeaderBtn = document.getElementById('sd-btn-header');
+    if (sdHeaderBtn) {
+        sdHeaderBtn.addEventListener('click', () => {
+            const id = currentDoc();
+            if (!id) return;
+            addBlock(id, activeSec(id), 'blue', 'Stardate ' + getStardateVal());
+            markDirty();
+        });
+    }
+    const sdInsertBtn = document.getElementById('sd-btn-insert');
+    if (sdInsertBtn) {
+        sdInsertBtn.addEventListener('mousedown', e => e.preventDefault());
+        sdInsertBtn.addEventListener('click', () => {
+            const text = 'Stardate ' + getStardateVal();
+            const act = document.activeElement;
+            if (act && (act.tagName === 'INPUT' || act.tagName === 'TEXTAREA')) {
+                const s = act.selectionStart || 0, e = act.selectionEnd || 0;
+                act.value = act.value.substring(0, s) + text + act.value.substring(e);
+                act.selectionStart = act.selectionEnd = s + text.length;
+                markDirty(); sync(); growAll();
+            } else {
+                document.execCommand('insertText', false, text);
+                markDirty(); growAll();
+            }
+        });
+    }
+
+	form.addEventListener('paste', function(e) {
+        if (e.target && e.target.classList && e.target.classList.contains('p3-text')) {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+            document.execCommand('insertText', false, text);
+        }
+    });
+
+    form.addEventListener('keydown', function(e) {
+        if (!e.ctrlKey && !e.metaKey) return;
+        if (!e.target || !e.target.isContentEditable) return;
+        const k = e.key.toLowerCase();
+        if (k === 'b') {
+            e.preventDefault();
+            runFormat('bold');
+        } else if (k === 'i') {
+            e.preventDefault();
+            runFormat('italic');
+        }
+    });
+
     form.addEventListener('click', function(e) {
         if (e.target.classList.contains('p3-mv')) moveBlock(e.target.closest('.p3-block'), Number(e.target.dataset.dir));
         if (e.target.classList.contains('p3-x')) {
             const b = e.target.closest('.p3-block');
-            const filled = Array.from(b.querySelectorAll('.p3-b-title, .p3-b-text')).some(x => x.value.trim());
+            const filled = Array.from(b.querySelectorAll('.p3-b-title, .p3-b-text')).some(x => (x.isContentEditable ? x.textContent : x.value).trim());
             if (filled && !confirm('Remove this item and its text?')) return;
             b.remove(); growAll();
         }
@@ -222,21 +329,27 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.sheet-page').forEach(p => p.classList.toggle('active', p.id === 'page-' + n));
         document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.classList.toggle('active', b.dataset.page === n));
         const dp = document.getElementById('page-' + n);
+        if (!dp) return;
         const isDoc = dp.classList.contains('doc-page');
-        document.getElementById('p3-tools').style.display = isDoc ? 'flex' : 'none';
-        if (isDoc) document.getElementById('p3-add-sec').textContent = DOCS[dp.dataset.doc].addLabel;
+        const p3Tools = document.getElementById('p3-tools');
+        if (p3Tools) p3Tools.style.display = isDoc ? 'flex' : 'none';
+        const addSec = document.getElementById('p3-add-sec');
+        if (isDoc && addSec && DOCS[dp.dataset.doc]) addSec.textContent = DOCS[dp.dataset.doc].addLabel;
         if (n === '1') balance();
         growAll();
     }
     document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 
     // Portrait upload (Page 1) mirrors to all other pages
-    document.getElementById('portrait-uploader').addEventListener('change', function(e) {
-        if (!e.target.files[0]) return;
-        const r = new FileReader();
-        r.onload = ev => { setPortrait(ev.target.result); markDirty(); };
-        r.readAsDataURL(e.target.files[0]);
-    });
+    const portraitUploader = document.getElementById('portrait-uploader');
+    if (portraitUploader) {
+        portraitUploader.addEventListener('change', function(e) {
+            if (!e.target.files[0]) return;
+            const r = new FileReader();
+            r.onload = ev => { setPortrait(ev.target.result); markDirty(); };
+            r.readAsDataURL(e.target.files[0]);
+        });
+    }
 
     // Save: one JSON bundle for all four pages
     const KEY = 'sta2e-autosave', UNS = 'sta2e-unsaved';
@@ -266,7 +379,8 @@ document.addEventListener('DOMContentLoaded', function() {
         a.href = URL.createObjectURL(blob);
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }
-    document.getElementById('utility-btn-save').addEventListener('click', function() { saveFile(''); setUnsaved(false); });
+    const saveBtn = document.getElementById('utility-btn-save');
+    if (saveBtn) saveBtn.addEventListener('click', function() { saveFile(''); setUnsaved(false); });
     const onEdit = e => { if (e.target.id !== 'utility-file-loader') markDirty(); };
     form.addEventListener('input', onEdit);
     form.addEventListener('change', onEdit);
@@ -290,59 +404,144 @@ document.addEventListener('DOMContentLoaded', function() {
         sync(); growAll();
     }
     const loader = document.getElementById('utility-file-loader');
-    document.getElementById('utility-btn-load').addEventListener('click', () => loader.click());
-    loader.addEventListener('change', function(e) {
-        const f = e.target.files[0];
-        if (!f) return;
-        const r = new FileReader();
-        r.onload = function(ev) {
-            try { applyData(JSON.parse(ev.target.result)); setUnsaved(false); autosave(); }
-            catch (err) { alert('Terminal Error: Incompatible file format or data string corrupted.'); }
-        };
-        r.readAsText(f);
-        loader.value = '';
-    });
+    const loadBtn = document.getElementById('utility-btn-load');
+    if (loadBtn && loader) loadBtn.addEventListener('click', () => loader.click());
+    if (loader) {
+        loader.addEventListener('change', function(e) {
+            const f = e.target.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = function(ev) {
+                try { applyData(JSON.parse(ev.target.result)); setUnsaved(false); autosave(); }
+                catch (err) { alert('Terminal Error: Incompatible file format or data string corrupted.'); }
+            };
+            r.readAsText(f);
+            loader.value = '';
+        });
+    }
 
     // Clear
-    document.getElementById('utility-btn-clear').addEventListener('click', function() {
-        if (!confirm('Clear this station? A backup file will be downloaded first.')) return;
-        saveFile('backup_');
-        form.reset();
-        follows.forEach(t => { t.dataset.touched = ''; });
-        setPortrait('');
-        fileId.value = DEFAULT_ID;
-        Object.keys(DOCS).forEach(defaultDoc);
-        try { localStorage.removeItem(KEY); } catch (e) {}
-        setUnsaved(false);
-        sync();
+    const clearBtn = document.getElementById('utility-btn-clear');
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            if (!confirm('Clear this station? A backup file will be downloaded first.')) return;
+            saveFile('backup_');
+            form.reset();
+            follows.forEach(t => { t.dataset.touched = ''; });
+            setPortrait('');
+            fileId.value = DEFAULT_ID;
+            Object.keys(DOCS).forEach(defaultDoc);
+            try { localStorage.removeItem(KEY); } catch (e) {}
+            setUnsaved(false);
+            sync();
+        });
+    }
+
+	function printFullDossier() {
+        const old = document.getElementById('print-all-container');
+        if (old) old.remove();
+
+        const container = document.createElement('div');
+        container.id = 'print-all-container';
+
+        function cloneWithValues(el) {
+            const copy = el.cloneNode(true);
+            const origs = el.querySelectorAll('input, textarea, select');
+            const copies = copy.querySelectorAll('input, textarea, select');
+            origs.forEach((orig, i) => {
+                if (orig.type === 'checkbox') copies[i].checked = orig.checked;
+                else copies[i].value = orig.value;
+            });
+            return copy;
+        }
+
+        // Page 1
+        const p1 = document.querySelector('#page-1 .printable-page-area');
+        if (p1) {
+            const wrap = document.createElement('div');
+            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
+            wrap.appendChild(cloneWithValues(p1));
+            container.appendChild(wrap);
+        }
+
+        // Page 2 (needs #page-2 ID for scoped CSS)
+        const p2 = document.querySelector('#page-2 .printable-page-area');
+        if (p2) {
+            const origP2 = document.getElementById('page-2');
+            if (origP2) origP2.id = 'page-2-orig';
+            const wrap = document.createElement('div');
+            wrap.id = 'page-2';
+            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
+            wrap.appendChild(cloneWithValues(p2));
+            container.appendChild(wrap);
+        }
+
+        // Pages 3 & 4 (need .doc-page class for scoped CSS)
+        ['p3', 'p4'].forEach(docId => {
+            const pg = page(docId);
+            if (!pg) return;
+            const area = pg.querySelector('.printable-page-area');
+            if (!area) return;
+            const vs = views(docId);
+            for (let t = 1; t <= vs.length; t++) {
+                const clonedArea = cloneWithValues(area);
+                clonedArea.querySelectorAll('.dossier-tab-view').forEach(v => {
+                    v.classList.toggle('active', Number(v.dataset.tab) === t);
+                });
+                clonedArea.querySelectorAll('.bio-page-link').forEach(btn => {
+                    btn.classList.toggle('active', Number(btn.dataset.sub) === t);
+                });
+                const wrap = document.createElement('div');
+                wrap.className = 'sheet-page active doc-page screen-only-view-padding print-page-break';
+                wrap.dataset.doc = docId;
+                wrap.appendChild(clonedArea);
+                container.appendChild(wrap);
+            }
+        });
+
+        document.body.appendChild(container);
+        document.body.classList.add('printing-all');
+        window.print();
+    }
+    const printBtn = document.getElementById('utility-btn-print-all');
+    if (printBtn) printBtn.addEventListener('click', printFullDossier);
+
+	window.addEventListener('afterprint', () => {
+        document.body.classList.remove('printing-all');
+        const origP2 = document.getElementById('page-2-orig');
+        if (origP2) origP2.id = 'page-2';
+        const c = document.getElementById('print-all-container');
+        if (c) c.remove();
     });
 
     // Species Ability picker (list comes from species_abilities.js)
     const picker = document.getElementById('species-ability-picker');
     const list = Array.isArray(window.STA_SPECIES_ABILITIES) ? window.STA_SPECIES_ABILITIES : [];
-    (function fillPicker() {
-        const first = document.createElement('option');
-        first.value = '';
-        first.textContent = list.length ? '\u25BE Choose species ability...' : '\u25BE No list loaded (species_abilities.js)';
-        picker.appendChild(first);
-        const groups = {};
-        list.forEach((e, i) => { (groups[e.species] = groups[e.species] || []).push([e, i]); });
-        Object.keys(groups).sort().forEach(sp => {
-            const g = document.createElement('optgroup');
-            g.label = sp;
-            groups[sp].forEach(([e, i]) => { const o = document.createElement('option'); o.value = i; o.textContent = e.name; g.appendChild(o); });
-            picker.appendChild(g);
+    if (picker) {
+        (function fillPicker() {
+            const first = document.createElement('option');
+            first.value = '';
+            first.textContent = list.length ? '\u25BE Choose species ability...' : '\u25BE No list loaded (species_abilities.js)';
+            picker.appendChild(first);
+            const groups = {};
+            list.forEach((e, i) => { (groups[e.species] = groups[e.species] || []).push([e, i]); });
+            Object.keys(groups).sort().forEach(sp => {
+                const g = document.createElement('optgroup');
+                g.label = sp;
+                groups[sp].forEach(([e, i]) => { const o = document.createElement('option'); o.value = i; o.textContent = e.name; g.appendChild(o); });
+                picker.appendChild(g);
+            });
+        })();
+        picker.addEventListener('change', function() {
+            if (picker.value === '') return;
+            const e = list[Number(picker.value)];
+            const box = form.elements['ledger_species_ability'];
+            if (box && box.value.trim() && !confirm('Replace the current Species Ability text?')) { picker.value = ''; return; }
+            if (box) box.value = e.name + (e.text ? ': ' + e.text : '');
+            picker.value = '';
+            growAll();
         });
-    })();
-    picker.addEventListener('change', function() {
-        if (picker.value === '') return;
-        const e = list[Number(picker.value)];
-        const box = form.elements['ledger_species_ability'];
-        if (box.value.trim() && !confirm('Replace the current Species Ability text?')) { picker.value = ''; return; }
-        box.value = e.name + (e.text ? ': ' + e.text : '');
-        picker.value = '';
-        growAll();
-    });
+    }
 
     // Talents / Equipment pickers: every pick is added as a new line
     function makeAppender(selId, boxName, list, label, groupOf, nameOf, lineOf, after) {
@@ -367,7 +566,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (sel.value === '') return;
             const box = form.elements[boxName];
             const item = items[Number(sel.value)];
-            box.value = (box.value.trim() ? box.value.replace(/\s+$/, '') + '\n' : '') + lineOf(item);
+            if (box) box.value = (box.value.trim() ? box.value.replace(/\s+$/, '') + '\n' : '') + lineOf(item);
             sel.value = '';
             growAll();
             if (after) { after(item); growAll(); }
@@ -377,7 +576,7 @@ document.addEventListener('DOMContentLoaded', function() {
     (function talentFilters() {
         const sel = document.getElementById('talent-picker'), q = document.getElementById('talent-search'), cat = document.getElementById('talent-cat');
         const items = Array.isArray(window.STA_TALENTS) ? window.STA_TALENTS : [];
-        if (!sel || !items.length) return;
+        if (!sel || !items.length || !q || !cat) return;
         const spp = new Set((Array.isArray(window.STA_SPECIES_ABILITIES) ? window.STA_SPECIES_ABILITIES : []).map(e => String(e.species).trim().toLowerCase()));
         const catOf = e => { const c = String(e.category || 'Other').trim(); return (spp.has(c.toLowerCase()) || /species/i.test(c)) ? 'Species' : c; };
         Array.from(new Set(items.map(catOf))).sort().forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; cat.appendChild(o); });
@@ -400,23 +599,144 @@ document.addEventListener('DOMContentLoaded', function() {
         form.addEventListener('reset', () => setTimeout(refill, 0));
         refill();
     })();
-    makeAppender('equipment-picker', 'ledger_equipment', window.STA_EQUIPMENT, 'Add equipment...', e => e.type || 'Other', e => e.name, e => {
-        const p = [e.type];
-        if (e.severity && e.severity !== '0') p.push('Severity ' + e.severity);
-        return e.name + ' (' + p.filter(Boolean).join(', ') + ')' + (e.qualities ? ': ' + e.qualities : '');
+	const allEquip = Array.isArray(window.STA_EQUIPMENT) ? window.STA_EQUIPMENT : [];
+    const gearList = allEquip.filter(e => !/weapon/i.test(e.type || ''));
+    const weaponList = allEquip.filter(e => /weapon/i.test(e.type || ''));
+
+    makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...', e => e.type || 'Other', e => {
+        const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
+        const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
+        const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
+        return e.name + ' [' + costLabel + ']';
     }, e => {
-        if (!/^Weapon/i.test(e.type || '')) return;
-        for (let n = 1; n <= 5; n++) {
-            const t = form.elements['attack_' + n + '_type'], q = form.elements['attack_' + n + '_qual'], sc = form.elements['attack_' + n + '_score'];
-            if (t && !t.value.trim() && !q.value.trim() && !sc.value.trim()) { t.value = e.name; q.value = e.qualities || ''; sc.value = e.severity || ''; return; }
-        }
-        alert('All 5 attack rows are already in use.');
+        return e.name + (e.qualities ? ': ' + e.qualities : '');
     });
 
+    (function initWeaponPicker() {
+        const wSel = document.getElementById('weapon-picker');
+        if (!wSel) return;
+        const first = document.createElement('option');
+        first.value = '';
+        first.textContent = weaponList.length ? '\u25BE Add weapon...' : '\u25BE No weapons loaded';
+        wSel.appendChild(first);
+        const groups = {};
+        weaponList.forEach((e, i) => { (groups[e.type || 'Weapons'] = groups[e.type || 'Weapons'] || []).push([e, i]); });
+        Object.keys(groups).sort().forEach(g => {
+            const og = document.createElement('optgroup');
+            og.label = g;
+            groups[g].sort((a, b) => a[0].name.localeCompare(b[0].name)).forEach(([e, i]) => {
+                const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
+                const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
+                const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
+                const o = document.createElement('option');
+                o.value = i;
+                o.textContent = e.name + ' [' + costLabel + ']';
+                og.appendChild(o);
+            });
+            wSel.appendChild(og);
+        });
+        wSel.addEventListener('change', function() {
+            if (wSel.value === '') return;
+            const w = weaponList[Number(wSel.value)];
+            let filled = false;
+            for (let n = 1; n <= 8; n++) {
+                const t = form.elements['attack_' + n + '_type'], q = form.elements['attack_' + n + '_qual'], sc = form.elements['attack_' + n + '_score'];
+                if (t && !t.value.trim() && !q.value.trim() && !sc.value.trim()) {
+                    t.value = w.name;
+                    q.value = w.qualities || '';
+                    sc.value = w.severity || '';
+                    filled = true;
+                    break;
+                }
+            }
+            if (!filled) alert('All 8 attack rows are already in use.');
+            wSel.value = '';
+            markDirty(); sync(); growAll();
+        });
+    })();
+	// Row controls: Attack and Roster slot shift & clear
+    function getAttack(i) {
+        return {
+            type: form.elements['attack_' + i + '_type'] ? form.elements['attack_' + i + '_type'].value : '',
+            qual: form.elements['attack_' + i + '_qual'] ? form.elements['attack_' + i + '_qual'].value : '',
+            score: form.elements['attack_' + i + '_score'] ? form.elements['attack_' + i + '_score'].value : ''
+        };
+    }
+    function setAttack(i, d) {
+        if (form.elements['attack_' + i + '_type']) form.elements['attack_' + i + '_type'].value = d.type;
+        if (form.elements['attack_' + i + '_qual']) form.elements['attack_' + i + '_qual'].value = d.qual;
+        if (form.elements['attack_' + i + '_score']) form.elements['attack_' + i + '_score'].value = d.score;
+    }
+    function getRoster(i) {
+        return {
+            name: form.elements['roster_' + i + '_name'] ? form.elements['roster_' + i + '_name'].value : '',
+            stat: form.elements['roster_' + i + '_stat'] ? form.elements['roster_' + i + '_stat'].value : '',
+            note: form.elements['roster_' + i + '_note'] ? form.elements['roster_' + i + '_note'].value : ''
+        };
+    }
+    function setRoster(i, d) {
+        if (form.elements['roster_' + i + '_name']) form.elements['roster_' + i + '_name'].value = d.name;
+        if (form.elements['roster_' + i + '_stat']) form.elements['roster_' + i + '_stat'].value = d.stat;
+        if (form.elements['roster_' + i + '_note']) form.elements['roster_' + i + '_note'].value = d.note;
+    }
+    function shiftRow(type, idx, dir) {
+        const max = type === 'attack' ? 8 : 6;
+        const target = idx + dir;
+        if (target < 1 || target > max) return;
+        if (type === 'attack') {
+            const a = getAttack(idx), b = getAttack(target);
+            setAttack(idx, b); setAttack(target, a);
+        } else {
+            const a = getRoster(idx), b = getRoster(target);
+            setRoster(idx, b); setRoster(target, a);
+        }
+        markDirty(); sync(); growAll();
+    }
+    function deleteAndShiftRow(type, idx) {
+        const max = type === 'attack' ? 8 : 6;
+        const cur = type === 'attack' ? getAttack(idx) : getRoster(idx);
+        const hasData = Object.values(cur).some(v => String(v).trim() !== '');
+        if (hasData && !confirm('Clear this row and shift remaining rows up?')) return;
+        for (let k = idx; k < max; k++) {
+            if (type === 'attack') setAttack(k, getAttack(k + 1));
+            else setRoster(k, getRoster(k + 1));
+        }
+        if (type === 'attack') setAttack(max, { type: '', qual: '', score: '' });
+        else setRoster(max, { name: '', stat: '', note: '' });
+        markDirty(); sync(); growAll();
+    }
+    (function initRowControls() {
+        const ctlHtml = (t, i) => '<button type="button" class="row-btn-up" data-type="' + t + '" data-idx="' + i + '" title="Move Up">&#9650;</button><button type="button" class="row-btn-down" data-type="' + t + '" data-idx="' + i + '" title="Move Down">&#9660;</button><button type="button" class="row-btn-del" data-type="' + t + '" data-idx="' + i + '" title="Clear & shift up">&times;</button>';
+        document.querySelectorAll('#page-2 .lcars-attack-row-capsule').forEach((r, i) => {
+            const d = document.createElement('div'); d.className = 'row-quick-ctl no-print';
+            d.innerHTML = ctlHtml('attack', i + 1); r.appendChild(d);
+        });
+        document.querySelectorAll('#page-2 .roster-row-capsule').forEach((r, i) => {
+            const d = document.createElement('div'); d.className = 'row-quick-ctl no-print';
+            d.innerHTML = ctlHtml('roster', i + 1); r.appendChild(d);
+        });
+        const p2 = document.getElementById('page-2');
+        if (p2) {
+            p2.addEventListener('click', function(e) {
+                const b = e.target.closest('.row-btn-up, .row-btn-down, .row-btn-del');
+                if (!b) return;
+                const t = b.dataset.type, idx = Number(b.dataset.idx);
+                if (b.classList.contains('row-btn-up')) shiftRow(t, idx, -1);
+                else if (b.classList.contains('row-btn-down')) shiftRow(t, idx, 1);
+                else if (b.classList.contains('row-btn-del')) deleteAndShiftRow(t, idx);
+            });
+        }
+    })();
     Object.keys(DOCS).forEach(defaultDoc);
     try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
     sync();
     balance(); growAll();
     window.addEventListener('load', () => { balance(); growAll(); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { balance(); growAll(); });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initConsole);
+} else {
+    initConsole();
+}

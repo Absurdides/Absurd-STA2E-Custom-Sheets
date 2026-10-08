@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>STA 2E - Unified Master System Interface Console</title>
 <link rel="stylesheet" href="style.css">
-
 </head>
 <body>
 <form id="unified-master-console-form" autocomplete="off" style="margin:0; padding:0; display:flex; flex-direction:column; align-items:center; width:100%;">
@@ -125,8 +124,6 @@
             </div>
             <div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
         </div>
-
-         
 </div></div>
 <!-- Block 4 END -->
 <!-- Block 5 START -->
@@ -140,7 +137,6 @@
                         <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Tactical Annex // Access Active // Combat Readiness Record</span></div>
                     </div>
                     <div class="shifted-metadata-block" style="right: 0;">
-                        
                         <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
                             <span>FILE ID:</span>
                             <span class="mirror-file-id file-id-editable-input"></span>
@@ -177,12 +173,43 @@
                                         <div class="vital-header-label">INJURIES</div>
                                         <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">PROTECTION <input type="text" name="combat_protection" maxlength="2" class="score-input"></div>
                                     </div>
-                                    <div class="lcars-writein-lines" style="flex-grow: 1; margin-top: 4px;"><textarea name="ledger_injuries" class="lcars-form-textarea"></textarea></div>
+								<div class="lcars-writein-lines" style="height: 128px; margin-top: 4px;"><textarea name="ledger_injuries" class="lcars-form-textarea"></textarea></div>
                                 </div>
                             </div>
                             <div class="lcars-column-strip">
-                                <div class="lcars-terminal-box" style="flex-grow: 1; padding-bottom: 4px; position: relative;">
-                                    <span class="box-heading-label">ATTACKS</span><span style="position: absolute; right: 6px; top: 5px; width: 22px; text-align: center; font-size: 7.5px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.3px; line-height: 1;">SEV.</span>
+                                <div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;">
+                                    <span class="box-heading-label">AWAY TEAM ROSTER // SQUAD DEPLOYMENT</span>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">1. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_1_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_1_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_1_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">2. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_2_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_2_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_2_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">3. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_3_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_3_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_3_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">4. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_4_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_4_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_4_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">5. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_5_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_5_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_5_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                    <div class="roster-row-capsule">
+                                        <div class="roster-line-flex"><span class="roster-label-prefix">6. NAME/ROLE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_6_name" class="attack-form-input fit-text"></div><span class="roster-label-prefix">STAT:</span><div class="lcars-writein-lines" style="height: 16px; width: 44px;"><input type="text" name="roster_6_stat" class="attack-form-input fit-text" style="text-align: center;"></div></div>
+                                        <div class="roster-line-flex"><span class="roster-label-prefix" style="padding-left: 10px;">GEAR/NOTE:</span><div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="roster_6_note" class="attack-form-input fit-text"></div></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tactical-middle-container-2col">
+                            <div class="lcars-column-strip">
+								<div class="lcars-terminal-box" style="flex-grow: 1; padding-bottom: 4px; position: relative;">
+                                    <span class="box-heading-label">ATTACKS</span><select id="weapon-picker" class="no-print species-picker" style="right: 34px;" title="Add weapon"></select><span style="position: absolute; right: 6px; top: 5px; width: 22px; text-align: center; font-size: 7.5px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.3px; line-height: 1;">SEV.</span>
                                     <div class="lcars-attack-row-capsule">
                                         <div style="display: flex; flex-direction: column; flex-grow: 1;">
                                             <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_1_type" class="attack-form-input fit-text"></div></div>
@@ -218,33 +245,49 @@
                                         </div>
                                         <div class="attack-score-box-column"><input type="text" name="attack_5_score" maxlength="2" class="score-input"></div>
                                     </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_6_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_6_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_6_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_7_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_7_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_7_score" maxlength="2" class="score-input"></div>
+                                    </div>
+                                    <div class="lcars-attack-row-capsule">
+                                        <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_8_type" class="attack-form-input fit-text"></div></div>
+                                            <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines" style="height: 16px;"><input type="text" name="attack_8_qual" class="attack-form-input fit-text"></div></div>
+                                        </div>
+                                        <div class="attack-score-box-column"><input type="text" name="attack_8_score" maxlength="2" class="score-input"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="lcars-column-strip">
-                                <div class="lcars-terminal-box" style="flex-grow: 1; position: relative;"><span class="box-heading-label">EQUIPMENT</span><select id="equipment-picker" class="no-print species-picker" title="Add equipment"></select><div class="lcars-writein-lines" style="height: 176px;"><textarea name="ledger_equipment" class="lcars-form-textarea"></textarea></div></div>
+                                <div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column; position: relative;"><span class="box-heading-label">EQUIPMENT</span><select id="equipment-picker" class="no-print species-picker" title="Add equipment"></select><div class="lcars-writein-lines fit-box-wrap" style="height: 304px;"><textarea name="ledger_equipment" class="lcars-form-textarea fit-box"></textarea></div></div>
                             </div>
                         </div>
                         <div class="lcars-terminal-box momentum-master-box-layout">
                             <span class="box-heading-label">MOMENTUM SPENDS, COMBAT</span>
                             <div class="momentum-inner-columns-grid">
-                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
                                     <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1+ MOMENTUM: BONUS DAMAGE</span><br>ADD +1 CHALLENGE DIE (&Delta;) TO THE ATTACK'S FLUID DAMAGE ROLL PER MOMENTUM SPENT. THIS OPTION MAY BE REPEATED MULTIPLE TIMES ON A SINGLE ATTACK ACCORDING TO GENERATED MOMENTUM.</div>
                                     <div><span style="color:#2c3a4d;">1 MOMENTUM: EXTRA MINOR TASK</span><br>PERFORM ONE ADDITIONAL MINOR TASK (SUCH AS AIMING, MOVING, OR DRAWING EQUIPMENT) DURING YOUR ACTIVATION PHASE. A CHARACTER IS STRICTLY LIMITED TO A MAXIMUM OF ONE EXTRA MINOR TASK PER ENCOUNTER TURN.</div>
                                 </div>
-                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
                                     <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1 MOMENTUM: OBTAIN INFORMATION</span><br>ASK THE GAMEMASTER ONE DIRECT QUESTION ABOUT THE SCENARIO OR ENVIRONMENT. THE GM MUST PROVIDE A TRUTHFUL ANSWER BASED ON ACCESSIBLE DATA AND WHAT THE CHARACTER COULD REASONABLY LOGICALLY DEDUCE.</div>
                                     <div><span style="color:#2c3a4d;">2 MOMENTUM: KEEP INITIATIVE</span><br>PASS OPERATIONAL ACTIVATION DIRECTLY TO ANOTHER ELIGIBLE ALLY INSTEAD OF GIVING UP THE TURN TO OPPOSING FORCES. CANNOT BE SPENT IF ENEMY INITIATIVE IS MANDATED BY AN ACTIVE COMPLICATION OR ENCOUNTER TRAIT.</div>
                                 </div>
-                                <div style="font-size: 10px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
+                                <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
                                     <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">2 MOMENTUM: CREATE ADVANTAGE</span><br>ESTABLISH A BRAND-NEW TACTICAL SCENE TRAIT OR ENVIRONMENTAL CONDITION ON THE BATTLEFIELD THAT ADVANTAGEOUSLY ASSISTS ENCOUNTER ALLIES OR CREATES A DIRECT PERFORMANCE PENALTY FOR OPPOSING HOSTILE FORCES.</div>
                                     <div><span style="color:#2c3a4d;">2 MOMENTUM: DISARM</span><br>A SUCCESSFUL ATTACK WITHIN REACH OR CLOSE RANGE KNOCKS ONE WEAPON OR MANUALLY ACCESSED ITEM HELD BY THE TARGET AWAY TO THE GROUND, FORCEFULLY REQUIRING A MINOR TASK TO RETRIEVE. NARRATIVE SENSE APPLIES.</div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="lcars-orange-banner-main" style="margin-top: 10px; margin-bottom: 6px; border-radius: 4px;">CHRONICLE RECOVERY // LOGS &amp; CHARACTER PROGRESSION</div>
-                        <div class="chronicle-stats-container-2col">
-                            <div class="lcars-column-strip"><div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;"><span class="box-heading-label">PERSONAL MISSION LOG</span><div class="lcars-writein-lines" style="flex-grow: 1;"><textarea name="ledger_mission_log" class="lcars-form-textarea"></textarea></div></div></div>
-                            <div class="lcars-column-strip"><div class="lcars-terminal-box" style="flex-grow: 1; display: flex; flex-direction: column;"><span class="box-heading-label">SERVICE RECORD</span><div class="lcars-writein-lines" style="flex-grow: 1;"><textarea name="ledger_service_record" class="lcars-form-textarea"></textarea></div></div></div>
                         </div>
                     </div>
                     <div class="unified-footer-capsule">
@@ -255,7 +298,6 @@
         </div>
         <div class="legal-footer-row"><div class="legal-micro-print">UNDER PENALTY OF FEDERATION LAW, UNAUTHORIZED ACCESS IS PROHIBITED.</div></div>
     </div>
-    
 </div></div>
 <!-- Block 5 END -->
 <!-- Block 6 START -->
@@ -336,7 +378,20 @@
         <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative Log</button>
         <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Session Log</button>
     </div>
-    <div id="p3-tools" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
+	<div id="p3-tools" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
+        <div class="bar-group"><span class="bar-label">Stardate</span>
+            <input type="number" id="sd-year" style="width: 56px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="2376" title="Campaign Year">
+            <select id="sd-month" style="font-size: 11px; padding: 2px 3px; border: 1px solid #708699; border-radius: 3px;" title="Month">
+                <option value="1">Jan (01)</option><option value="2">Feb (02)</option><option value="3">Mar (03)</option>
+                <option value="4">Apr (04)</option><option value="5">May (05)</option><option value="6">Jun (06)</option>
+                <option value="7">Jul (07)</option><option value="8">Aug (08)</option><option value="9">Sep (09)</option>
+                <option value="10">Oct (10)</option><option value="11">Nov (11)</option><option value="12">Dec (12)</option>
+            </select>
+            <input type="number" id="sd-day" min="1" max="31" style="width: 42px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="1" title="Day">
+            <span id="sd-display" style="font-size: 11px; font-weight: bold; color: #2c3a4d; letter-spacing: 0.5px; padding: 0 4px; min-width: 90px;">STARDATE 53000</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-header" style="background-color: #2c3a4d;">+ Header</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-insert" style="background-color: #708699;">Insert</button>
+        </div>
         <div class="bar-group"><span class="bar-label">Header bars</span>
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-blue">+ Blue</button>
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
@@ -353,21 +408,27 @@
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-lines" style="background-color: #2c3a4d;">+ Ruled Lines</button>
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-line" style="background-color: #2c3a4d;">+ Ruled Line</button>
         </div>
+		<div class="bar-group"><span class="bar-label">Format</span>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-bold" style="background-color: #2c3a4d; font-weight: bold;">Bold (Ctrl+B)</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-italic" style="background-color: #2c3a4d; font-style: italic;">Italic (Ctrl+I)</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-antonio" style="background-color: #708699; font-family: 'Antonio', sans-serif;">Font: LCARS</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-arial" style="background-color: #708699; font-family: Arial, sans-serif; text-transform: none;">Font: Arial</button>
+            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-clear" style="background-color: #bd4b4b;">Clear Format</button>
+        </div>
         <div class="bar-group"><span class="bar-label">Sections</span>
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-sec" style="background-color: #708699;">+ Add Section</button>
             <button type="button" class="lcars-utility-btn btn-tab" id="p3-del-sec" style="background-color: #bd4b4b;">- Remove Last Section</button>
         </div>
     </div>
-    <div class="bar-group"><span class="bar-label">File</span>
+	<div class="bar-group"><span class="bar-label">File</span>
         <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Save As File</button>
         <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Load File</button>
         <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
+        <button type="button" class="lcars-utility-btn" id="utility-btn-print-all" style="background-color: #2c3a4d;">Print Dossier (PDF)</button>
     </div>
     <input type="file" id="utility-file-loader" accept=".json" style="display: none;">
 </div>
-<!-- Block 8 END -->
 </form>
-    <!-- Place this section at the very bottom of index.html, right before </body> -->
     <script src="species_abilities.js"></script>
     <script src="talents.js"></script>
     <script src="equipment.js"></script>
