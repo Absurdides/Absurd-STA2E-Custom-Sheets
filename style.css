@@ -1,10 +1,13 @@
 @page { size: letter portrait; margin: 0; }
 * { box-sizing: border-box; }
+html {
+    margin: 0; padding: 0; width: 100%; min-height: 100%;
+}
 body {
-    margin: 0; padding: 0; width: 100vw; min-height: 100vh; background-color: #ffffff;
+    margin: 0; padding: 0; width: 100%; min-height: 100%; background-color: #ffffff;
     font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; text-transform: uppercase;
     display: flex; flex-direction: column; justify-content: flex-start; align-items: center; 
-    overflow-y: auto; overflow-x: hidden;
+    overflow-x: hidden;
 }
 .screen-only-view-padding {
     padding: 20px 0; display: flex; flex-direction: column; align-items: center; width: 100%;
@@ -24,7 +27,7 @@ body {
 .subtitle-highlight { font-size: 11px; font-weight: bold; color: #222222; letter-spacing: 1.5px; }
 
 .external-utility-bar {
-    display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-bottom: 20px; width: 8.0in; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 20px; margin-bottom: 60px; width: 8.0in; flex-shrink: 0;
     justify-content: flex-start; background-color: #fafafa;
     border: 1px dashed #708699; padding: 6px 12px; border-radius: 6px;
 }
