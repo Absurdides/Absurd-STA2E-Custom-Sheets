@@ -222,7 +222,7 @@ body.play-mode-active .help-trigger span.info-icon { display: inline; }
 .lcars-help-item:last-child { margin-bottom: 0; }
 .lcars-help-item strong { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 11px; color: #d96b27; letter-spacing: 0.4px; text-transform: uppercase; display: inline-block; margin-right: 3px; }
 body.play-mode-active .has-popover:hover .lcars-help-popover,
-body.play-mode-active .has-popover.popover-open .lcars-help-popover { display: block; }
+body.play-mode-active .has-popover.popover-open .lcars-help-popover { display: block !important; }
 
 /* Determination & Legacy Popover Rules */
 .det-popover {
@@ -237,7 +237,8 @@ body.play-mode-active .has-popover.popover-open .lcars-help-popover { display: b
 .det-popover-item { font-family: 'Roboto', Arial, sans-serif; font-size: 11px; line-height: 1.35; margin-bottom: 4px; color: #f0f2f5; }
 .det-popover-item:last-child { margin-bottom: 0; }
 .det-popover-item strong { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 11.5px; color: #d96b27; letter-spacing: 0.4px; text-transform: uppercase; display: block; }
-body.play-mode-active .vital-box-panel-fullwidth:hover .det-popover, body.play-mode-active .vital-box-panel-fullwidth.popover-open .det-popover { display: block; }.baseline-split-grid-left { display: flex; flex-direction: column; gap: 6px; width: 100%; flex-grow: 1; min-height: 326px; }
+body.play-mode-active #page-2 .stress-panel-header-row:hover .injury-popover, body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popover { display: block !important; }
+.baseline-split-grid-left { display: flex; flex-direction: column; gap: 6px; width: 100%; flex-grow: 1; min-height: 326px; }
 
 .unified-footer-capsule { display: flex; width: 100%; height: 22px; gap: 6px; margin-top: 10px; align-items: flex-end; clear: both; }
 .foot-block-slate { width: 45px; height: 22px; background-color: #708699; border-top-left-radius: 12px; }
