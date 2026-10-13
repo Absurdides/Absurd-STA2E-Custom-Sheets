@@ -136,11 +136,11 @@ function initConsole() {
         } else if (type === 'para') {
             d.className = 'p3-block p3-para';
             d.innerHTML = '<div class="p3-text p3-b-text" contenteditable="true" data-placeholder="' + DOCS[id].body + '"></div><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this text">&times;</button>' + DN + '</div>';
-        } else if (type.indexOf('cap-') === 0) {
+		} else if (type.indexOf('cap-') === 0) {
             d.className = 'p3-block p3-cap ' + type;
             d.innerHTML = '<div class="p3-cap-label-cell"><textarea class="p3-cap-label p3-b-title" rows="1" placeholder="Label"></textarea></div><div class="p3-cap-body"><textarea class="p3-cap-text p3-b-text" placeholder="' + DOCS[id].body + '"></textarea></div><div class="p3-cap-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this row">&times;</button>' + DN + '</div>';
         } else {
-            const cls = type === 'tan' ? ' alt' : (type === 'orange' ? ' orng' : '');
+            const cls = type === 'tan' ? ' alt' : (type === 'orange' ? ' orng' : (type === 'slate' ? ' slate-bar' : ''));
             d.className = 'p3-block';
             d.innerHTML = '<div class="p3-heading-row' + cls + '"><div class="p3-slate"><input type="text" class="p3-b-title" placeholder="' + DOCS[id].head + '"></div><div class="p3-yellow"></div><div class="p3-orange">' + UP + DN + '<button type="button" class="p3-x" title="Remove this header bar">&times;</button></div></div>';
         }
@@ -183,9 +183,9 @@ function initConsole() {
         const blocks = d.blocks || [];
         const n = Math.max(1, d.sections || 1, ...blocks.map(b => Number(b.tab) || 1));
         for (let i = 2; i <= n; i++) addSection(id);
-        blocks.forEach(b => {
+		blocks.forEach(b => {
             const tb = Number(b.tab) || 1;
-            if (['blue', 'tan', 'orange'].includes(b.type) && b.text) { addBlock(id, tb, b.type, b.title, ''); addBlock(id, tb, 'para', '', b.text); }
+            if (['blue', 'tan', 'orange', 'slate'].includes(b.type) && b.text) { addBlock(id, tb, b.type, b.title, ''); addBlock(id, tb, 'para', '', b.text); }
             else addBlock(id, tb, b.type, b.title, b.text, b.rows);
         });
         showSection(id, 1);
@@ -206,9 +206,10 @@ function initConsole() {
         const el = document.getElementById(bid);
         if (el) el.addEventListener('click', () => { const id = currentDoc(); if (id) fn(id); });
     };
-    tool('p3-add-blue', id => addBlock(id, activeSec(id), 'blue'));
+	tool('p3-add-blue', id => addBlock(id, activeSec(id), 'blue'));
     tool('p3-add-tan', id => addBlock(id, activeSec(id), 'tan'));
     tool('p3-add-orange', id => addBlock(id, activeSec(id), 'orange'));
+    tool('p3-add-slate', id => addBlock(id, activeSec(id), 'slate'));
     tool('p3-cap-tan', id => addBlock(id, activeSec(id), 'cap-tan'));
     tool('p3-cap-orange', id => addBlock(id, activeSec(id), 'cap-orange'));
     tool('p3-cap-slate', id => addBlock(id, activeSec(id), 'cap-slate'));
@@ -351,17 +352,30 @@ function initConsole() {
         });
     }
 
-    // Save: one JSON bundle for all four pages
+// Save: one JSON bundle for all four pages
     const KEY = 'sta2e-autosave', UNS = 'sta2e-unsaved';
     let unsaved = false, autoTimer;
     try { unsaved = localStorage.getItem(UNS) === '1'; } catch (e) {}
-    function setUnsaved(v) { unsaved = v; try { localStorage.setItem(UNS, v ? '1' : '0'); } catch (e) {} }
+    function updateAutosaveUI(state) {
+        document.querySelectorAll('.autosave-indicator').forEach(dot => {
+            dot.className = 'autosave-indicator ' + state + (dot.classList.contains('no-print') ? ' no-print' : '');
+            dot.title = state === 'saved' ? 'Autosave: Synchronized (Click to force save)' : 'Autosave: Changes pending...';
+        });
+    }
+    function setUnsaved(v) {
+        unsaved = v;
+        try { localStorage.setItem(UNS, v ? '1' : '0'); } catch (e) {}
+        updateAutosaveUI(v ? 'pending' : 'saved');
+    }
     function buildData(withPortrait) {
         const data = { _bundle: 'sta2e-unified-v3' };
         form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name) data[el.name] = el.value; });
         form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name) data[el.name] = el.checked; });
         data.docs = { p3: collect('p3'), p4: collect('p4') };
         data.base_equipment = (baseEquipment !== null) ? baseEquipment : (form.elements['ledger_equipment'] ? form.elements['ledger_equipment'].value : '');
+        data.challenged_values = Array.from(form.querySelectorAll('.val-row'))
+            .map((r, i) => r.classList.contains('challenged') ? (i + 1) : null)
+            .filter(Boolean);
         const pi = document.getElementById('portrait-img');
         if (withPortrait !== false && pi && pi.src && pi.style.display === 'block') data['cached_portrait_data'] = pi.src;
         return data;
@@ -369,8 +383,20 @@ function initConsole() {
     function autosave() {
         try { localStorage.setItem(KEY, JSON.stringify(buildData())); }
         catch (e) { try { localStorage.setItem(KEY, JSON.stringify(buildData(false))); } catch (e2) {} }
+        updateAutosaveUI('saved');
     }
-    function markDirty() { setUnsaved(true); clearTimeout(autoTimer); autoTimer = setTimeout(autosave, 500); }
+    function markDirty() {
+        setUnsaved(true);
+        clearTimeout(autoTimer);
+        autoTimer = setTimeout(autosave, 500);
+    }
+    document.addEventListener('click', e => {
+        if (e.target.classList.contains('autosave-indicator')) {
+            clearTimeout(autoTimer);
+            autosave();
+            setUnsaved(false);
+        }
+    });
     function saveFile(prefix) {
         const blob = new Blob([JSON.stringify(buildData(), null, 2)], { type: 'application/json' });
         let name = fileId.value.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '_');
@@ -398,11 +424,20 @@ function initConsole() {
         if (d.ledger_values && d.ledger_value_1 === undefined) String(d.ledger_values).split(/\r?\n/).slice(0, 4).forEach((t, i) => { d['ledger_value_' + (i + 1)] = t; });
         form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name && d[el.name] !== undefined) el.value = d[el.name]; });
         form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name && d[el.name] !== undefined) el.checked = d[el.name]; });
-        follows.forEach(t => { if (d[t.name] !== undefined) t.dataset.touched = d[t.name] ? '1' : ''; });
+        follows.forEach(t => {
+            if (d[t.name] !== undefined) {
+                const baseVal = d[t.dataset.follow] || '';
+                t.dataset.touched = (d[t.name] && d[t.name] !== baseVal) ? '1' : '';
+            }
+        });
         if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
         else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
         if (d['cached_portrait_data']) setPortrait(d['cached_portrait_data']);
         if (d.base_equipment !== undefined) baseEquipment = d.base_equipment;
+        const ch = Array.isArray(d.challenged_values) ? d.challenged_values : [];
+        form.querySelectorAll('.val-row').forEach((r, i) => {
+            r.classList.toggle('challenged', ch.includes(i + 1));
+        });
         sync(); updateModColors(); growAll();
     }
     const loader = document.getElementById('utility-file-loader');
@@ -430,6 +465,7 @@ function initConsole() {
             saveFile('backup_');
             form.reset();
             follows.forEach(t => { t.dataset.touched = ''; });
+            document.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
             setPortrait('');
             fileId.value = DEFAULT_ID;
             Object.keys(DOCS).forEach(defaultDoc);
@@ -753,6 +789,18 @@ function initConsole() {
             });
         }
     })();
+    // Value Challenge toggle (Play Mode only)
+    form.addEventListener('click', e => {
+        if (!isPlayMode) return;
+        const num = e.target.closest('.val-num');
+        if (!num) return;
+        const row = num.closest('.val-row');
+        if (row) {
+            row.classList.toggle('challenged');
+            markDirty();
+        }
+    });
+
     // Stat modifier dynamic coloring
     function updateModColors() {
         document.querySelectorAll('.mod-input').forEach(input => {
@@ -772,6 +820,9 @@ function initConsole() {
     function setPlayMode(active) {
         isPlayMode = active;
         document.body.classList.toggle('play-mode-active', isPlayMode);
+        document.querySelectorAll('.val-num').forEach(el => {
+            el.title = isPlayMode ? 'Click to Challenge/Restore this Value' : '';
+        });
         const toggleBtn = document.getElementById('btn-mode-toggle');
         if (toggleBtn) {
             toggleBtn.textContent = isPlayMode ? 'Mode: Play 🔒' : 'Mode: Edit 🔓';
@@ -835,13 +886,42 @@ function initConsole() {
         });
     }
 
-    Object.keys(DOCS).forEach(defaultDoc);
-    try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
-    sync();
-    balance(); growAll();
-    window.addEventListener('load', () => { balance(); growAll(); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { balance(); growAll(); });
-}
+	// Fullscreen PADD mode toggle
+		const fsBtn = document.getElementById('btn-fullscreen-toggle');
+		if (fsBtn) {
+			fsBtn.addEventListener('click', () => {
+				if (!document.fullscreenElement) {
+					document.documentElement.requestFullscreen().catch(() => {});
+				} else {
+					if (document.exitFullscreen) document.exitFullscreen();
+				}
+			});
+			document.addEventListener('fullscreenchange', () => {
+				const isFs = !!document.fullscreenElement;
+				fsBtn.textContent = isFs ? 'Exit PADD ✕' : 'PADD ⛶';
+				fsBtn.style.backgroundColor = isFs ? '#d96b27' : '#708699';
+			});
+		}
+
+		// Determination popover tap/click toggle for touchscreens
+		const detTrigger = document.querySelector('.det-info-trigger');
+		if (detTrigger) {
+			detTrigger.addEventListener('click', e => {
+				e.stopPropagation();
+				detTrigger.closest('.vital-box-panel-fullwidth')?.classList.toggle('popover-open');
+			});
+			document.addEventListener('click', () => {
+				document.querySelectorAll('.vital-box-panel-fullwidth.popover-open').forEach(el => el.classList.remove('popover-open'));
+			});
+		}
+
+		Object.keys(DOCS).forEach(defaultDoc);
+		try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
+		sync();
+		balance(); growAll();
+		window.addEventListener('load', () => { balance(); growAll(); });
+		if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { balance(); growAll(); });
+	}
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initConsole);

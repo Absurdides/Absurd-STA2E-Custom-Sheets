@@ -42,7 +42,8 @@ Paste or attach this at the start of a new chat, together with the current `inde
 
 ## Page 1 (visual master)
 - Top bio fields (`bio_name`, `bio_species`, `bio_rank`, `bio_assignment`, `bio_career_path`, `bio_traits`, etc.).
-- Left column: Attributes, Departments (Command and Conn red, Engineering and Security yellow, Medicine and Science blue), Determination (3 boxes). Attributes and Departments feature companion ± modifier inputs (`.mod-input`, e.g. `attr_control_mod`), auto-colored red for `-` and dark green for `+`; hidden in print.- Right column: Species Ability (`ledger_species_ability`, 3 lines), Values (`ledger_value_1..4`, numbered, per-line shrink), Focuses (`ledger_focus_1..6`, per-line shrink, grid rows fill the box).
+- Left column: Attributes, Departments (Command and Conn red, Engineering and Security yellow, Medicine and Science blue), Determination (3 boxes, with hover/tap LCARS popover detailing the 5 canonical 2E Determination spends; hidden in print). Attributes and Departments feature companion ± modifier inputs (`.mod-input`, e.g. `attr_control_mod`), auto-colored red for `-` and dark green for `+`; hidden in print.
+- Right column: Species Ability (`ledger_species_ability`, 3 lines), Values (`ledger_value_1..4`, numbered, per-line shrink; in Play Mode, clicking the number toggles a red strikethrough "Challenged" state), Focuses (`ledger_focus_1..6`, per-line shrink, grid rows fill the box).
 - Full width below: Talents (`ledger_talents`), Mission Profile & Active Directives (`ledger_mission_directives`), Pastimes (`ledger_background_notes`, 2 lines).
 - LAYOUT RULES (user was unhappy when broken): Determination bottom border must align with Focuses bottom. Species Ability stays 3 lines, Focuses 6 lines, Values 4. Talents and Mission Profile share leftover height via JS `balance()` (Talents = ceil(lines/2)+2, Mission = floor(lines/2)-2).
 - Shrink-to-fit: boxes with `.fit-box` shrink the whole block (tighten spacing, then largest font that fits); inputs with `.fit-text` shrink per line. Default text 11.5px. Page 2 attack inputs also use `.fit-text`.
@@ -53,7 +54,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - Middle row: 2-column grid (`.tactical-middle-container-2col`). Left col contains 8 Attack rows (`attack_1..8_type/_qual/_score`); right col contains Equipment (`ledger_equipment`, `.fit-box` enabled).
   - Bottom row: Momentum Spends (`.momentum-master-box-layout`, 245px, 10.5px font size, 3 columns).
 - Removed: `CHRONICLE RECOVERY` banner, `ledger_mission_log`, and `ledger_service_record` (migrating to Page 4).
-- Fields: `combat_*`, `stress_*`, `ledger_injuries`, `roster_1..6_name/_stat/_note`, `attack_1..7_type/_qual/_score`, `logistics_allowance`, `logistics_base_cost`, `logistics_mission_cost`, `logistics_total_cost`, `ledger_equipment`.
+- Fields: `combat_*` (`combat_max_stress` auto-follows `attr_fitness` via `data-follow`, disengaging if manually edited), `stress_*`, `ledger_injuries`, `roster_1..6_name/_stat/_note`, `attack_1..7_type/_qual/_score`, `logistics_allowance`, `logistics_base_cost`, `logistics_mission_cost`, `logistics_total_cost`, `ledger_equipment`.
 - "SEV." heading sits over the attack score boxes (Slots 1–7). Slot 8 replaced by Requisitions & Logistics panel.
 - Hover controls on Attack (1–7) and Away Team Roster (1–6) rows: Up (▲), Down (▼), and Delete & shift up (×). Hidden in print.
 - Logistics & Opportunity Cost:
@@ -63,7 +64,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 
 ## Pages 3 and 4 - Narrative Log / Session Log (blank templates)
 - Page 3 only: vitals `p3_vital_name/species/age/rank/assignment/posting/education/career` and `p3_value_1..4`. Fields with `data-follow` copy from Page 1 until the user types in them.
-- Added items (all have up/down/x controls, hidden in print): header bars (blue, tan, orange; bar only), paragraphs (`contenteditable` rich text: Bold, Italic, Font LCARS/Arial, Clear Format), detail rows (`cap-tan/orange/slate/navy`: editable label + text). Sections = tabs (max 8); tab row hidden while there is 1 section; red "page full" warning on screen.
+- Added items (all have up/down/x controls, hidden in print): header bars (blue, tan, orange, slate/light blue; bar only), paragraphs (`contenteditable` rich text: Bold, Italic, Font LCARS/Arial, Clear Format), detail rows (`cap-tan/orange/slate/navy`: editable label + text).
 - Paragraph editing: sanitized plain-text paste prevents external styling; `Ctrl+B` and `Ctrl+I` intercepted to override browser bookmark/page info shortcuts; JSON save/load preserves HTML tags while backward-compatible with legacy plain text strings.
 - Stardate generator: Year, Month, Day inputs in `#p3-tools` compute 24th-century integer stardate in real time. "+ Header" spawns a titled blue header bar; "Insert" inserts into cursor/selection.
 - Off-page menu rows: Pages | Stardate | Header bars | Detail rows | Text | Format | Sections | File.
@@ -80,10 +81,13 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Save As File -> one JSON named from FILE ID (`_bundle: sta2e-unified-v3`): all named fields + `docs: {p3:{sections,blocks[]}, p4:{...}}` (preserving paragraph HTML formatting) + portrait.
 - Load migrates older saves (`ledger_values`, `ledger_focuses`, `ledger_mission_profile` + `ledger_active_directives`, old `p3_blocks`).
 - Filename: `<fileid>_YYYY-MM-DD.json`. Clear Form first downloads `backup_<fileid>_<date>.json`.
-- Autosave: localStorage `sta2e-autosave` (same bundle, debounced 500 ms after edits), restored at startup; `sta2e-unsaved` flag drives the close-tab warning (cleared by Save As File / Load / Clear). Clear removes autosave. Load and autosave restore both go through `applyData()`.
+- Autosave: localStorage `sta2e-autosave` (same bundle, debounced 500 ms after edits), restored at startup; `sta2e-unsaved` flag drives the close-tab warning (cleared by Save As File / Load / Clear). Live status indicator dots beside File and File ID reflect storage sync status (Green = Saved, Amber = Pending). Clear removes autosave. Load and autosave restore both go through `applyData()`.
 - Keep field `name` attributes stable; renaming breaks old saves.
 - Print: `.printable-page-area` is 8.0 x 10.5 in. Standard browser print (`Ctrl+P`) prints only active page. "Print Dossier (PDF)" compiles Page 1, Page 2, and all tabs of Pages 3 and 4 with full headers/footers into a single multi-page print stream via native browser `window.print()` and `afterprint` cleanup.
 - Session management:
   - "Mode: Edit 🔓 / Play 🔒": Toggles tablet-friendly read-only lock on static bio, core stats, and talents to prevent accidental touches.
-  - "Reset Mission Status": Archives `ledger_mission_directives` to Page 4 Session Log under an Orange header ("Mission Debrief: Stardate XXXXX") and paragraph; clears stress; resets stat modifiers; restores baseline equipment.
-- Off-page menu rows: Pages | Stardate | Header bars | Detail rows | Text | Format | Sections | Session | File.
+  - "Reset Mission": Archives `ledger_mission_directives` to Page 4 Session Log under an Orange header ("Mission Debrief: Stardate XXXXX") and paragraph; clears stress; resets stat modifiers; restores baseline equipment.
+  - "PADD ⛶": Toggles native browser fullscreen mode to hide tablet/phone browser chrome during live table play.
+- Off-page menus (hidden in print):
+  - Top Utility Bar (above sheet): File (Save, Load, Clear, Print (PDF)) + Session (Mode toggle, Reset Mission) on line 1; Pages (1–4) on line 2.
+  - Bottom Utility Bar (below sheet): `#p3-tools` (Stardate, Header bars, Detail rows, Text, Format, Sections) appears only on Pages 3 & 4.

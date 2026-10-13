@@ -11,6 +11,29 @@
 </head>
 <body>
 <form id="unified-master-console-form" autocomplete="off" style="margin:0; padding:0; display:flex; flex-direction:column; align-items:center; width:100%;">
+<div class="external-utility-bar external-top-bar no-print">
+    <div class="bar-group top-menu-row">
+        <span class="top-row-label">File</span>
+        <span class="autosave-indicator saved" title="Autosave: Synchronized (Click to force save)"></span>
+        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Save As File</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Load File</button>
+        <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
+        <button type="button" class="lcars-utility-btn" id="utility-btn-print-all" style="background-color: #2c3a4d;">Print (PDF)</button>
+        <div class="menu-divider-bar"></div>
+        <span class="top-row-label">Session</span>
+        <button type="button" class="lcars-utility-btn" id="btn-mode-toggle" style="background-color: #2c3a4d;">Mode: Edit 🔓</button>
+        <button type="button" class="lcars-utility-btn" id="btn-reset-mission" style="background-color: #bd4b4b;">Reset Mission</button>
+        <button type="button" class="lcars-utility-btn" id="btn-fullscreen-toggle" style="background-color: #708699;" title="Toggle Fullscreen PADD Mode">PADD ⛶</button>
+    </div>
+    <div class="bar-group" style="gap: 4px; flex-wrap: nowrap;">
+        <span class="top-row-label">Pages</span>
+        <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Personnel Dossier</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical Annex</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative Log</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Session Log</button>
+    </div>
+    <input type="file" id="utility-file-loader" accept=".json" style="display: none;">
+</div>
 <!-- Block 4 START -->
 <div id="page-1" class="sheet-page active"><div class="screen-only-view-padding">
 <div class="printable-page-area">
@@ -28,6 +51,7 @@
                         <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
                             <span>FILE ID:</span>
                             <input type="text" id="metadata-file-id" name="meta_file_id" class="file-id-editable-input" value="2376-[FILE_DEFAULT]">
+                            <span class="autosave-indicator saved no-print" title="Autosave: Synchronized (Click to force save)"></span>
                         </div>
                         <div style="color: #708699;">/ Form STA-2E</div>
                     </div>
@@ -106,8 +130,16 @@
                                             <div class="single-stat-capsule"><span class="stat-label-text" style="color: #4b8bbd;">Science</span><div class="stat-values-wrap"><div class="stat-input-score-line"><input type="text" name="dept_science" maxlength="2" class="score-input"></div><div class="stat-input-mod-line no-print"><input type="text" name="dept_science_mod" maxlength="3" class="mod-input" placeholder="±"></div></div></div>
                                         </div>
                                     </div>
-                                    <div class="vital-box-panel-fullwidth" style="margin-top: auto;">
-                                        <div class="vital-header-label">Determination</div>
+                                    <div class="vital-box-panel-fullwidth" style="margin-top: auto; position: relative;">
+                                        <div class="vital-header-label det-info-trigger" title="Hover or tap to view 2E Determination rules">Determination <span class="no-print" style="font-size: 8.5px; color: #708699;">ⓘ</span></div>
+                                        <div class="det-popover no-print">
+                                            <div class="det-popover-header">Determination Spends // Requires Value or Directive</div>
+                                            <div class="det-popover-item"><strong>Perfect Opportunity:</strong> Before rolling, set one d20 to a 1 (counts as a critical success).</div>
+                                            <div class="det-popover-item"><strong>Moment of Inspiration:</strong> After rolling, re-roll any number of d20s in your pool.</div>
+                                            <div class="det-popover-item"><strong>Surge of Activity:</strong> Perform one additional major action immediately.</div>
+                                            <div class="det-popover-item"><strong>Make It So:</strong> Immediately create a new Advantage trait in the scene.</div>
+                                            <div class="det-popover-item"><strong>Special Technique:</strong> Gain the benefits of any talent for the current scene.</div>
+                                        </div>
                                         <div class="det-boxes-row-large">
                                             <input type="checkbox" name="determination_1" class="form-matrix-checkbox">
                                             <input type="checkbox" name="determination_2" class="form-matrix-checkbox">
@@ -165,7 +197,7 @@
                                 <div class="stress-track-panel-block">
                                     <div class="stress-panel-header-row" style="padding-right: 6px;">
                                         <div class="vital-header-label">STRESS TRACK</div>
-                                        <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">MAX STRESS [BASE: FITNESS]<input type="text" name="combat_max_stress" maxlength="2" class="score-input"></div>
+                                        <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">MAX STRESS [BASE: FITNESS]<input type="text" name="combat_max_stress" maxlength="2" class="score-input" data-follow="attr_fitness"></div>
                                     </div>
                                     <div class="stress-bubbles-matrix" style="grid-template-columns: repeat(8, 1fr);">
                                         <input type="checkbox" name="stress_1" class="form-matrix-checkbox"><input type="checkbox" name="stress_2" class="form-matrix-checkbox"><input type="checkbox" name="stress_3" class="form-matrix-checkbox"><input type="checkbox" name="stress_4" class="form-matrix-checkbox"><input type="checkbox" name="stress_5" class="form-matrix-checkbox"><input type="checkbox" name="stress_6" class="form-matrix-checkbox"><input type="checkbox" name="stress_7" class="form-matrix-checkbox"><input type="checkbox" name="stress_8" class="form-matrix-checkbox">
@@ -391,69 +423,50 @@
 </div></div>
 <!-- Block 7 END -->
 <!-- Block 8 START -->
-<div class="external-utility-bar" style="margin-top: 20px; margin-bottom: 20px;">
-    <div class="bar-group"><span class="bar-label">Pages</span>
-        <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Personnel Dossier</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical Annex</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative Log</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Session Log</button>
+<div id="p3-tools" class="external-utility-bar no-print" style="display: none; margin-top: 15px; margin-bottom: 60px;">
+    <div class="bar-group"><span class="bar-label">Stardate</span>
+        <input type="number" id="sd-year" style="width: 56px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="2376" title="Campaign Year">
+        <select id="sd-month" style="font-size: 11px; padding: 2px 3px; border: 1px solid #708699; border-radius: 3px;" title="Month">
+            <option value="1">Jan (01)</option><option value="2">Feb (02)</option><option value="3">Mar (03)</option>
+            <option value="4">Apr (04)</option><option value="5">May (05)</option><option value="6">Jun (06)</option>
+            <option value="7">Jul (07)</option><option value="8">Aug (08)</option><option value="9">Sep (09)</option>
+            <option value="10">Oct (10)</option><option value="11">Nov (11)</option><option value="12">Dec (12)</option>
+        </select>
+        <input type="number" id="sd-day" min="1" max="31" style="width: 42px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="1" title="Day">
+        <span id="sd-display" style="font-size: 11px; font-weight: bold; color: #2c3a4d; letter-spacing: 0.5px; padding: 0 4px; min-width: 90px;">STARDATE 53000</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-header" style="background-color: #2c3a4d;">+ Header</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-insert" style="background-color: #708699;">Insert</button>
     </div>
-	<div id="p3-tools" style="display: none; flex-direction: column; gap: 8px; width: 100%;">
-        <div class="bar-group"><span class="bar-label">Stardate</span>
-            <input type="number" id="sd-year" style="width: 56px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="2376" title="Campaign Year">
-            <select id="sd-month" style="font-size: 11px; padding: 2px 3px; border: 1px solid #708699; border-radius: 3px;" title="Month">
-                <option value="1">Jan (01)</option><option value="2">Feb (02)</option><option value="3">Mar (03)</option>
-                <option value="4">Apr (04)</option><option value="5">May (05)</option><option value="6">Jun (06)</option>
-                <option value="7">Jul (07)</option><option value="8">Aug (08)</option><option value="9">Sep (09)</option>
-                <option value="10">Oct (10)</option><option value="11">Nov (11)</option><option value="12">Dec (12)</option>
-            </select>
-            <input type="number" id="sd-day" min="1" max="31" style="width: 42px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="1" title="Day">
-            <span id="sd-display" style="font-size: 11px; font-weight: bold; color: #2c3a4d; letter-spacing: 0.5px; padding: 0 4px; min-width: 90px;">STARDATE 53000</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-header" style="background-color: #2c3a4d;">+ Header</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="sd-btn-insert" style="background-color: #708699;">Insert</button>
-        </div>
-        <div class="bar-group"><span class="bar-label">Header bars</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-blue">+ Blue</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-orange" style="background-color: #d96b27;">+ Orange</button>
-        </div>
-        <div class="bar-group"><span class="bar-label">Detail rows</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-orange" style="background-color: #d96b27;">+ Orange</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-slate" style="background-color: #708699;">+ Light Blue</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-navy" style="background-color: #2c3a4d;">+ Navy</button>
-        </div>
-        <div class="bar-group"><span class="bar-label">Text</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-para" style="background-color: #2c3a4d;">+ Paragraph</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-lines" style="background-color: #2c3a4d;">+ Ruled Lines</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-line" style="background-color: #2c3a4d;">+ Ruled Line</button>
-        </div>
-		<div class="bar-group"><span class="bar-label">Format</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-bold" style="background-color: #2c3a4d; font-weight: bold;">Bold (Ctrl+B)</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-italic" style="background-color: #2c3a4d; font-style: italic;">Italic (Ctrl+I)</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-antonio" style="background-color: #708699; font-family: 'Antonio', sans-serif;">Font: LCARS</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-arial" style="background-color: #708699; font-family: Arial, sans-serif; text-transform: none;">Font: Arial</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-clear" style="background-color: #bd4b4b;">Clear Format</button>
-        </div>
-        <div class="bar-group"><span class="bar-label">Sections</span>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-sec" style="background-color: #708699;">+ Add Section</button>
-            <button type="button" class="lcars-utility-btn btn-tab" id="p3-del-sec" style="background-color: #bd4b4b;">- Remove Last Section</button>
-        </div>
+	<div class="bar-group"><span class="bar-label">Header bars</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-blue">+ Blue</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-orange" style="background-color: #d96b27;">+ Orange</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-slate" style="background-color: #708699; color: #000000;">+ Light Blue</button>
     </div>
-	<div class="bar-group"><span class="bar-label">Session</span>
-        <button type="button" class="lcars-utility-btn" id="btn-mode-toggle" style="background-color: #2c3a4d;">Mode: Edit 🔓</button>
-        <button type="button" class="lcars-utility-btn" id="btn-reset-mission" style="background-color: #bd4b4b;">Reset Mission Status</button>
+    <div class="bar-group"><span class="bar-label">Detail rows</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-tan" style="background-color: #eed292; color: #000000;">+ Tan</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-orange" style="background-color: #d96b27;">+ Orange</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-slate" style="background-color: #708699;">+ Light Blue</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-cap-navy" style="background-color: #2c3a4d;">+ Navy</button>
     </div>
-	<div class="bar-group"><span class="bar-label">File</span>
-        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Save As File</button>
-        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Load File</button>
-        <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
-        <button type="button" class="lcars-utility-btn" id="utility-btn-print-all" style="background-color: #2c3a4d;">Print Dossier (PDF)</button>
+    <div class="bar-group"><span class="bar-label">Text</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-para" style="background-color: #2c3a4d;">+ Paragraph</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-lines" style="background-color: #2c3a4d;">+ Ruled Lines</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-line" style="background-color: #2c3a4d;">+ Ruled Line</button>
     </div>
-    <input type="file" id="utility-file-loader" accept=".json" style="display: none;">
+    <div class="bar-group"><span class="bar-label">Format</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-bold" style="background-color: #2c3a4d; font-weight: bold;">Bold (Ctrl+B)</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-italic" style="background-color: #2c3a4d; font-style: italic;">Italic (Ctrl+I)</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-antonio" style="background-color: #708699; font-family: 'Antonio', sans-serif;">Font: LCARS</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-arial" style="background-color: #708699; font-family: Arial, sans-serif; text-transform: none;">Font: Arial</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-fmt-clear" style="background-color: #bd4b4b;">Clear Format</button>
+    </div>
+    <div class="bar-group"><span class="bar-label">Sections</span>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-add-sec" style="background-color: #708699;">+ Add Section</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="p3-del-sec" style="background-color: #bd4b4b;">- Remove Last Section</button>
+    </div>
 </div>
-</form>
-    <script src="species_abilities.js"></script>
+</form>    <script src="species_abilities.js"></script>
     <script src="talents.js"></script>
     <script src="equipment.js"></script>
     <script src="console.js"></script>
