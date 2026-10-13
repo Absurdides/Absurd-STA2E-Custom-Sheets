@@ -379,6 +379,8 @@ function initConsole() {
             .filter(Boolean);
         const pi = document.getElementById('portrait-img');
         if (withPortrait !== false && pi && pi.src && pi.style.display === 'block') data['cached_portrait_data'] = pi.src;
+        const si = document.getElementById('ship-ortho-img');
+        if (withPortrait !== false && si && si.src && si.style.display === 'block') data['cached_ship_ortho_data'] = si.src;
         return data;
     }
     function autosave() {
@@ -434,6 +436,7 @@ function initConsole() {
         if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
         else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
         if (d['cached_portrait_data']) setPortrait(d['cached_portrait_data']);
+        if (d['cached_ship_ortho_data']) setShipGraphic(d['cached_ship_ortho_data']);
         if (d.base_equipment !== undefined) baseEquipment = d.base_equipment;
         const ch = Array.isArray(d.challenged_values) ? d.challenged_values : [];
         form.querySelectorAll('.val-row').forEach((r, i) => {
@@ -468,6 +471,7 @@ function initConsole() {
             follows.forEach(t => { t.dataset.touched = ''; });
             document.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
             setPortrait('');
+            setShipGraphic('');
             fileId.value = DEFAULT_ID;
             Object.keys(DOCS).forEach(defaultDoc);
             try { localStorage.removeItem(KEY); } catch (e) {}
@@ -476,7 +480,76 @@ function initConsole() {
         });
     }
 
-	function printFullDossier() {
+	function setShipGraphic(src) {
+        const img = document.getElementById('ship-ortho-img');
+        const ph = document.getElementById('ship-ortho-ph');
+        if (img) { img.src = src || ''; img.style.display = src ? 'block' : 'none'; }
+        if (ph) { ph.style.display = src ? 'none' : 'block'; }
+    }
+    const shipUploader = document.getElementById('ship-img-uploader');
+    if (shipUploader) {
+        shipUploader.addEventListener('change', function(e) {
+            if (!e.target.files[0]) return;
+            const r = new FileReader();
+            r.onload = ev => { setShipGraphic(ev.target.result); markDirty(); };
+            r.readAsDataURL(e.target.files[0]);
+        });
+    }
+
+    function exportShipFile() {
+        const shipData = { _bundle: 'sta2e-starship-v1' };
+        form.querySelectorAll('input, textarea').forEach(el => {
+            if (el.name && el.name.startsWith('ship_')) {
+                if (el.type === 'checkbox') shipData[el.name] = el.checked;
+                else shipData[el.name] = el.value;
+            }
+        });
+        const shipImg = document.getElementById('ship-ortho-img');
+        if (shipImg && shipImg.src && shipImg.style.display === 'block') {
+            shipData['cached_ship_ortho_data'] = shipImg.src;
+        }
+        let reg = (form.elements['ship_registry']?.value || '').trim().replace(/[^a-z0-9\-]/gi, '_');
+        let shipName = (form.elements['ship_name']?.value || 'starship').trim().replace(/[^a-z0-9\-]/gi, '_');
+        const filename = 'uss_' + (shipName || 'vessel') + (reg ? '_' + reg : '') + '.json';
+        const blob = new Blob([JSON.stringify(shipData, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.download = filename.toLowerCase();
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    const shipExportBtn = document.getElementById('utility-btn-ship-export');
+    if (shipExportBtn) shipExportBtn.addEventListener('click', exportShipFile);
+
+    const shipLoader = document.getElementById('utility-ship-loader');
+    const shipImportBtn = document.getElementById('utility-btn-ship-import');
+    if (shipImportBtn && shipLoader) shipImportBtn.addEventListener('click', () => shipLoader.click());
+    if (shipLoader) {
+        shipLoader.addEventListener('change', function(e) {
+            const f = e.target.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = function(ev) {
+                try {
+                    const d = JSON.parse(ev.target.result);
+                    Object.keys(d).forEach(k => {
+                        if (k.startsWith('ship_') && form.elements[k]) {
+                            if (form.elements[k].type === 'checkbox') form.elements[k].checked = !!d[k];
+                            else form.elements[k].value = d[k];
+                        }
+                    });
+                    if (d['cached_ship_ortho_data']) setShipGraphic(d['cached_ship_ortho_data']);
+                    markDirty(); sync(); growAll();
+                    alert('Starship profile loaded successfully.');
+                } catch (err) {
+                    alert('Terminal Error: Unable to parse starship registry file.');
+                }
+            };
+            r.readAsText(f);
+            shipLoader.value = '';
+        });
+    }
+
+    function printFullDossier() {
         const old = document.getElementById('print-all-container');
         if (old) old.remove();
 
@@ -537,6 +610,15 @@ function initConsole() {
                 container.appendChild(wrap);
             }
         });
+
+        // Page 5
+        const p5 = document.querySelector('#page-5 .printable-page-area');
+        if (p5) {
+            const wrap = document.createElement('div');
+            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
+            wrap.appendChild(cloneWithValues(p5));
+            container.appendChild(wrap);
+        }
 
         document.body.appendChild(container);
         document.body.classList.add('printing-all');
@@ -654,7 +736,7 @@ function initConsole() {
         }
     });
 
-    makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...', e => e.type || 'Other', e => {
+makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...', e => e.type || 'Other', e => {
         const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
         const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
         const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
@@ -675,29 +757,70 @@ function initConsole() {
         }
     });
 
+    (function equipmentFilters() {
+        const sel = document.getElementById('equipment-picker'), q = document.getElementById('equipment-search');
+        if (!sel || !gearList.length || !q) return;
+        function refill() {
+            const term = q.value.trim().toLowerCase();
+            const hits = gearList.map((e, i) => [e, i]).filter(([e]) => !term || (e.name + ' ' + (e.qualities || '') + ' ' + (e.type || '')).toLowerCase().includes(term));
+            while (sel.children.length > 1) sel.removeChild(sel.lastChild);
+            sel.options[0].textContent = '\u25BE ' + (hits.length === gearList.length ? 'Add equipment...' : hits.length + (hits.length === 1 ? ' match' : ' matches') + '...');
+            const groups = {};
+            hits.forEach(h => { (groups[h[0].type || 'Other'] = groups[h[0].type || 'Other'] || []).push(h); });
+            Object.keys(groups).sort().forEach(g => {
+                const og = document.createElement('optgroup'); og.label = g;
+                groups[g].sort((a, b) => a[0].name.localeCompare(b[0].name)).forEach(([e, i]) => {
+                    const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
+                    const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
+                    const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
+                    const o = document.createElement('option');
+                    o.value = i;
+                    o.textContent = e.name + ' [' + costLabel + ']';
+                    og.appendChild(o);
+                });
+                sel.appendChild(og);
+            });
+        }
+        q.addEventListener('input', refill);
+        q.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+        form.addEventListener('reset', () => setTimeout(refill, 0));
+    })();
+
     (function initWeaponPicker() {
-        const wSel = document.getElementById('weapon-picker');
+        const wSel = document.getElementById('weapon-picker'), wQ = document.getElementById('weapon-search');
         if (!wSel) return;
+        function refill() {
+            const term = wQ ? wQ.value.trim().toLowerCase() : '';
+            const hits = weaponList.map((e, i) => [e, i]).filter(([e]) => !term || (e.name + ' ' + (e.qualities || '') + ' ' + (e.type || '')).toLowerCase().includes(term));
+            while (wSel.children.length > 1) wSel.removeChild(wSel.lastChild);
+            wSel.options[0].textContent = '\u25BE ' + (hits.length === weaponList.length ? (weaponList.length ? 'Add weapon...' : 'No weapons loaded') : hits.length + (hits.length === 1 ? ' match' : ' matches') + '...');
+            const groups = {};
+            hits.forEach(h => { (groups[h[0].type || 'Weapons'] = groups[h[0].type || 'Weapons'] || []).push(h); });
+            Object.keys(groups).sort().forEach(g => {
+                const og = document.createElement('optgroup');
+                og.label = g;
+                groups[g].sort((a, b) => a[0].name.localeCompare(b[0].name)).forEach(([e, i]) => {
+                    const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
+                    const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
+                    const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
+                    const o = document.createElement('option');
+                    o.value = i;
+                    o.textContent = e.name + ' [' + costLabel + ']';
+                    og.appendChild(o);
+                });
+                wSel.appendChild(og);
+            });
+        }
         const first = document.createElement('option');
         first.value = '';
         first.textContent = weaponList.length ? '\u25BE Add weapon...' : '\u25BE No weapons loaded';
         wSel.appendChild(first);
-        const groups = {};
-        weaponList.forEach((e, i) => { (groups[e.type || 'Weapons'] = groups[e.type || 'Weapons'] || []).push([e, i]); });
-        Object.keys(groups).sort().forEach(g => {
-            const og = document.createElement('optgroup');
-            og.label = g;
-            groups[g].sort((a, b) => a[0].name.localeCompare(b[0].name)).forEach(([e, i]) => {
-                const isStandard = e.standard_issue === true || String(e.standard_issue).toLowerCase() === 'true';
-                const cost = (e.opportunity_cost !== undefined && e.opportunity_cost !== null && e.opportunity_cost !== '') ? e.opportunity_cost : '?';
-                const costLabel = isStandard ? 'Standard Issue' : 'Cost: ' + cost;
-                const o = document.createElement('option');
-                o.value = i;
-                o.textContent = e.name + ' [' + costLabel + ']';
-                og.appendChild(o);
-            });
-            wSel.appendChild(og);
-        });
+        refill();
+        if (wQ) {
+            wQ.addEventListener('input', refill);
+            wQ.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+            form.addEventListener('reset', () => setTimeout(refill, 0));
+        }
         wSel.addEventListener('change', function() {
             if (wSel.value === '') return;
             const w = weaponList[Number(wSel.value)];
@@ -938,19 +1061,22 @@ function initConsole() {
         window.addEventListener('resize', () => { if (isFitWidth) updateSheetZoom(); });
     }
 
-		// Determination popover tap/click toggle for touchscreens
-		const detTrigger = document.querySelector('.det-info-trigger');
-		if (detTrigger) {
-			detTrigger.addEventListener('click', e => {
-				e.stopPropagation();
-				detTrigger.closest('.vital-box-panel-fullwidth')?.classList.toggle('popover-open');
-			});
-			document.addEventListener('click', () => {
-				document.querySelectorAll('.vital-box-panel-fullwidth.popover-open').forEach(el => el.classList.remove('popover-open'));
-			});
-		}
-
-		Object.keys(DOCS).forEach(defaultDoc);
+	// Unified LCARS popover tap/click listener for touchscreens (Play Mode only)
+    document.addEventListener('click', e => {
+        const trigger = e.target.closest('.help-trigger, .det-info-trigger, .injury-info-trigger');
+        if (trigger && isPlayMode) {
+            e.stopPropagation();
+            const wrap = trigger.closest('.has-popover, .vital-box-panel-fullwidth, .stress-panel-header-row');
+            if (wrap) {
+                const wasOpen = wrap.classList.contains('popover-open');
+                document.querySelectorAll('.popover-open').forEach(el => el.classList.remove('popover-open'));
+                wrap.classList.toggle('popover-open', !wasOpen);
+            }
+            return;
+        }
+        document.querySelectorAll('.popover-open').forEach(el => el.classList.remove('popover-open'));
+    });
+    Object.keys(DOCS).forEach(defaultDoc);
 		try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
 		sync();
 		balance(); growAll();

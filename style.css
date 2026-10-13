@@ -36,6 +36,31 @@ body {
 .external-top-bar .top-menu-row {
     display: flex; flex-wrap: nowrap; align-items: center; gap: 4px; width: 100%;
 }
+.ship-ortho-void-area {
+    width: 100%; height: 115px; border: 1px dashed #708699; border-radius: 4px;
+    background-color: #fafbfc; display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden; cursor: pointer; margin-bottom: 4px;
+}
+.ship-ortho-void-area img { width: 100%; height: 100%; object-fit: contain; object-position: center; display: none; }
+.ship-ortho-placeholder-text { font-size: 10px; font-weight: bold; color: #708699; letter-spacing: 1px; text-transform: uppercase; }
+.ship-stat-card-quarter { display: flex; align-items: center; justify-content: space-between; border: 1px solid #c0c8cf; border-radius: 4px; background-color: #fafafa; padding: 3px 6px; height: 24px; }
+.ship-system-card { border: 1px solid #c0c8cf; border-radius: 4px; background-color: #fafbfc; padding: 4px; display: flex; flex-direction: column; gap: 2px; }
+.ship-system-header-row { display: flex; justify-content: space-between; align-items: center; }
+.ship-breach-pips-row { display: flex; align-items: center; gap: 3px; justify-content: flex-end; }
+.ship-lcars-section-header {
+    height: 18px; display: flex; align-items: center; padding: 0 8px;
+    font-family: 'Antonio', 'Oswald', sans-serif; font-size: 10.5px; font-weight: 900;
+    letter-spacing: 1.2px; text-transform: uppercase; border-radius: 2px; margin-bottom: 4px;
+}
+.ship-lcars-section-header.orange { background-color: #d96b27; color: #ffffff; }
+.ship-lcars-section-header.yellow { background-color: #eed292; color: #111111; }
+.ship-shields-grid {
+    display: grid !important; grid-template-columns: repeat(15, 1fr) !important;
+    gap: 3px; width: 100%; margin-top: 3px;
+}
+.ship-shields-grid .form-matrix-checkbox {
+    width: 14px; height: 14px; margin: 0 auto; display: block;
+}
 .external-top-bar .top-row-label {
     font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; font-size: 10px; font-weight: 900;
     color: #708699; letter-spacing: 0.8px; text-transform: uppercase; margin-right: 2px; flex-shrink: 0; width: auto;
@@ -176,10 +201,30 @@ body.play-mode-active .stat-input-mod-line { display: flex; }
 .mod-input.pos { color: #2e7d32 !important; font-weight: 900; }
 .mod-input.neg { color: #bd4b4b !important; font-weight: 900; }
 body.play-mode-active input[readonly], body.play-mode-active textarea[readonly] { background-color: rgba(112, 134, 153, 0.04); cursor: default; }
-body.play-mode-active .no-print.species-picker, body.play-mode-active .row-quick-ctl { display: none !important; }
-.vital-box-panel-fullwidth { border: 1px solid #708699; border-radius: 4px; padding: 6px; background-color: #fcfcfc; display: flex; justify-content: space-between; align-items: center; width: 100%; height: 38px; }
+body.play-mode-active .no-print.species-picker, body.play-mode-active .row-quick-ctl,
+body.play-mode-active .talent-picker-wrap, body.play-mode-active .weapon-picker-wrap { display: none !important; }.vital-box-panel-fullwidth { border: 1px solid #708699; border-radius: 4px; padding: 6px; background-color: #fcfcfc; display: flex; justify-content: space-between; align-items: center; width: 100%; height: 38px; }
 .vital-header-label { font-size: 11px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.5px; line-height: 1; }
-.det-info-trigger { cursor: pointer; user-select: none; display: flex; align-items: center; gap: 3px; }
+/* Unified LCARS Rules Popover System (Play Mode Only) */
+.help-trigger { user-select: none; display: inline-flex; align-items: center; gap: 3px; cursor: default; }
+.help-trigger span.info-icon { display: none; font-size: 8.5px; }
+body.play-mode-active .help-trigger { cursor: pointer; }
+body.play-mode-active .help-trigger span.info-icon { display: inline; }
+.lcars-help-popover {
+    display: none; position: absolute; z-index: 100;
+    background-color: #2c3a4d; border: 1px solid #eed292; border-radius: 5px; padding: 8px 10px;
+    color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.35); text-transform: none;
+}
+.lcars-help-header {
+    font-family: 'Antonio', 'Oswald', sans-serif; font-size: 12.5px; font-weight: 900; color: #eed292;
+    letter-spacing: 0.8px; border-bottom: 1px solid #708699; padding-bottom: 4px; margin-bottom: 5px; text-transform: uppercase;
+}
+.lcars-help-item { font-family: 'Roboto', Arial, sans-serif; font-size: 10.5px; line-height: 1.35; margin-bottom: 4px; color: #f0f2f5; }
+.lcars-help-item:last-child { margin-bottom: 0; }
+.lcars-help-item strong { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 11px; color: #d96b27; letter-spacing: 0.4px; text-transform: uppercase; display: inline-block; margin-right: 3px; }
+body.play-mode-active .has-popover:hover .lcars-help-popover,
+body.play-mode-active .has-popover.popover-open .lcars-help-popover { display: block; }
+
+/* Determination & Legacy Popover Rules */
 .det-popover {
     display: none; position: absolute; bottom: calc(100% + 4px); left: 0; width: 350px;
     background-color: #2c3a4d; border: 1px solid #eed292; border-radius: 5px; padding: 8px 10px;
@@ -192,9 +237,7 @@ body.play-mode-active .no-print.species-picker, body.play-mode-active .row-quick
 .det-popover-item { font-family: 'Roboto', Arial, sans-serif; font-size: 11px; line-height: 1.35; margin-bottom: 4px; color: #f0f2f5; }
 .det-popover-item:last-child { margin-bottom: 0; }
 .det-popover-item strong { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 11.5px; color: #d96b27; letter-spacing: 0.4px; text-transform: uppercase; display: block; }
-.vital-box-panel-fullwidth:hover .det-popover, .vital-box-panel-fullwidth.popover-open .det-popover { display: block; }
-.det-boxes-row-large { display: flex; gap: 8px; }
-.baseline-split-grid-left { display: flex; flex-direction: column; gap: 6px; width: 100%; flex-grow: 1; min-height: 326px; }
+body.play-mode-active .vital-box-panel-fullwidth:hover .det-popover, body.play-mode-active .vital-box-panel-fullwidth.popover-open .det-popover { display: block; }.baseline-split-grid-left { display: flex; flex-direction: column; gap: 6px; width: 100%; flex-grow: 1; min-height: 326px; }
 
 .unified-footer-capsule { display: flex; width: 100%; height: 22px; gap: 6px; margin-top: 10px; align-items: flex-end; clear: both; }
 .foot-block-slate { width: 45px; height: 22px; background-color: #708699; border-top-left-radius: 12px; }
@@ -229,7 +272,23 @@ body.play-mode-active .no-print.species-picker, body.play-mode-active .row-quick
 #page-2 .stress-track-panel-block {border: 1px solid #708699; border-radius: 4px; padding: 5px; background-color: #fcfcfc; width: 100%; display: flex; flex-direction: column;}
 #page-2 .stress-panel-header-row {display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid #eef0f4; padding-bottom: 2px;}
 #page-2 .vital-header-label {font-size: 11px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.5px; line-height: 1;}
-#page-2 .stress-bubbles-matrix {display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; width: 100%;}
+#page-2 .injury-info-trigger { user-select: none; display: flex; align-items: center; gap: 3px; cursor: default; }
+#page-2 .injury-info-trigger span { display: none; }
+body.play-mode-active #page-2 .injury-info-trigger { cursor: pointer; }
+body.play-mode-active #page-2 .injury-info-trigger span { display: inline; }
+#page-2 .injury-popover {
+    display: none; position: absolute; top: calc(100% + 4px); left: 0; width: 340px;
+    background-color: #2c3a4d; border: 1px solid #eed292; border-radius: 5px; padding: 8px 10px;
+    z-index: 100; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.35); text-transform: none;
+}
+#page-2 .injury-popover-header {
+    font-family: 'Antonio', 'Oswald', sans-serif; font-size: 12px; font-weight: 900; color: #eed292;
+    letter-spacing: 0.8px; border-bottom: 1px solid #708699; padding-bottom: 4px; margin-bottom: 5px; text-transform: uppercase;
+}
+#page-2 .injury-popover-item { font-family: 'Roboto', Arial, sans-serif; font-size: 10.5px; line-height: 1.35; margin-bottom: 4px; color: #f0f2f5; }
+#page-2 .injury-popover-item:last-child { margin-bottom: 0; }
+#page-2 .injury-popover-item strong { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 11px; color: #d96b27; letter-spacing: 0.4px; text-transform: uppercase; display: block; }
+body.play-mode-active #page-2 .stress-panel-header-row:hover .injury-popover, body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popover { display: block; }#page-2 .stress-bubbles-matrix {display: grid; grid-template-columns: repeat(8, 1fr); gap: 3px; width: 100%;}
 #page-2 .bubble-node {width: 13px; height: 13px; border: 1px solid #2c3a4d; border-radius: 2px; background-color: #ffffff;}
 #page-2 .form-matrix-checkbox {appearance: none; -webkit-appearance: none; border: 1px solid #2c3a4d; border-radius: 2px; background-color: #ffffff; cursor: pointer; width: 13px; height: 13px; margin: 0; padding: 0; display: block;}
 #page-2 .form-matrix-checkbox:checked {background-color: #2c3a4d;}
