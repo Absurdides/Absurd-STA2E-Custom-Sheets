@@ -88,6 +88,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - "Mode: Edit 🔓 / Play 🔒": Toggles tablet-friendly read-only lock on static bio, core stats, and talents to prevent accidental touches.
   - "Reset Mission": Archives `ledger_mission_directives` to Page 4 Session Log under an Orange header ("Mission Debrief: Stardate XXXXX") and paragraph; clears stress; resets stat modifiers; restores baseline equipment.
   - "PADD ⛶": Toggles native browser fullscreen mode to hide tablet/phone browser chrome during live table play.
+	- "Fit ↔": Scales sheet to match tablet screen width for seamless edge-to-edge reading; unzooms cleanly for print.
 - Off-page menus (hidden in print):
   - Top Utility Bar (above sheet): File (Save, Load, Clear, Print (PDF)) + Session (Mode toggle, Reset Mission) on line 1; Pages (1–4) on line 2.
   - Bottom Utility Bar (below sheet): `#p3-tools` (Stardate, Header bars, Detail rows, Text, Format, Sections) appears only on Pages 3 & 4.

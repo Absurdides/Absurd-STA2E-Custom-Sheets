@@ -381,7 +381,7 @@ body.printing-all #print-all-container { display: block !important; width: 100%;
     .sheet-page:not(.active) { display: none !important; }
     .external-utility-bar { display: none !important; }
     .no-print { display: none !important; }
-    .screen-only-view-padding { padding: 0.25in 0 0 0 !important; width: 100% !important; }
-    .printable-page-area { margin: 0 auto !important; }
+    .screen-only-view-padding { padding: 0.25in 0 0 0 !important; width: 100% !important; height: auto !important; }
+    .printable-page-area { margin: 0 auto !important; zoom: 1 !important; transform: none !important; width: 8.0in !important; height: 10.5in !important; }
     body { overflow: visible !important; min-height: 0 !important; }
 }

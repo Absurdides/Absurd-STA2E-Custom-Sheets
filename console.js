@@ -337,6 +337,7 @@ function initConsole() {
         const addSec = document.getElementById('p3-add-sec');
         if (isDoc && addSec && DOCS[dp.dataset.doc]) addSec.textContent = DOCS[dp.dataset.doc].addLabel;
         if (n === '1') balance();
+        if (isFitWidth) updateSheetZoom();
         growAll();
     }
     document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
@@ -887,21 +888,55 @@ function initConsole() {
     }
 
 	// Fullscreen PADD mode toggle
-		const fsBtn = document.getElementById('btn-fullscreen-toggle');
-		if (fsBtn) {
-			fsBtn.addEventListener('click', () => {
-				if (!document.fullscreenElement) {
-					document.documentElement.requestFullscreen().catch(() => {});
-				} else {
-					if (document.exitFullscreen) document.exitFullscreen();
-				}
-			});
-			document.addEventListener('fullscreenchange', () => {
-				const isFs = !!document.fullscreenElement;
-				fsBtn.textContent = isFs ? 'Exit PADD ✕' : 'PADD ⛶';
-				fsBtn.style.backgroundColor = isFs ? '#d96b27' : '#708699';
-			});
-		}
+    const fsBtn = document.getElementById('btn-fullscreen-toggle');
+    if (fsBtn) {
+        fsBtn.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        });
+        document.addEventListener('fullscreenchange', () => {
+            const isFs = !!document.fullscreenElement;
+            fsBtn.textContent = isFs ? 'Exit PADD ✕' : 'PADD ⛶';
+            fsBtn.style.backgroundColor = isFs ? '#d96b27' : '#708699';
+        });
+    }
+
+    // Zoom: Scale sheet to fit tablet screen width
+    let isFitWidth = false;
+    function updateSheetZoom() {
+        const pages = document.querySelectorAll('.printable-page-area');
+        const paddings = document.querySelectorAll('.screen-only-view-padding');
+        if (!isFitWidth) {
+            pages.forEach(p => { p.style.zoom = ''; p.style.transform = ''; p.style.transformOrigin = ''; });
+            paddings.forEach(w => { w.style.height = ''; });
+            return;
+        }
+        const avail = window.innerWidth - 16;
+        const scale = Math.max(0.5, avail / 768);
+        const useZoom = 'zoom' in document.documentElement.style;
+        pages.forEach(p => {
+            if (useZoom) {
+                p.style.zoom = scale;
+            } else {
+                p.style.transform = `scale(${scale})`;
+                p.style.transformOrigin = 'top center';
+                const w = p.closest('.screen-only-view-padding');
+                if (w) w.style.height = ((p.offsetHeight * scale) + 40) + 'px';
+            }
+        });
+    }
+    const fitBtn = document.getElementById('btn-fit-width');
+    if (fitBtn) {
+        fitBtn.addEventListener('click', () => {
+            isFitWidth = !isFitWidth;
+            fitBtn.style.backgroundColor = isFitWidth ? '#d96b27' : '#708699';
+            updateSheetZoom();
+        });
+        window.addEventListener('resize', () => { if (isFitWidth) updateSheetZoom(); });
+    }
 
 		// Determination popover tap/click toggle for touchscreens
 		const detTrigger = document.querySelector('.det-info-trigger');
