@@ -21,8 +21,8 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Docs rule: when a feature's behaviour changes, update `README.md` AND `readme.js` (identical text) in the same change.
 
 ## Files (all in one folder)
-- `index.html` - markup only (5 pages, split top/bottom menus). Structured strictly into Blocks 1–8 (`<!-- Block 1 START -->` through `<!-- Block 8 END -->`). Loads scripts at bottom: `species_abilities.js`, `talents.js`, `equipment.js`, `spends.js`, `readme.js`, `console.js`.
-- `style.css` - all CSS structured into 11 marked logical sections (Page 1 master, Page 2 scoped `#page-2`, shell, Pages 3/4, Page 5 `#page-5`, popovers, screen-only utilities/dark Play Mode (10b), consolidated print isolation last).
+- `index.html` - markup only (6 pages, split top/bottom menus). Structured strictly into Blocks 1–8 (`<!-- Block 1 START -->` through `<!-- Block 8 END -->`). Loads scripts at bottom: `species_abilities.js`, `talents.js`, `equipment.js`, `spends.js`, `readme.js`, `console.js`.
+- `style.css` - all CSS structured into 11 marked logical sections (Page 1 master, Page 2 scoped `#page-2`, shell, Pages 3/4, Page 5 `#page-5`, Page 6 `#page-6`, popovers, screen-only utilities/dark Play Mode (10b), consolidated print isolation last).
 - `console.js` - all app JS, wrapped in `initConsole()` with readyState fallback.
 - `species_abilities.js` - `window.STA_SPECIES_ABILITIES = [{species, source, name, text}]` (109 entries; fully sourced rules text, alphabetized).
 - `talents.js` - `window.STA_TALENTS = [{talent, source, category, text}]` (245 entries; 170 personal talents + 75 starship talents, alphabetized by section).
@@ -39,7 +39,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - Session (+ autosave dot): `Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `Reset Ship`; right-aligned `Clear Form` (red), `Print (PDF)` (navy).
   - Tools: `PADD ⛶`, `Fit ↔`, `Theme: Dark/Light` (only affects Play Mode), `Quick Note` (Play Mode only); right-aligned fixed group `Undo` (slate), `Backup All` (orange), `Restore All` (slate), divider, `User Manual` (bright yellow `.btn-help`, black text; opens the manual overlay). Right group never shifts when Quick Note appears.
   - Crew / Ship (identical structure): `.lcars-select` dropdown + `+ New`, `Copy`, `Rename`, `Delete` (`.slot-btn`, 66px). Right-aligned `Export Crew` / `Import Crew` (Crew row; bundles active ship) and `Export Ship` / `Import Ship` (Ship row).
-  - Pages: Page 1-5 tabs (`data-page`; Page 5 = `Page 5: Ship`, id `btn-ship-view`).
+  - Pages: Page 1-6 tabs (`data-page`; Page 5 = `Page 5: Ship`, id `btn-ship-view`; Page 6 = `Page 6: Reference`, id `btn-ref-view`).
   - Colour rule: orange = save/export, slate = load/import/secondary, red = destructive, navy = neutral/tabs, tan = active tab / Quick Note, bright yellow = User Manual only.
 - Page 5 - Starship Registry: Utopia Planitia technical readout in 8.0 x 10.5 in portrait.
   - Header: Click-to-upload ship orthographic graphic void (`#ship-ortho-img`, 96px). Generic LCARS flavor banner (`Starship Specification // Active Service Record`). Editable ship File ID (`#ship-metadata-file-id`, default `NCC-80106-[PHOBOS_DEFAULT]`), which sets the export filename.
@@ -55,18 +55,21 @@ Paste or attach this at the start of a new chat, together with the current `inde
     - Right (1fr): Shuttlebay // Support Craft Complement (top) and Special Rules // System Capabilities (bottom) stacked vertically.
     - Full-width below: Starship Talents (full-width lined `.fit-box` writein lines filling remaining vertical space down to the footer).
   - Logistics & Export: Supports standalone `.json` ship export/import (`sta2e-starship-v1`) as well as full bundling and autosave in master character files (`cached_ship_ortho_data`). Included in multi-page "Print (PDF)".
+- Page 6 - Reference Manual: Field Operations Quick Reference Sheet in 8.0 x 10.5 in portrait.
+  - Sweeping LCARS Headers: Left pillar-connected sweeping headers and split headers organize core rules.
+  - Core Task Resolution & Action Economy: Target Number calculation, Critical Successes, Complications, Assistance, Minor Actions, Major Actions, and Initiative.
+  - Momentum Spends Catalog: General Task spends, Combat & Attack spends, and Tactical/Reaction spends.
+  - Determination & Extended Tasks: Canonical Determination spends, Extended Task formulas, Resistance, Breakthroughs, and Medical/Stress recovery.
+  - Included in multi-page "Print (PDF)".
 
 ## Feature Roadmap Queue
 - Interactive Task Roller / TN Calculator (Play Mode): tap Attribute + Department to show TN and Focus critical range, optional d20 roll.
-- Larger tap targets in Play Mode (stress, shield, breach boxes): CSS only, needs layout iteration.
 - Canonical Focuses Suggestion Picker: helper dropdown above Page 1 Focuses box.
-- Audit remaining rules popovers on Page 1 & Page 2 for any residual 1E wording.
-- Page 6: Printable Player Reference Sheet (2E core rules, task difficulties, combat momentum - leveraging `spends.js`).
-- Dropped: "Copy Shareable Link" (URL too small for images/logs; Backup All replaces it).
+- Momentum Spends Modal / Quick Reference (Tools Row, browsing `spends.js`).
 
 ## Layout, Print & Mobile
 - Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, 4 Header bars, 4 Detail rows, Text, Format, and Sections tools.
-- Print: `.printable-page-area` is 8.0 x 10.5 in, centered horizontally on 8.5 x 11 in Letter via `margin: 0 auto !important;` with 0.25 in top padding. Standard `Ctrl+P` prints only the active page. "Print (PDF)" compiles Page 1, Page 2, and all tabs of Pages 3 & 4 with repeated LCARS headers/footers into a single multi-page print stream with automatic `afterprint` cleanup.
+- Print: `.printable-page-area` is 8.0 x 10.5 in, centered horizontally on 8.5 x 11 in Letter via `margin: 0 auto !important;` with 0.25 in top padding. Standard `Ctrl+P` prints only the active page. "Print (PDF)" compiles Page 1, Page 2, all tabs of Pages 3 & 4, Page 5, and Page 6 with repeated LCARS headers/footers into a single multi-page print stream with automatic `afterprint` cleanup.
 - Mobile / Tablet: Google Fonts (`Antonio`, `Oswald`, `Roboto`) and viewport meta in `<head>` guarantee correct condensed typography on mobile. Natural document scrolling prevents Android Firefox scroll cutoff.
 
 ## Page 1 (visual master)
@@ -79,7 +82,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - Species Ability (`ledger_species_ability`, 3 lines, select picker replaces text).
   - Values (`ledger_value_1..4`, numbered, per-line shrink; in Play Mode, clicking the number toggles a red strikethrough "Challenged" state stored in `data.challenged_values`).
   - Focuses (`ledger_focus_1..6`, per-line shrink; hover/tap LCARS popover detailing 2E Critical Success and assist rules; Play Mode only, hidden in print).
-- Full width below: Talents (`ledger_talents`, search + category filter appends), Mission Profile & Active Directives (`ledger_mission_directives`), Pastimes (`ledger_background_notes`, 2 lines).
+- Full width below: Talents (`ledger_talents`, search + category filter appends), Mission Profile & Active Directives (`ledger_mission_directives`), Pastimes (`ledger_background_notes`, 2 lines) split horizontally with LCARS Orange Momentum Pool (`combat_momentum_1..6`, Max 6, inset numbers) in the bottom-right corner.
 - LAYOUT RULES: Determination bottom border must align with Focuses bottom. Species Ability stays 3 lines, Focuses 6 lines, Values 4. Talents and Mission Profile share leftover height via JS `balance()` (Talents = ceil(lines/2)+2, Mission = floor(lines/2)-2).
 - Shrink-to-fit: `.fit-box` shrinks entire block; `.fit-text` shrinks per line. Default text 11.5px.
 
@@ -93,7 +96,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
     - Right col: Equipment (`ledger_equipment`, 336px height, `.fit-box`, decoupled non-weapon picker with instant search bar).
   - Bottom row: Sweeping LCARS header bar (`TACTICAL OPERATIONS // STATUS & OBJECTIVES` with 2E Combat Momentum Spends rules popover) + Tactical Operations Console (`.tactical-ops-box-layout`, 2fr/1fr split):
     - Left (2/3 width): 4 full-width Scene Traits & Advantages (Advantage, Hazard/Zone, Complication, Cover/Terrain) stacked above full-width ruled Tactical Notes.
-    - Right (1/3 width): Extended Task // Objective (Objective description, 15 Work Track pips in 3×5 grid, Magnitude, Resistance, Difficulty ratings, 5 Breakthrough pips) stacked above LCARS Orange Momentum Pool (Max 6, 22×22px white boxes with inset slate numbers turning white when checked).
+    - Right (1/3 width): Extended Task // Objective Console (Objective description, 15 Work Track pips in 3×5 grid with large 19px touch targets, Magnitude/Resistance/Difficulty ratings row, and 5 Breakthrough pips).
   - Footer capsule text matches Page 1 master: `United Federation Of Planets // Personnel Record Master`.
 - Logistics & Opportunity Cost:
   - Base Cost: Automatically increments when adding non-standard gear in Edit Mode.
@@ -113,11 +116,11 @@ Paste or attach this at the start of a new chat, together with the current `inde
 ## Unified 2E Rules Popovers (Play Mode Only)
 All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoid blocking form inputs. In Play Mode (`body.play-mode-active`), clicking/tapping the `ⓘ` icon opens the guide:
 - Attributes (Page 1): Definitions of all 6 attributes.
-- Determination (Page 1): 5 canonical 2E Determination spends.
+- Determination (Page 1): 5 canonical 2E Determination spends (including unified 2E trait rules for Make It So).
 - Focuses (Page 1): Critical success ($\le$ Department) and assist rules.
-- Stress Track (Page 2): Breather, Break, and Triage rules.
+- Stress Track (Page 2): Avoid Injury defensive function, Breather (4 Stress), and Break (8 Stress) rules.
 - Injuries (Page 2): Avoid Injury, Stun vs. Deadly, First Aid, Treatment, and Revival rules.
-- Attacks (Page 2): 2E Weapon Qualities glossary (Accurate, Area, Charge, Cumbersome, Debilitating, Intense, Knockdown, Piercing, Stun, Vicious).
+- Attacks (Page 2): 2E Weapon Qualities glossary (Accurate with Aim 2d20, Area, Charge, Cumbersome, Debilitating, Intense, Knockdown, Piercing, Stun, Vicious X adding +X Severity).
 - Requisitions (Page 2): Standard Issue, Opportunity Cost limits, and field requisition rules.
 - Tactical Operations (Page 2): Canonical 2E Combat Momentum Spends (Added Severity, Disarm, Counterattack, Extra Minor Action, Extra Major Action, Keep the Initiative, Alter Trait, Avoid Injury, First Aid).
 
@@ -129,6 +132,7 @@ All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoi
 - "Quick Note" (Play Mode): prompts for text, appends a Tan detail row "Stardate N" to Page 4 Logs.
 - Dark Play Mode: screen-only CSS filter inversion of `.printable-page-area` when Play Mode + `Theme: Dark` (preference in localStorage `sta2e_dark_play`); images/popovers counter-inverted; never affects print.
 - "Fit ↔": Scales sheet to match tablet screen width for seamless edge-to-edge reading; unzooms cleanly for print.
+- Larger Touch Targets (Play Mode): Scoped to `@media (pointer: coarse)` on touchscreens to expand invisible hit areas on dense checkbox tracks (Stress, Ship Shields, Breaches, Breakthroughs) for effortless tapping without shifting layout or affecting mouse precision on PC/laptop.
 - Live Autosave Indicator: Pulsing dot beside the Session label and File ID reflects storage sync status (Green = Saved, Amber = Pending). Clicking dot forces instant save.
 
 ## User Manual Overlay

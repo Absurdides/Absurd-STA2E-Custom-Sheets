@@ -990,6 +990,15 @@ function initConsole() {
             container.appendChild(wrap);
         }
 
+        // Page 6
+        const p6 = document.querySelector('#page-6 .printable-page-area');
+        if (p6) {
+            const wrap = document.createElement('div');
+            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
+            wrap.appendChild(cloneWithValues(p6));
+            container.appendChild(wrap);
+        }
+
         document.body.appendChild(container);
         document.body.classList.add('printing-all');
         window.print();

@@ -7,11 +7,12 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - Press **Mode** to switch to **Play Mode**. Play Mode locks the Bio, Attributes, Departments, Talents and Attacks so a stray tap can't change them. It also turns on the `±` modifier boxes, Challenged Values, the ⓘ rules popovers, Quick Note and the dark theme.
 - The dot beside **Session** is the autosave light: green = saved to browser memory, amber = saving.
 
-## The Five Pages
-- **Page 1 Dossier:** Bio, Attributes, Departments, Determination, Species Ability, Values, Focuses, Talents, Mission Profile & Active Directives and Pastimes.
-- **Page 2 Tactical:** Stress Track, Injuries, Away Team Roster, Attacks, Requisitions & Logistics, Equipment, and Tactical Operations (left 2/3: Scene Traits & Advantages, Tactical Notes; right 1/3: Extended Task Objective, Work Track, Ratings, Breakthroughs, Momentum Pool, and 2E Momentum Spends rules popover).
+## The Six Pages
+- **Page 1 Dossier:** Bio, Attributes, Departments, Determination, Species Ability, Values, Focuses, Talents, Mission Profile & Active Directives, Pastimes, and Momentum Pool (bottom-right corner).
+- **Page 2 Tactical:** Stress Track, Injuries, Away Team Roster, Attacks, Requisitions & Logistics, Equipment, and Tactical Operations (left 2/3: Scene Traits & Advantages, Tactical Notes; right 1/3: Extended Task Objective, 15 Work Track pips, Ratings, Breakthroughs, and 2E Momentum Spends rules popover).
 - **Pages 3 and 4 Narrative and Logs:** free-form logs. The bar under the sheet adds Header Bars, Detail Rows, Paragraphs, Ruled Lines and Stardates. Each page holds up to 8 Sections.
 - **Page 5 Ship:** Systems, Breaches, Departments, Shields, Attacks, Talents and a schematic image.
+- **Page 6 Reference:** Printable 2E quick-reference sheet covering Task Resolution, Action Economy, Momentum Spends, Determination, Extended Tasks, and Medical Recovery.
 - Pickers (Species Ability, Talents, Weapons, Equipment, Ship Weapons and Ship Talents) have a search box and add the entry for you.
 
 ## Crew and Ship Slots
@@ -46,9 +47,10 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - **PADD** goes fullscreen and asks the screen to stay awake (needs https, so GitHub Pages works but a local file may not).
 - **Fit** scales the sheet to your screen width.
 - **Theme** switches Play Mode between dark and light. It never affects printing.
+- In Play Mode, checkboxes (Stress, Shields, Breaches, Breakthroughs) expand their invisible touch area on touchscreens for easier tapping.
 
 ## Printing
 - `Ctrl+P` prints the page you are looking at.
-- **Print (PDF)** prints Page 1, Page 2, every section of Pages 3 and 4, and Page 5 as one document.
+- **Print (PDF)** prints Page 1, Page 2, every section of Pages 3 and 4, Page 5, and Page 6 as one document.
 - Use Letter paper at 100% scale, and turn on **Background graphics** if the colours are missing.
 - Menus, popovers and editing controls never print, so a blank sheet prints clean.
