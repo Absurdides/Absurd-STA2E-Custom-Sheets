@@ -18,23 +18,53 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Copyright: copy rulebook / fan-site rules text into files or replies where possible. Otherwise, names and structure only.
 - Runs locally from a folder on Windows (file://) or online via GitHub Pages. Browsers block fetch of .json, so data lists are `.js` files loaded with <script src>.
 
+- Docs rule: when a feature's behaviour changes, update `README.md` AND `readme.js` (identical text) in the same change.
+
 ## Files (all in one folder)
-- `index.html` - markup only (5 pages, split top/bottom menus). Structured strictly into Blocks 1–8 (`<!-- Block 1 START -->` through `<!-- Block 8 END -->`). Loads scripts at bottom: `species_abilities.js`, `talents.js`, `equipment.js`, `console.js`.
-- `style.css` - all CSS (Page 1 master, Page 2 scoped `#page-2`, shell, Pages 3/4, popovers, mobile zoom, print isolation last).
+- `index.html` - markup only (5 pages, split top/bottom menus). Structured strictly into Blocks 1–8 (`<!-- Block 1 START -->` through `<!-- Block 8 END -->`). Loads scripts at bottom: `species_abilities.js`, `talents.js`, `equipment.js`, `spends.js`, `readme.js`, `console.js`.
+- `style.css` - all CSS structured into 11 marked logical sections (Page 1 master, Page 2 scoped `#page-2`, shell, Pages 3/4, Page 5 `#page-5`, popovers, screen-only utilities/dark Play Mode (10b), consolidated print isolation last).
 - `console.js` - all app JS, wrapped in `initConsole()` with readyState fallback.
 - `species_abilities.js` - `window.STA_SPECIES_ABILITIES = [{species, source, name, text}]` (109 entries; fully sourced rules text, alphabetized).
-- `talents.js` - `window.STA_TALENTS = [{talent, source, category, text}]` (170 entries; Core 2E, Division books, Setting guides, Continuing Mission staples, alphabetized).
-- `equipment.js` - `window.STA_EQUIPMENT = [{name, source, type, severity, standard_issue, opportunity_cost, qualities}]` (131 entries; personal weapons, armor, and gear across all eras, alphabetized).
+- `talents.js` - `window.STA_TALENTS = [{talent, source, category, text}]` (245 entries; 170 personal talents + 75 starship talents, alphabetized by section).
+- `equipment.js` - `window.STA_EQUIPMENT = [{name, source, type, severity, standard_issue, opportunity_cost, qualities}]` (156 entries; 131 personal gear/weapons + 25 starship weapons, alphabetized by section).
+- `spends.js` - `window.STA_SPENDS = [{category, name, cost, type, source, text}]` (22 official 2E Momentum spends across 5 categories, alphabetized).
+- `README.md` - user manual (GitHub display). `readme.js` - identical text as `window.STA_README = "..."` (JSON string) for the in-app User Manual overlay (fetch of .md is blocked on file://).
 - `add_ability_text.py` - user-run PDF text extractor utility.
 - `trekstar.png` - Starfleet insignia used by the headers.
+- `icon-ent.png` - Browser tab favicon and Ship View button icon.
 
 ## HTML & Off-Page Menu Structure
 - One form: `#unified-master-console-form`. Pages are `.sheet-page`; Pages 3 and 4 also `.doc-page` with `data-doc="p3"|"p4"`.
-- Top Utility Bar (`.external-top-bar.no-print`): Sits above the sheet.
-  - Line 1: File (`Save As File`, `Load File`, `Clear Form`, `Print (PDF)`) + LCARS Divider + Session (`Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `PADD ⛶`, `Fit ↔`).
-  - Line 2: Ship (`Ship View 🛸`, `Export Ship`, `Import Ship`).
-  - Line 3: Pages (Pages 1–5 tabs).
-- Page 5 - Starship Registry: Utopia Planitia technical readout in 8.0 x 10.5 in portrait. Click-to-upload ship orthographic graphic; Name/Registry/Date, Mission Profile/Service Record, Traits/Refits, Resistance/Scale/Crew Support/Small Craft; 6 Systems with 5 breach pips; 6 Departments; 30-checkbox Shields Track + Power; 4 Starship Attacks; Talents; Special Rules; Shuttlebay. Supports standalone `.json` ship export/import and unifies with master character saves.
+- Top Utility Bar (`.external-top-bar.no-print`): Sits above the sheet. Five rows (Session, Tools, Crew, Ship, Pages), labels right-aligned in a 56px column + grey divider.
+  - Session (+ autosave dot): `Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `Reset Ship`; right-aligned `Clear Form` (red), `Print (PDF)` (navy).
+  - Tools: `PADD ⛶`, `Fit ↔`, `Theme: Dark/Light` (only affects Play Mode), `Quick Note` (Play Mode only); right-aligned fixed group `Undo` (slate), `Backup All` (orange), `Restore All` (slate), divider, `User Manual` (bright yellow `.btn-help`, black text; opens the manual overlay). Right group never shifts when Quick Note appears.
+  - Crew / Ship (identical structure): `.lcars-select` dropdown + `+ New`, `Copy`, `Rename`, `Delete` (`.slot-btn`, 66px). Right-aligned `Export Crew` / `Import Crew` (Crew row; bundles active ship) and `Export Ship` / `Import Ship` (Ship row).
+  - Pages: Page 1-5 tabs (`data-page`; Page 5 = `Page 5: Ship`, id `btn-ship-view`).
+  - Colour rule: orange = save/export, slate = load/import/secondary, red = destructive, navy = neutral/tabs, tan = active tab / Quick Note, bright yellow = User Manual only.
+- Page 5 - Starship Registry: Utopia Planitia technical readout in 8.0 x 10.5 in portrait.
+  - Header: Click-to-upload ship orthographic graphic void (`#ship-ortho-img`, 96px). Generic LCARS flavor banner (`Starship Specification // Active Service Record`). Editable ship File ID (`#ship-metadata-file-id`, default `NCC-80106-[PHOBOS_DEFAULT]`), which sets the export filename.
+  - Vitals: 3 rows (Name 2/5, Registry 2/5, Service Date 1/5; Mission Profile 1/2, Service Record 1/2; Traits 1/2, Refits 1/2).
+  - Systems & Departments: Connected sweeping split-header (dark blue from pillar across Systems; light blue across Departments).
+    - Systems (2/3 width, 3×2 grid): 3 division-coded columns (Blue: Comms/Sensors; Gold: Engines/Computers; Red: Structure/Weapons). 22×22px white score boxes, centered `BREACH` label, 15×15px breach checkboxes.
+    - Departments (1/3 width, 2×3 grid): Command, Conn, Engineering, Security, Medicine, Science. Cell borders align with Systems top and bottom.
+  - Middle Tactical Band (2fr/1fr matching Systems/Departments above):
+    - Left (2fr): Shields Track with 40 checkboxes grouped in 5s (4 groups of 5 × 2 rows) spanning the column; Power [Engines] and Max Shields in a 50/50 subgrid with right-aligned labels and vertically aligned score lines.
+    - Right (1fr): 2×2 Vitals panel containing Resistance, Scale, Crew Support, Small Craft.
+  - Lower Grid:
+    - Left (1fr): Starship Attacks (5 rows, Type, Qual, Sev with Page 2 boxed score styling).
+    - Right (1fr): Shuttlebay // Support Craft Complement (top) and Special Rules // System Capabilities (bottom) stacked vertically.
+    - Full-width below: Starship Talents (full-width lined `.fit-box` writein lines filling remaining vertical space down to the footer).
+  - Logistics & Export: Supports standalone `.json` ship export/import (`sta2e-starship-v1`) as well as full bundling and autosave in master character files (`cached_ship_ortho_data`). Included in multi-page "Print (PDF)".
+
+## Feature Roadmap Queue
+- Interactive Task Roller / TN Calculator (Play Mode): tap Attribute + Department to show TN and Focus critical range, optional d20 roll.
+- Larger tap targets in Play Mode (stress, shield, breach boxes): CSS only, needs layout iteration.
+- Canonical Focuses Suggestion Picker: helper dropdown above Page 1 Focuses box.
+- Audit remaining rules popovers on Page 1 & Page 2 for any residual 1E wording.
+- Page 6: Printable Player Reference Sheet (2E core rules, task difficulties, combat momentum - leveraging `spends.js`).
+- Dropped: "Copy Shareable Link" (URL too small for images/logs; Backup All replaces it).
+
+## Layout, Print & Mobile
 - Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, 4 Header bars, 4 Detail rows, Text, Format, and Sections tools.
 - Print: `.printable-page-area` is 8.0 x 10.5 in, centered horizontally on 8.5 x 11 in Letter via `margin: 0 auto !important;` with 0.25 in top padding. Standard `Ctrl+P` prints only the active page. "Print (PDF)" compiles Page 1, Page 2, and all tabs of Pages 3 & 4 with repeated LCARS headers/footers into a single multi-page print stream with automatic `afterprint` cleanup.
 - Mobile / Tablet: Google Fonts (`Antonio`, `Oswald`, `Roboto`) and viewport meta in `<head>` guarantee correct condensed typography on mobile. Natural document scrolling prevents Android Firefox scroll cutoff.
@@ -61,13 +91,16 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - Middle row (`.tactical-middle-container-2col`):
     - Left col: 7 Attack rows (`attack_1..7_type/_qual/_score`, decoupled weapon picker with instant search bar, hover ▲, ▼, × controls, hover/tap LCARS popover with 2E Weapon Qualities glossary) + Requisitions & Logistics box (Allowance, Base Cost, Mission Req, Total Cost auto-tally; hover/tap LCARS popover with 2E Opportunity Cost rules).
     - Right col: Equipment (`ledger_equipment`, 336px height, `.fit-box`, decoupled non-weapon picker with instant search bar).
-  - Bottom row: Momentum Spends (`.momentum-master-box-layout`, 225px min-height, 10.5px font size, 3 columns).
+  - Bottom row: Sweeping LCARS header bar (`TACTICAL OPERATIONS // STATUS & OBJECTIVES` with 2E Combat Momentum Spends rules popover) + Tactical Operations Console (`.tactical-ops-box-layout`, 2fr/1fr split):
+    - Left (2/3 width): 4 full-width Scene Traits & Advantages (Advantage, Hazard/Zone, Complication, Cover/Terrain) stacked above full-width ruled Tactical Notes.
+    - Right (1/3 width): Extended Task // Objective (Objective description, 15 Work Track pips in 3×5 grid, Magnitude, Resistance, Difficulty ratings, 5 Breakthrough pips) stacked above LCARS Orange Momentum Pool (Max 6, 22×22px white boxes with inset slate numbers turning white when checked).
+  - Footer capsule text matches Page 1 master: `United Federation Of Planets // Personnel Record Master`.
 - Logistics & Opportunity Cost:
   - Base Cost: Automatically increments when adding non-standard gear in Edit Mode.
   - Mission Req: Automatically increments when adding gear in Play Mode; cleared on "Reset Mission".
   - Total: Live tally of Base + Mission costs.
 
-## Pages 3 and 4 - Narrative Log / Session Log (blank templates)
+## Pages 3 and 4 - Narrative Log / Logs (blank templates)
 - Page 3 vitals (`p3_vital_*`) and values (`p3_value_*`): `data-follow` copies from Page 1 until typed in.
 - Modular items (up/down/x controls, hidden in print):
   - 4 Header bars: Blue, Tan, Orange, and Light Blue (`.slate-bar`).
@@ -86,15 +119,26 @@ All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoi
 - Injuries (Page 2): Avoid Injury, Stun vs. Deadly, First Aid, Treatment, and Revival rules.
 - Attacks (Page 2): 2E Weapon Qualities glossary (Accurate, Area, Charge, Cumbersome, Debilitating, Intense, Knockdown, Piercing, Stun, Vicious).
 - Requisitions (Page 2): Standard Issue, Opportunity Cost limits, and field requisition rules.
+- Tactical Operations (Page 2): Canonical 2E Combat Momentum Spends (Added Severity, Disarm, Counterattack, Extra Minor Action, Extra Major Action, Keep the Initiative, Alter Trait, Avoid Injury, First Aid).
 
 ## Session Management & Mobile / Tablet Play
 - "Mode: Edit 🔓 / Play 🔒": Toggles tablet-friendly read-only lock on static bio, core stats, and talents to prevent accidental touches. Unlocks live tracking, `±` modifiers, Value challenge toggles, and 2E rules popovers.
-- "Reset Mission": Archives `ledger_mission_directives` to Page 4 under an Orange header ("Mission Debrief: Stardate XXXXX") + paragraph; clears Stress track; resets `±` stat modifiers; clears mission requisitions; restores baseline equipment.
-- "PADD ⛶": Toggles native browser fullscreen mode to hide tablet/phone browser chrome during live table play.
+- "Reset Mission": Archives `ledger_mission_directives` to Page 4 under an Orange header ("Mission Debrief: Stardate XXXXX") + paragraph; clears Stress track; clears Tactical Momentum pips; clears Extended Task work/breakthrough pips and Magnitude; resets `±` stat modifiers; clears mission requisitions; restores baseline equipment.
+- "PADD ⛶": Toggles native browser fullscreen mode to hide tablet/phone browser chrome during live table play; also requests a screen wake lock (https only).
+- "Reset Ship": clears all Shield and Breach boxes on the active ship (stats kept). "Reset Mission" never touches the ship.
+- "Quick Note" (Play Mode): prompts for text, appends a Tan detail row "Stardate N" to Page 4 Logs.
+- Dark Play Mode: screen-only CSS filter inversion of `.printable-page-area` when Play Mode + `Theme: Dark` (preference in localStorage `sta2e_dark_play`); images/popovers counter-inverted; never affects print.
 - "Fit ↔": Scales sheet to match tablet screen width for seamless edge-to-edge reading; unzooms cleanly for print.
-- Live Autosave Indicator: Pulsing dot beside File and File ID reflects storage sync status (Green = Saved, Amber = Pending). Clicking dot forces instant save.
+- Live Autosave Indicator: Pulsing dot beside the Session label and File ID reflects storage sync status (Green = Saved, Amber = Pending). Clicking dot forces instant save.
+
+## User Manual Overlay
+- `User Manual` button (Tools row) opens `#manual-overlay` (screen-only, `.no-print`, z-index 10001) over the current page; closes via Close ×, backdrop click, or Esc. Built lazily by `openManual()`; `mdToHtml()` is a tiny renderer (headings `#`-`###`, `-` and `1.` lists, `**bold**`, `*italic*`, `` `code` ``, `---`; no tables or links). Styled in style.css Section 10b (`.manual-*`).
 
 ## Save / load
-- Save As File -> one JSON named from FILE ID (`_bundle: sta2e-unified-v3`): all named fields + `docs: {p3:{sections,blocks[]}, p4:{...}}` + `base_equipment` + `challenged_values` + portrait.
-- Autosave: `localStorage` `sta2e-autosave`, debounced 500 ms; close-tab warning if unsaved. Clear Form downloads backup first.
+- Export Crew (`#utility-btn-save`) -> one JSON named from FILE ID (`_bundle: sta2e-unified-v3`): all named fields + `docs: {p3:{sections,blocks[]}, p4:{...}}` + `base_equipment` + `challenged_values` + portrait.
+- Slots (localStorage, up to 5 characters + up to 5 ships, independent): index `sta2e_storage_slots_index` / data `sta2e_slot_data_<id>` / active `sta2e_active_slot`; ships `sta2e_ship_slots_index` / `sta2e_ship_data_<id>` / `sta2e_active_ship`. Character slots exclude `ship_*` fields; they store `_play_mode` (Edit/Play restored per slot). Managed by `makeSlots()` in console.js; `applyData(d, 'char'|'ship')`.
+- Autosave: debounced 500 ms into the active character slot and active ship slot; dot green = saved to browser memory. Names follow `bio_name` / `ship_name` unless renamed. Quota fallback drops images and warns once. Legacy `sta2e-autosave` migrated once.
+- Load File / Import Ship ask: New Slot / Replace Current / Cancel. Character file with a ship offers a new ship slot. Clear Form clears the active character only (downloads backup first). Save As File bundles the active ship.
 - Keep field `name` attributes stable; renaming breaks old saves.
+- Undo: one step, in memory only (lost on reload). Snapshots taken before Reset Mission, Reset Ship, Clear Form, Load/Import Replace, and slot Delete (restores deleted slot).
+- Backup All / Restore All: one JSON (`_bundle: sta2e-backup-v1`) with all character + ship slots. Restore replaces everything after auto-downloading a backup of the current state.

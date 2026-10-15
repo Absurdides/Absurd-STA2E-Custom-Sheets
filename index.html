@@ -8,7 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@400;700&family=Oswald:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2.1">
+<link rel="icon" type="image/png" href="icon-ent.png">
+<link rel="stylesheet" href="style.css?v=2.7">
 <style>
 .lcars-help-popover, .det-popover, .injury-popover { display: none; }
 </style>
@@ -16,34 +17,68 @@
 <body>
 <form id="unified-master-console-form" autocomplete="off" style="margin:0; padding:0; display:flex; flex-direction:column; align-items:center; width:100%;">
 <div class="external-utility-bar external-top-bar no-print">
-    <div class="bar-group top-menu-row">
-        <span class="top-row-label">File</span>
-        <span class="autosave-indicator saved" title="Autosave: Synchronized (Click to force save)"></span>
-        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Save As File</button>
-        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Load File</button>
-        <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
-        <button type="button" class="lcars-utility-btn" id="utility-btn-print-all" style="background-color: #2c3a4d;">Print (PDF)</button>
+    <div class="bar-group">
+        <div class="top-menu-label-cell"><span class="top-row-label">Session</span><span class="autosave-indicator saved" title="Autosave: Synchronized (Click to force save)"></span></div>
         <div class="menu-divider-bar"></div>
-        <span class="top-row-label">Session</span>
-        <button type="button" class="lcars-utility-btn" id="btn-mode-toggle" style="background-color: #2c3a4d;">Mode: Edit 🔓</button>
-        <button type="button" class="lcars-utility-btn" id="btn-reset-mission" style="background-color: #bd4b4b;">Reset Mission</button>
-        <button type="button" class="lcars-utility-btn" id="btn-fullscreen-toggle" style="background-color: #708699;" title="Toggle Fullscreen PADD Mode">PADD ⛶</button>
-        <button type="button" class="lcars-utility-btn" id="btn-fit-width" style="background-color: #708699;" title="Scale sheet to fit screen width">Fit ↔</button>
+        <button type="button" class="lcars-utility-btn btn-navy" id="btn-mode-toggle">Mode: Edit 🔓</button>
+        <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-mission">Reset Mission</button>
+        <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-ship" title="Clear all Shield and Breach boxes on the active ship">Reset Ship</button>
+        <span class="row-spacer"></span>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
+        <button type="button" class="lcars-utility-btn btn-navy" id="utility-btn-print-all">Print (PDF)</button>
     </div>
-    <div class="bar-group" style="gap: 4px; flex-wrap: nowrap;">
-        <span class="top-row-label">Ship</span>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="5" id="btn-ship-view" style="background-color: #2c3a4d; flex: 0 0 auto;">Ship View 🛸</button>
-        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-ship-export" style="background-color: #d96b27;">Export Ship</button>
-        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-ship-import" style="background-color: #708699;">Import Ship</button>
+    <div class="bar-group">
+        <div class="top-menu-label-cell"><span class="top-row-label">Tools</span></div>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-load" id="btn-fullscreen-toggle" title="Toggle Fullscreen PADD Mode">PADD ⛶</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="btn-fit-width" title="Scale sheet to fit screen width">Fit ↔</button>
+        <button type="button" class="lcars-utility-btn btn-navy" id="btn-theme" title="Dark / Light theme (applies in Play Mode)">Theme: Dark</button>
+        <button type="button" class="lcars-utility-btn btn-tan play-only" id="btn-quick-note" title="Add a stardate-stamped note to Page 4 Logs">Quick Note</button>
+        <span class="row-spacer"></span>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-load" id="btn-undo" title="Nothing to undo" disabled>Undo</button>
+        <button type="button" class="lcars-utility-btn btn-save" id="btn-backup-all" title="Download all character and ship slots as one file">Backup All</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="btn-restore-all" title="Replace all slots from a Backup All file">Restore All</button>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-help" id="btn-manual" title="Open the User Manual (Esc closes)">User Manual</button>
+        <input type="file" id="utility-backup-loader" accept=".json" style="display: none;">
+    </div>
+    <div class="bar-group">
+        <div class="top-menu-label-cell"><span class="top-row-label">Crew</span></div>
+        <div class="menu-divider-bar"></div>
+        <select id="slot-selector" class="lcars-select" title="Switch character slot (browser memory)"></select>
+        <button type="button" class="lcars-utility-btn btn-navy slot-btn" id="slot-btn-new">+ New</button>
+        <button type="button" class="lcars-utility-btn btn-load slot-btn" id="slot-btn-dup">Copy</button>
+        <button type="button" class="lcars-utility-btn btn-load slot-btn" id="slot-btn-ren">Rename</button>
+        <button type="button" class="lcars-utility-btn btn-clear slot-btn" id="slot-btn-del">Delete</button>
+        <span class="row-spacer"></span>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-save">Export Crew</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-load">Import Crew</button>
+    </div>
+    <div class="bar-group">
+        <div class="top-menu-label-cell"><span class="top-row-label">Ship</span></div>
+        <div class="menu-divider-bar"></div>
+        <select id="ship-slot-selector" class="lcars-select" title="Switch starship / craft slot (browser memory)"></select>
+        <button type="button" class="lcars-utility-btn btn-navy slot-btn" id="ship-slot-btn-new">+ New</button>
+        <button type="button" class="lcars-utility-btn btn-load slot-btn" id="ship-slot-btn-dup">Copy</button>
+        <button type="button" class="lcars-utility-btn btn-load slot-btn" id="ship-slot-btn-ren">Rename</button>
+        <button type="button" class="lcars-utility-btn btn-clear slot-btn" id="ship-slot-btn-del">Delete</button>
+        <span class="row-spacer"></span>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-save" id="utility-btn-ship-export">Export Ship</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="utility-btn-ship-import">Import Ship</button>
         <input type="file" id="utility-ship-loader" accept=".json" style="display: none;">
     </div>
-    <div class="bar-group" style="gap: 4px; flex-wrap: nowrap;">
-        <span class="top-row-label">Pages</span>
-        <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Personnel Dossier</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical Annex</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative Log</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Session Log</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="5">Page 5: Starship Registry</button>
+    <div class="bar-group">
+        <div class="top-menu-label-cell"><span class="top-row-label">Pages</span></div>
+        <div class="menu-divider-bar"></div>
+        <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Dossier</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Logs</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="5" id="btn-ship-view">Page 5: Ship</button>
     </div>
     <input type="file" id="utility-file-loader" accept=".json" style="display: none;">
 </div>
@@ -412,26 +447,132 @@
                     </div>
 <!-- Block 6 END -->
 <!-- Block 7 START -->
-                    <div class="lcars-terminal-box momentum-master-box-layout">
-                        <span class="box-heading-label">MOMENTUM SPENDS, COMBAT</span>
-                        <div class="momentum-inner-columns-grid">
-                            <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
-                                <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1+ MOMENTUM: BONUS DAMAGE</span><br>ADD +1 CHALLENGE DIE (&Delta;) TO THE ATTACK'S FLUID DAMAGE ROLL PER MOMENTUM SPENT. THIS OPTION MAY BE REPEATED MULTIPLE TIMES ON A SINGLE ATTACK ACCORDING TO GENERATED MOMENTUM.</div>
-                                <div><span style="color:#2c3a4d;">1 MOMENTUM: EXTRA MINOR TASK</span><br>PERFORM ONE ADDITIONAL MINOR TASK (SUCH AS AIMING, MOVING, OR DRAWING EQUIPMENT) DURING YOUR ACTIVATION PHASE. A CHARACTER IS STRICTLY LIMITED TO A MAXIMUM OF ONE EXTRA MINOR TASK PER ENCOUNTER TURN.</div>
+                    <div class="lcars-sweeping-header-wrapper has-popover" style="position: relative; margin-top: 2px;">
+                        <div class="lcars-sweeping-header-bar help-trigger" title="Hover or tap to view 2E Combat Momentum Spends">TACTICAL OPERATIONS // STATUS &amp; OBJECTIVES <span class="no-print info-icon" style="color: #eed292;">ⓘ</span></div>
+                        <div class="lcars-help-popover no-print" style="bottom: calc(100% + 4px); left: 0; width: 340px;">
+                            <div class="lcars-help-header">COMBAT MOMENTUM SPENDS // 2E RULES</div>
+                            <div class="lcars-help-item"><strong>Added Severity (2 Mom, Rep):</strong> Increase attack Severity by +1 per 2 Momentum (max +2).</div>
+                            <div class="lcars-help-item"><strong>Disarm (1–2 Mom):</strong> Target drops weapon within Reach (1 Mom 1-handed, 2 Mom 2-handed).</div>
+                            <div class="lcars-help-item"><strong>Counterattack (2 Mom, Imm):</strong> Inflict Injury on attacker after winning melee defense.</div>
+                            <div class="lcars-help-item"><strong>Extra Minor Action (1 Mom):</strong> Take 1 additional minor action on your turn.</div>
+                            <div class="lcars-help-item"><strong>Extra Major Action (2 Mom):</strong> Take 1 additional major action (task Difficulty increases by +1).</div>
+                            <div class="lcars-help-item"><strong>Keep the Initiative (2 Mom, Imm):</strong> Pass turn directly to an ally instead of an enemy.</div>
+                            <div class="lcars-help-item"><strong>Alter Trait (2 Mom):</strong> Create, change, or remove a scene trait (or adjust its Potency).</div>
+                            <div class="lcars-help-item"><strong>Avoid Injury (2 Mom/Threat, Imm):</strong> Suffer Stress equal to attack Severity to avoid Injury.</div>
+                            <div class="lcars-help-item"><strong>First Aid (1+ Mom):</strong> Clear 1 additional Stress per Momentum spent on treatment.</div>
+                        </div>
+                    </div>
+                    <div class="lcars-terminal-box tactical-ops-box-layout">
+                        <div class="tactical-ops-grid-2col">
+                            <div class="tactical-ops-left-col">
+                                <div class="tactical-ops-subcard">
+                                    <div class="tactical-pill-bar tan-pill">SCENE TRAITS &amp; ADVANTAGES</div>
+                                    <div class="scene-traits-list">
+                                        <div class="scene-trait-row">
+                                            <span class="scene-trait-lbl">1. ADVANTAGE:</span>
+                                            <div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="combat_trait_1" class="attack-form-input fit-text"></div>
+                                        </div>
+                                        <div class="scene-trait-row">
+                                            <span class="scene-trait-lbl">2. HAZARD / ZONE:</span>
+                                            <div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="combat_trait_2" class="attack-form-input fit-text"></div>
+                                        </div>
+                                        <div class="scene-trait-row">
+                                            <span class="scene-trait-lbl">3. COMPLICATION:</span>
+                                            <div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="combat_trait_3" class="attack-form-input fit-text"></div>
+                                        </div>
+                                        <div class="scene-trait-row">
+                                            <span class="scene-trait-lbl">4. COVER / TERRAIN:</span>
+                                            <div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="combat_trait_4" class="attack-form-input fit-text"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tactical-ops-subcard" style="flex: 1 1 auto;">
+                                    <div class="tactical-pill-bar navy-pill">TACTICAL NOTES</div>
+                                    <div class="lcars-writein-lines fit-box-wrap" style="flex: 1 1 auto; height: 48px;">
+                                        <textarea name="combat_tactical_notes" class="lcars-form-textarea fit-box" placeholder="Positions, targets, cover, maneuvers..."></textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
-                                <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">1 MOMENTUM: OBTAIN INFORMATION</span><br>ASK THE GAMEMASTER ONE DIRECT QUESTION ABOUT THE SCENARIO OR ENVIRONMENT. THE GM MUST PROVIDE A TRUTHFUL ANSWER BASED ON ACCESSIBLE DATA AND WHAT THE CHARACTER COULD REASONABLY LOGICALLY DEDUCE.</div>
-                                <div><span style="color:#2c3a4d;">2 MOMENTUM: KEEP INITIATIVE</span><br>PASS OPERATIONAL ACTIVATION DIRECTLY TO ANOTHER ELIGIBLE ALLY INSTEAD OF GIVING UP THE TURN TO OPPOSING FORCES. CANNOT BE SPENT IF ENEMY INITIATIVE IS MANDATED BY AN ACTIVE COMPLICATION OR ENCOUNTER TRAIT.</div>
-                            </div>
-                            <div style="font-size: 10.5px; color: #111111; line-height: 1.5; font-weight: bold; letter-spacing: 0.5px; padding: 4px 2px;">
-                                <div style="margin-bottom: 6px; border-bottom: 1px solid #f0f2f5; padding-bottom: 5px;"><span style="color:#2c3a4d;">2 MOMENTUM: CREATE ADVANTAGE</span><br>ESTABLISH A BRAND-NEW TACTICAL SCENE TRAIT OR ENVIRONMENTAL CONDITION ON THE BATTLEFIELD THAT ADVANTAGEOUSLY ASSISTS ENCOUNTER ALLIES OR CREATES A DIRECT PERFORMANCE PENALTY FOR OPPOSING HOSTILE FORCES.</div>
-                                <div><span style="color:#2c3a4d;">2 MOMENTUM: DISARM</span><br>A SUCCESSFUL ATTACK WITHIN REACH OR CLOSE RANGE KNOCKS ONE WEAPON OR MANUALLY ACCESSED ITEM HELD BY THE TARGET AWAY TO THE GROUND, FORCEFULLY REQUIRING A MINOR TASK TO RETRIEVE. NARRATIVE SENSE APPLIES.</div>
+                            <div class="tactical-ops-right-col">
+                                <div class="tactical-ops-subcard">
+                                    <div class="tactical-pill-bar slate-pill">EXTENDED TASK // OBJECTIVE</div>
+                                    <div style="display: flex; align-items: center; gap: 4px; width: 100%; margin-bottom: 2px;">
+                                        <span class="scene-trait-lbl" style="min-width: auto;">OBJ:</span>
+                                        <div class="lcars-writein-lines" style="height: 16px; flex: 1;"><input type="text" name="ext_task_objective" class="attack-form-input fit-text" placeholder="Task description..."></div>
+                                    </div>
+                                    <div class="ext-middle-split-grid">
+                                        <div class="ext-work-card">
+                                            <div class="tactical-field-lbl" style="font-size: 8px; margin-bottom: 1px;">WORK TRACK (15 PIPS)</div>
+                                            <div class="ext-work-track-grid">
+                                                <div class="ext-work-grp">
+                                                    <input type="checkbox" name="ext_task_work_1" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_2" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_3" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_4" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_5" class="form-matrix-checkbox">
+                                                    <span class="ext-work-subnum">5</span>
+                                                </div>
+                                                <div class="ext-work-grp">
+                                                    <input type="checkbox" name="ext_task_work_6" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_7" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_8" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_9" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_10" class="form-matrix-checkbox">
+                                                    <span class="ext-work-subnum">10</span>
+                                                </div>
+                                                <div class="ext-work-grp">
+                                                    <input type="checkbox" name="ext_task_work_11" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_12" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_13" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_14" class="form-matrix-checkbox">
+                                                    <input type="checkbox" name="ext_task_work_15" class="form-matrix-checkbox">
+                                                    <span class="ext-work-subnum">15</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="ext-ratings-col">
+                                            <div class="ext-rating-card">
+                                                <span class="tactical-field-lbl">MAGNITUDE:</span>
+                                                <input type="text" name="ext_task_magnitude" maxlength="2" class="score-input" style="width: 20px; height: 16px; font-size: 13px;">
+                                            </div>
+                                            <div class="ext-rating-card">
+                                                <span class="tactical-field-lbl">RESISTANCE:</span>
+                                                <input type="text" name="ext_task_resistance" maxlength="2" class="score-input" style="width: 20px; height: 16px; font-size: 13px;">
+                                            </div>
+                                            <div class="ext-rating-card">
+                                                <span class="tactical-field-lbl">DIFFICULTY:</span>
+                                                <input type="text" name="ext_task_difficulty" maxlength="2" class="score-input" style="width: 20px; height: 16px; font-size: 13px;">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ext-breakthroughs-row">
+                                        <span class="tactical-field-lbl">BREAKTHROUGHS:</span>
+                                        <div class="ext-bt-pips">
+                                            <div class="ext-bt-item"><span class="ext-bt-num">1</span><input type="checkbox" name="ext_task_bt_1" class="form-matrix-checkbox"></div>
+                                            <div class="ext-bt-item"><span class="ext-bt-num">2</span><input type="checkbox" name="ext_task_bt_2" class="form-matrix-checkbox"></div>
+                                            <div class="ext-bt-item"><span class="ext-bt-num">3</span><input type="checkbox" name="ext_task_bt_3" class="form-matrix-checkbox"></div>
+                                            <div class="ext-bt-item"><span class="ext-bt-num">4</span><input type="checkbox" name="ext_task_bt_4" class="form-matrix-checkbox"></div>
+                                            <div class="ext-bt-item"><span class="ext-bt-num">5</span><input type="checkbox" name="ext_task_bt_5" class="form-matrix-checkbox"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="momentum-panel-orange">
+                                    <div class="momentum-panel-head">MOMENTUM POOL [MAX 6]</div>
+                                    <div class="momentum-pips-bar">
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_1" class="form-matrix-checkbox"><span class="mom-pip-num">1</span></div>
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_2" class="form-matrix-checkbox"><span class="mom-pip-num">2</span></div>
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_3" class="form-matrix-checkbox"><span class="mom-pip-num">3</span></div>
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_4" class="form-matrix-checkbox"><span class="mom-pip-num">4</span></div>
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_5" class="form-matrix-checkbox"><span class="mom-pip-num">5</span></div>
+                                        <div class="mom-pip-item"><input type="checkbox" name="combat_momentum_6" class="form-matrix-checkbox"><span class="mom-pip-num">6</span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="unified-footer-capsule">
-                    <div class="foot-block-slate"></div><div class="foot-block-center-label">UNITED FEDERATION OF PLANETS</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div>
+                    <div class="foot-block-slate"></div><div class="foot-block-center-label">United Federation Of Planets // Personnel Record Master</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div>
                 </div>
             </div>
         </div>
@@ -480,7 +621,7 @@
         <div class="header-logo-container"><img src="trekstar.png" alt="Starfleet Insignia" class="starfleet-insignia"></div>
         <div class="brand-text">
             <div class="main-title">Starfleet Command</div>
-            <div class="subtitle">Personnel Record Division // Session Log</div>
+            <div class="subtitle">Personnel Record Division // Log Data</div>
             <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Personnel File // <span data-mirror="bio_name"></span></span></div>
         </div>
         <div class="shifted-metadata-block">
@@ -496,12 +637,12 @@
         <div class="top-right-portrait-void-area" style="cursor:default;"><img class="mirror-portrait-img" alt="Portrait"><span class="mirror-portrait-ph">Character<br>Portrait</span></div>
     </div>
     <div class="lcars-system-wrapper"><div class="lcars-body-grid">
-        <div class="lcars-left-pillar-wrapper"><div class="lcars-unified-hockey-stick"></div><div class="lcars-pillar-data-tracking"><div class="internal-tracking-bar"></div><div class="pillar-vertical-text">Session Log // [System: Status: Live]</div></div></div>
+        <div class="lcars-left-pillar-wrapper"><div class="lcars-unified-hockey-stick"></div><div class="lcars-pillar-data-tracking"><div class="internal-tracking-bar"></div><div class="pillar-vertical-text">Log Data // [System: Status: Live]</div></div></div>
         <div class="lcars-right-content-assembly">
-            <div style="display: flex; width: 100%; height: 26px; margin-bottom: 4px;"><div class="lcars-orange-banner-main">Confidential // Restricted Access <span class="divider">//</span> Session Log Entries</div><div style="width: 128px; height: 100%; background-color: transparent; margin-left: 12px;"></div></div>
+            <div style="display: flex; width: 100%; height: 26px; margin-bottom: 4px;"><div class="lcars-orange-banner-main">Confidential // Restricted Access <span class="divider">//</span> Log Entries</div><div style="width: 128px; height: 100%; background-color: transparent; margin-left: 12px;"></div></div>
             <div class="blank-workspace-canvas"><div class="p3-viewport"><div class="dossier-tab-view active" data-tab="1"><div class="p3-blocks" data-tab="1"></div></div></div>
             <div class="p3-pagination single"><span class="p3-pag-h">Data Transmission Path</span><span class="p3-warn">Page full: continue on next section</span><span class="p3-pag-bar">Log Sections: <span class="p3-pag-links"></span></span></div></div>
-            <div class="unified-footer-capsule"><div class="foot-block-slate"></div><div class="foot-block-center-label">United Federation Of Planets // Session Log</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div></div>
+            <div class="unified-footer-capsule"><div class="foot-block-slate"></div><div class="foot-block-center-label">United Federation Of Planets // Log Data</div><div class="foot-block-yellow"></div><div class="foot-block-orange"></div></div>
         </div></div></div>
     <div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
 </div>
@@ -514,12 +655,12 @@
         <div class="brand-text">
             <div class="main-title">Starfleet Command // Utopia Planitia</div>
             <div class="subtitle">Operations Division // Starship Technical Readout</div>
-            <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Starship File // <span data-mirror="ship_name"></span> // NCC <span data-mirror="ship_registry"></span></span></div>
+            <div class="tan-text-banner-wrapper" style="width: 52%; min-width: 250px;"><span class="subtitle-highlight">Starship Specification // Active Service Record</span></div>
         </div>
-        <div class="shifted-metadata-block" style="right: 0;">
+        <div class="shifted-metadata-block" style="right: 0; bottom: 0; width: 175px;">
             <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
                 <span>FILE ID:</span>
-                <span class="mirror-file-id file-id-editable-input"></span>
+                <input type="text" id="ship-metadata-file-id" name="ship_file_id" class="file-id-editable-input" value="NCC-80106-[PHOBOS_DEFAULT]" style="width: 100%; font-size: 9px;">
             </div>
             <div style="color: #708699;">/ Form STA-2E-SHIP</div>
         </div>
@@ -534,14 +675,14 @@
                 </div>
             </div>
             <div class="lcars-right-content-assembly">
-                <div class="lcars-orange-banner-main" style="width: 100%; height: 26px; border-radius: 0 4px 4px 0; margin-bottom: 4px;">UTOPIA PLANITIA FLEET YARDS <span class="divider">//</span> TECHNICAL READOUT <span class="divider">//</span> LEVEL 7 ACCESS</div>
+                <div class="lcars-orange-banner-main">UTOPIA PLANITIA FLEET YARDS <span class="divider">//</span> TECHNICAL READOUT <span class="divider">//</span> LEVEL 7 ACCESS</div>
                 <div class="blank-workspace-canvas">
                     <div class="ship-ortho-void-area" onclick="document.getElementById('ship-img-uploader').click();" title="Click to upload starship orthographic or schematic graphic">
                         <input type="file" id="ship-img-uploader" accept="image/*" style="display: none;">
                         <img id="ship-ortho-img" src="" alt="Starship Orthographic Readout">
                         <span id="ship-ortho-ph" class="ship-ortho-placeholder-text">Click to upload Starship Schematic / Orthographic Graphic</span>
                     </div>
-                    <div class="dossier-grid" style="gap: 4px;">
+                    <div class="dossier-grid" style="gap: 3px; margin-top: 0;">
                         <div style="display: grid; grid-template-columns: 2fr 2fr 1fr; gap: 8px; width: 100%;">
                             <div class="bio-field-capsule"><span class="bio-field-label">Name</span><div class="bio-field-underline"><input type="text" name="ship_name" class="bio-form-input"></div></div>
                             <div class="bio-field-capsule"><span class="bio-field-label">Registry</span><div class="bio-field-underline"><input type="text" name="ship_registry" class="bio-form-input"></div></div>
@@ -555,93 +696,132 @@
                             <div class="bio-field-capsule"><span class="bio-field-label">Traits</span><div class="bio-field-underline"><input type="text" name="ship_traits" class="bio-form-input"></div></div>
                             <div class="bio-field-capsule"><span class="bio-field-label">Refits</span><div class="bio-field-underline"><input type="text" name="ship_refits" class="bio-form-input"></div></div>
                         </div>
-                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; width: 100%; margin-bottom: 2px;">
-                            <div class="ship-stat-card-quarter"><span class="stat-label-text">Resistance</span><div class="stat-input-score-line"><input type="text" name="ship_resistance" maxlength="2" class="score-input"></div></div>
-                            <div class="ship-stat-card-quarter"><span class="stat-label-text">Scale</span><div class="stat-input-score-line"><input type="text" name="ship_scale" maxlength="2" class="score-input"></div></div>
-                            <div class="ship-stat-card-quarter"><span class="stat-label-text">Crew Support</span><div class="stat-input-score-line"><input type="text" name="ship_crew_support" maxlength="2" class="score-input"></div></div>
-                            <div class="ship-stat-card-quarter"><span class="stat-label-text">Small Craft</span><div class="stat-input-score-line"><input type="text" name="ship_small_craft" maxlength="2" class="score-input"></div></div>
-                        </div>
                     </div>
-<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px; width: 100%;">
-                        <div class="lcars-terminal-box" style="padding: 4px 6px;">
-                            <div class="ship-lcars-section-header orange"><span>Systems // Breaches [Scale]</span></div>
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-top: 2px;">
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Comms</span><input type="text" name="ship_sys_comms" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_comms_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_comms_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_comms_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_comms_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_comms_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Engines</span><input type="text" name="ship_sys_engines" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_engines_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_engines_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_engines_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_engines_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_engines_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Structure</span><input type="text" name="ship_sys_structure" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_structure_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_structure_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_structure_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_structure_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_structure_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Computers</span><input type="text" name="ship_sys_computers" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_computers_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_computers_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_computers_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_computers_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_computers_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Sensors</span><input type="text" name="ship_sys_sensors" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_sensors_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_sensors_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_sensors_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_sensors_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_sensors_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
-                                <div class="ship-system-card"><div class="ship-system-header-row"><span class="stat-label-text">Weapons</span><input type="text" name="ship_sys_weapons" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div><div class="ship-breach-pips-row"><span style="font-size:7px; font-weight:900; color:#708699;">BREACH:</span><input type="checkbox" name="ship_sys_weapons_b1" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_weapons_b2" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_weapons_b3" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_weapons_b4" class="form-matrix-checkbox" style="width:11px;height:11px;"><input type="checkbox" name="ship_sys_weapons_b5" class="form-matrix-checkbox" style="width:11px;height:11px;"></div></div>
+                    <div class="ship-sweeping-split-header">
+                        <div class="ship-head-segment-systems">Systems // Breaches [Scale]</div>
+                        <div class="ship-head-segment-dept">Departments</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 8px; width: 100%; align-items: stretch;">
+                        <div class="lcars-terminal-box" style="padding: 5px 6px; display: flex; flex-direction: column;">
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); gap: 5px; height: 100%;">
+                                <div class="ship-system-card card-blue"><div class="ship-sys-name-col"><span class="stat-label-text">Comms</span><div class="ship-score-box"><input type="text" name="ship_sys_comms" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_comms_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_comms_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_comms_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_comms_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_comms_b5" class="form-matrix-checkbox"></div></div></div>
+                                <div class="ship-system-card card-gold"><div class="ship-sys-name-col"><span class="stat-label-text">Engines</span><div class="ship-score-box"><input type="text" name="ship_sys_engines" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_engines_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_engines_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_engines_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_engines_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_engines_b5" class="form-matrix-checkbox"></div></div></div>
+                                <div class="ship-system-card card-red"><div class="ship-sys-name-col"><span class="stat-label-text">Structure</span><div class="ship-score-box"><input type="text" name="ship_sys_structure" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_structure_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_structure_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_structure_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_structure_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_structure_b5" class="form-matrix-checkbox"></div></div></div>
+                                <div class="ship-system-card card-blue"><div class="ship-sys-name-col"><span class="stat-label-text">Sensors</span><div class="ship-score-box"><input type="text" name="ship_sys_sensors" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_sensors_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_sensors_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_sensors_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_sensors_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_sensors_b5" class="form-matrix-checkbox"></div></div></div>
+                                <div class="ship-system-card card-gold"><div class="ship-sys-name-col"><span class="stat-label-text">Computers</span><div class="ship-score-box"><input type="text" name="ship_sys_computers" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_computers_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_computers_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_computers_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_computers_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_computers_b5" class="form-matrix-checkbox"></div></div></div>
+                                <div class="ship-system-card card-red"><div class="ship-sys-name-col"><span class="stat-label-text">Weapons</span><div class="ship-score-box"><input type="text" name="ship_sys_weapons" maxlength="2" class="score-input"></div></div><div class="ship-sys-breach-col"><span class="ship-sys-breach-label">BREACH</span><div class="ship-sys-breach-pips"><input type="checkbox" name="ship_sys_weapons_b1" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_weapons_b2" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_weapons_b3" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_weapons_b4" class="form-matrix-checkbox"><input type="checkbox" name="ship_sys_weapons_b5" class="form-matrix-checkbox"></div></div></div>
                             </div>
                         </div>
-                        <div class="lcars-terminal-box" style="padding: 4px 6px;">
-                            <div class="ship-lcars-section-header yellow"><span>Departments</span></div>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-top: 2px;">                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#bd4b4b; font-size:9px;">Command</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_command" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
-                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#bd4b4b; font-size:9px;">Conn</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_conn" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
-                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#c49a45; font-size:9px;">Engineering</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_engineering" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
-                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#c49a45; font-size:9px;">Security</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_security" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
-                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#4b8bbd; font-size:9px;">Medicine</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_medicine" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
-                                <div class="single-stat-capsule" style="height:20px; padding:2px 4px;"><span class="stat-label-text" style="color:#4b8bbd; font-size:9px;">Science</span><div class="stat-input-score-line" style="height:11px;"><input type="text" name="ship_dept_science" maxlength="2" class="score-input" style="height:13px; font-size:12px;"></div></div>
+                        <div class="lcars-terminal-box" style="padding: 5px 6px; display: flex; flex-direction: column;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(3, 1fr); gap: 4px; height: 100%;">
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#bd4b4b;">Command</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_command" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#bd4b4b;">Conn</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_conn" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#c49a45;">Engineering</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_engineering" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#c49a45;">Security</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_security" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#4b8bbd;">Medicine</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_medicine" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
+                                <div class="ship-dept-capsule"><span class="stat-label-text" style="color:#4b8bbd;">Science</span><div class="stat-input-score-line" style="height:12px; width:18px;"><input type="text" name="ship_dept_science" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div></div>
                             </div>
                         </div>
                     </div>
-<div class="stress-track-panel-block" style="padding: 4px 6px;">
-                        <div class="stress-panel-header-row" style="margin-bottom: 2px;">
-                            <div class="vital-header-label">SHIELDS TRACK</div>
-                            <div style="display: flex; gap: 12px; align-items: center;">
-                                <div class="vital-header-label" style="color:#708699; display:flex; align-items:center; gap:4px; font-size:9.5px;">POWER [ENGINES] <div class="stat-input-score-line" style="height:14px; width:22px;"><input type="text" name="ship_power" maxlength="2" class="score-input" style="height:14px; font-size:12px;" data-follow="ship_sys_engines"></div></div>
-                                <div class="vital-header-label" style="color:#708699; display:flex; align-items:center; gap:4px; font-size:9.5px;">MAX SHIELDS <div class="stat-input-score-line" style="height:14px; width:22px;"><input type="text" name="ship_shields_max" maxlength="2" class="score-input" style="height:14px; font-size:12px;"></div></div>
+                    <div class="ship-middle-tactical-row">
+                        <div class="ship-shields-panel">
+                            <div class="ship-shields-track-left">
+                                <span class="vital-header-label" style="font-size: 10px; margin-bottom: 2px;">SHIELDS TRACK</span>
+                                <div class="ship-shields-grid-pips">
+                                    <div class="ship-shield-row">
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_1" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_2" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_3" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_4" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_5" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_6" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_7" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_8" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_9" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_10" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_11" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_12" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_13" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_14" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_15" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_16" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_17" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_18" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_19" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_20" class="form-matrix-checkbox"></div>
+                                    </div>
+                                    <div class="ship-shield-row">
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_21" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_22" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_23" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_24" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_25" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_26" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_27" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_28" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_29" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_30" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_31" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_32" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_33" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_34" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_35" class="form-matrix-checkbox"></div>
+                                        <div class="ship-shield-grp"><input type="checkbox" name="ship_shield_36" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_37" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_38" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_39" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_40" class="form-matrix-checkbox"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="ship-power-shields-subgrid">
+                                <span class="ship-shield-stat-sublabel">POWER [ENGINES]</span>
+                                <div class="stat-input-score-line" style="height:14px; width:22px;"><input type="text" name="ship_power" maxlength="2" class="score-input" style="height:14px; font-size:13px;" data-follow="ship_sys_engines"></div>
+                                <span class="ship-shield-stat-sublabel">MAX SHIELDS</span>
+                                <div class="stat-input-score-line" style="height:14px; width:22px;"><input type="text" name="ship_shields_max" maxlength="2" class="score-input" style="height:14px; font-size:13px;"></div>
                             </div>
                         </div>
-                        <div class="ship-shields-grid">
-                            <input type="checkbox" name="ship_shield_1" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_2" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_3" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_4" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_5" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_6" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_7" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_8" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_9" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_10" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_11" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_12" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_13" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_14" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_15" class="form-matrix-checkbox">
-                            <input type="checkbox" name="ship_shield_16" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_17" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_18" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_19" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_20" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_21" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_22" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_23" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_24" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_25" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_26" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_27" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_28" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_29" class="form-matrix-checkbox"><input type="checkbox" name="ship_shield_30" class="form-matrix-checkbox">
+                        <div class="ship-vitals-2x2-panel">
+                            <div class="ship-vitals-2x2-grid">
+                                <div class="ship-stat-card-quarter"><span class="stat-label-text">Resistance</span><div class="stat-input-score-line"><input type="text" name="ship_resistance" maxlength="2" class="score-input"></div></div>
+                                <div class="ship-stat-card-quarter"><span class="stat-label-text">Scale</span><div class="stat-input-score-line"><input type="text" name="ship_scale" maxlength="2" class="score-input"></div></div>
+                                <div class="ship-stat-card-quarter"><span class="stat-label-text">Crew Support</span><div class="stat-input-score-line"><input type="text" name="ship_crew_support" maxlength="2" class="score-input"></div></div>
+                                <div class="ship-stat-card-quarter"><span class="stat-label-text">Small Craft</span><div class="stat-input-score-line"><input type="text" name="ship_small_craft" maxlength="2" class="score-input"></div></div>
+                            </div>
                         </div>
                     </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%;">
-                        <div class="lcars-terminal-box" style="padding-bottom: 3px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f2f5; margin-bottom: 3px;"><span class="box-heading-label" style="border:none; margin:0; padding:0;">STARSHIP ATTACKS</span><span style="font-size:7.5px; font-weight:900; color:#2c3a4d;">SEV.</span></div>
-                            <div class="lcars-attack-row-capsule" style="margin-bottom: 2px;">
-                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">TYPE:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_1_type" class="attack-form-input fit-text"></div></div>
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">QUAL:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_1_qual" class="attack-form-input fit-text"></div></div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: 100%; align-items: stretch;">
+                        <div class="lcars-terminal-box" style="padding-bottom: 3px; position: relative;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f2f5; margin-bottom: 3px; position: relative;">
+                                <span class="box-heading-label" style="border:none; margin:0; padding:0;">STARSHIP ATTACKS</span>
+                                <div class="no-print ship-weapon-picker-wrap" style="position: absolute; top: 0; right: 34px; display: flex; gap: 3px; align-items: center;">
+                                    <input type="text" id="ship-weapon-search" placeholder="Search..." style="width: 70px; font-size: 9px; border: 1px solid #708699; border-radius: 3px; padding: 1px 3px;">
+                                    <select id="ship-weapon-picker" class="species-picker" style="position: static; max-width: 135px;" title="Add starship weapon"></select>
                                 </div>
-                                <div class="attack-score-box-column" style="height: 30px;"><input type="text" name="ship_attack_1_score" maxlength="2" class="score-input"></div>
-                            </div>
-                            <div class="lcars-attack-row-capsule" style="margin-bottom: 2px;">
-                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">TYPE:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_2_type" class="attack-form-input fit-text"></div></div>
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">QUAL:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_2_qual" class="attack-form-input fit-text"></div></div>
-                                </div>
-                                <div class="attack-score-box-column" style="height: 30px;"><input type="text" name="ship_attack_2_score" maxlength="2" class="score-input"></div>
-                            </div>
-                            <div class="lcars-attack-row-capsule" style="margin-bottom: 2px;">
-                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">TYPE:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_3_type" class="attack-form-input fit-text"></div></div>
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">QUAL:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_3_qual" class="attack-form-input fit-text"></div></div>
-                                </div>
-                                <div class="attack-score-box-column" style="height: 30px;"><input type="text" name="ship_attack_3_score" maxlength="2" class="score-input"></div>
+                                <span style="font-size:7.5px; font-weight:900; color:#2c3a4d;">SEV.</span>
                             </div>
                             <div class="lcars-attack-row-capsule">
                                 <div style="display: flex; flex-direction: column; flex-grow: 1;">
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">TYPE:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_4_type" class="attack-form-input fit-text"></div></div>
-                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix" style="font-size:9px; width:22px;">QUAL:</span><div class="lcars-writein-lines" style="height: 15px;"><input type="text" name="ship_attack_4_qual" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_1_type" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_1_qual" class="attack-form-input fit-text"></div></div>
                                 </div>
-                                <div class="attack-score-box-column" style="height: 30px;"><input type="text" name="ship_attack_4_score" maxlength="2" class="score-input"></div>
+                                <div class="attack-score-box-column"><input type="text" name="ship_attack_1_score" maxlength="2" class="score-input"></div>
+                            </div>
+                            <div class="lcars-attack-row-capsule">
+                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_2_type" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_2_qual" class="attack-form-input fit-text"></div></div>
+                                </div>
+                                <div class="attack-score-box-column"><input type="text" name="ship_attack_2_score" maxlength="2" class="score-input"></div>
+                            </div>
+                            <div class="lcars-attack-row-capsule">
+                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_3_type" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_3_qual" class="attack-form-input fit-text"></div></div>
+                                </div>
+                                <div class="attack-score-box-column"><input type="text" name="ship_attack_3_score" maxlength="2" class="score-input"></div>
+                            </div>
+                            <div class="lcars-attack-row-capsule" style="margin-bottom: 3px;">
+                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_4_type" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_4_qual" class="attack-form-input fit-text"></div></div>
+                                </div>
+                                <div class="attack-score-box-column"><input type="text" name="ship_attack_4_score" maxlength="2" class="score-input"></div>
+                            </div>
+                            <div class="lcars-attack-row-capsule">
+                                <div style="display: flex; flex-direction: column; flex-grow: 1;">
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">TYPE:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_5_type" class="attack-form-input fit-text"></div></div>
+                                    <div style="display: flex; width: 100%;"><span class="attack-label-prefix">QUAL:</span><div class="lcars-writein-lines"><input type="text" name="ship_attack_5_qual" class="attack-form-input fit-text"></div></div>
+                                </div>
+                                <div class="attack-score-box-column"><input type="text" name="ship_attack_5_score" maxlength="2" class="score-input"></div>
                             </div>
                         </div>
-                        <div class="lcars-terminal-box">
-                            <span class="box-heading-label">STARSHIP TALENTS</span>
-                            <div class="lcars-writein-lines fit-box-wrap" style="height: 135px;"><textarea name="ship_talents" class="lcars-form-textarea fit-box"></textarea></div>
+                        <div style="display: flex; flex-direction: column; gap: 4px; height: 100%;">
+                            <div class="lcars-terminal-box" style="flex: 1 1 0; display: flex; flex-direction: column; min-height: 0;">
+                                <span class="box-heading-label">SHUTTLEBAY // SUPPORT CRAFT COMPLEMENT</span>
+                                <div class="lcars-writein-lines fit-box-wrap" style="flex: 1 1 auto; height: 100%;"><textarea name="ship_shuttlebay" class="lcars-form-textarea fit-box" style="height: 100%;"></textarea></div>
+                            </div>
+                            <div class="lcars-terminal-box" style="flex: 1 1 0; display: flex; flex-direction: column; min-height: 0;">
+                                <span class="box-heading-label">SPECIAL RULES // SYSTEM CAPABILITIES</span>
+                                <div class="lcars-writein-lines fit-box-wrap" style="flex: 1 1 auto; height: 100%;"><textarea name="ship_special_rules" class="lcars-form-textarea fit-box" style="height: 100%;"></textarea></div>
+                            </div>
                         </div>
                     </div>
-                    <div class="lcars-terminal-box">
-                        <span class="box-heading-label">SPECIAL RULES // SYSTEM CAPABILITIES</span>
-                        <div class="lcars-writein-lines fit-box-wrap" style="height: 48px;"><textarea name="ship_special_rules" class="lcars-form-textarea fit-box"></textarea></div>
-                    </div>
-                    <div class="lcars-terminal-box">
-                        <span class="box-heading-label">SHUTTLEBAY // SUPPORT CRAFT COMPLEMENT</span>
-                        <div class="lcars-writein-lines fit-box-wrap" style="height: 48px;"><textarea name="ship_shuttlebay" class="lcars-form-textarea fit-box"></textarea></div>
+                    <div class="lcars-terminal-box" style="flex: 1 1 auto; display: flex; flex-direction: column; min-height: 140px; position: relative;">
+                        <span class="box-heading-label">STARSHIP TALENTS</span>
+                        <div class="no-print ship-talent-picker-wrap" style="position: absolute; top: 2px; right: 6px; display: flex; gap: 3px; align-items: center;">
+                            <input type="text" id="ship-talent-search" placeholder="Search..." style="width: 90px; font-size: 9px; border: 1px solid #708699; border-radius: 3px; padding: 1px 3px;">
+                            <select id="ship-talent-picker" class="species-picker" style="position: static;" title="Add a ship talent"></select>
+                        </div>
+                        <div class="lcars-writein-lines fit-box-wrap" style="flex: 1 1 auto; height: 100%;"><textarea name="ship_talents" class="lcars-form-textarea fit-box" style="height: 100%;"></textarea></div>
                     </div>
                 </div>
                 <div class="unified-footer-capsule">
@@ -655,9 +835,7 @@
     </div>
     <div class="legal-footer-row"><div class="legal-micro-print">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div></div>
 </div>
-</div></div>
-
-<div id="p3-tools" class="external-utility-bar no-print" style="display: none; margin-top: 15px; margin-bottom: 60px;">
+</div></div><div id="p3-tools" class="external-utility-bar no-print" style="display: none; margin-top: 15px; margin-bottom: 60px;">
     <div class="bar-group"><span class="bar-label">Stardate</span>
         <input type="number" id="sd-year" style="width: 56px; font-size: 11px; padding: 2px 4px; border: 1px solid #708699; border-radius: 3px;" value="2376" title="Campaign Year">
         <select id="sd-month" style="font-size: 11px; padding: 2px 3px; border: 1px solid #708699; border-radius: 3px;" title="Month">
@@ -704,7 +882,9 @@
 <script src="species_abilities.js?v=2.1"></script>
 <script src="talents.js?v=2.1"></script>
 <script src="equipment.js?v=2.1"></script>
-<script src="console.js?v=2.1"></script>
+<script src="readme.js?v=1.0"></script>
+<script src="spends.js?v=1.0"></script>
+<script src="console.js?v=2.5"></script>
 </body>
 </html>
 <!-- Block 8 END -->

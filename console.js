@@ -353,8 +353,371 @@ function initConsole() {
         });
     }
 
-// Save: one JSON bundle for all four pages
-    const KEY = 'sta2e-autosave', UNS = 'sta2e-unsaved';
+    // ===== Slot manager: characters + starships (up to 5 each, browser localStorage) =====
+    const KEY = 'sta2e-autosave'; // legacy single-autosave key (migrated once)
+    const MAX_SLOTS = 5;
+    let quotaState = 0;
+    function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+    function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    function lsJSON(k) { try { return JSON.parse(lsGet(k)); } catch (e) { return null; } }
+    function warnQuota(level) {
+        if (level <= quotaState) return;
+        quotaState = level;
+        alert(level === 1 ? 'Browser storage is full. Images were left out of the autosave. Use Save As File to keep them.' : 'Browser storage is full. Autosave FAILED. Use Save As File now.');
+    }
+    function showChoice(head, body, btns, cb) {
+        const old = document.getElementById('choice-modal'); if (old) old.remove();
+        const dlg = document.createElement('div');
+        dlg.id = 'choice-modal'; dlg.className = 'no-print';
+        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box"><div class="row-modal-header"></div><div class="row-modal-body"></div><div class="row-modal-btn-row"></div></div></div>';
+        dlg.querySelector('.row-modal-header').textContent = head;
+        dlg.querySelector('.row-modal-body').textContent = body;
+        const row = dlg.querySelector('.row-modal-btn-row');
+        const close = v => { dlg.remove(); cb(v); };
+        btns.forEach(b => {
+            const x = document.createElement('button');
+            x.type = 'button'; x.className = 'lcars-utility-btn'; x.style.backgroundColor = b.color || '#2c3a4d'; x.textContent = b.label;
+            x.addEventListener('click', () => close(b.val));
+            row.appendChild(x);
+        });
+        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) close('cancel'); });
+        document.body.appendChild(dlg);
+    }
+    function blankChar() {
+        const own = el => el.name && el.name.indexOf('ship_') !== 0;
+        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (own(el)) el.value = el.defaultValue; });
+        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (own(el)) el.checked = false; });
+        follows.forEach(t => { if (own(t)) t.dataset.touched = ''; });
+        document.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
+        setPortrait('');
+        baseEquipment = null;
+        setPlayMode(false);
+        Object.keys(DOCS).forEach(defaultDoc);
+        updateModColors();
+    }
+    function blankShip() {
+        const own = el => el.name && el.name.indexOf('ship_') === 0;
+        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (own(el)) el.value = el.defaultValue; });
+        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (own(el)) el.checked = false; });
+        follows.forEach(t => { if (own(t)) t.dataset.touched = ''; });
+        setShipGraphic('');
+    }
+    function makeSlots(c) {
+        let cur = null, wired = false;
+        const idxRead = () => { const a = lsJSON(c.idxKey); return (Array.isArray(a) && a.length) ? a : null; };
+        const idxWrite = a => lsSet(c.idxKey, JSON.stringify(a));
+        const selEl = () => document.getElementById(c.ui + 'selector');
+        const find = () => (idxRead() || []).find(x => x.id === cur);
+        function fill() {
+            const s = selEl(); if (!s) return;
+            s.innerHTML = '';
+            (idxRead() || []).forEach(x => {
+                const o = document.createElement('option');
+                o.value = x.id; o.textContent = x.name; o.selected = (x.id === cur);
+                s.appendChild(o);
+            });
+        }
+        function go(id) {
+            cur = id; lsSet(c.activeKey, id);
+            const d = lsJSON(c.dataKey + id);
+            c.blank();
+            if (d) c.apply(d);
+            c.after();
+            fill();
+        }
+        function save() {
+            if (!cur) return true;
+            let ok = lsSet(c.dataKey + cur, JSON.stringify(c.build(true)));
+            if (!ok) { ok = lsSet(c.dataKey + cur, JSON.stringify(c.build(false))); warnQuota(ok ? 1 : 2); }
+            const a = idxRead(), s = a && a.find(x => x.id === cur);
+            if (s && !s.custom) {
+                const nm = c.autoName();
+                if (nm && nm !== s.name) {
+                    s.name = nm; idxWrite(a);
+                    const se = selEl(), o = se && se.querySelector('option[value="' + cur + '"]');
+                    if (o) o.textContent = nm;
+                }
+            }
+            return ok;
+        }
+        const count = () => (idxRead() || []).length;
+        function full() {
+            if (count() >= MAX_SLOTS) { alert('Maximum of ' + MAX_SLOTS + ' ' + c.plural + ' reached.'); return true; }
+            return false;
+        }
+        function create() {
+            if (full()) return false;
+            save();
+            const a = idxRead() || [], id = c.prefix + Date.now();
+            a.push({ id: id, name: c.defName + ' ' + (a.length + 1) });
+            idxWrite(a); go(id); save();
+            return true;
+        }
+        function duplicate() {
+            if (full()) return;
+            save();
+            const a = idxRead() || [], s = find(), id = c.prefix + Date.now();
+            if (!lsSet(c.dataKey + id, JSON.stringify(c.build(true)))) lsSet(c.dataKey + id, JSON.stringify(c.build(false)));
+            a.push({ id: id, name: (s ? s.name : c.defName) + ' (copy)', custom: true });
+            idxWrite(a); go(id);
+        }
+        function rename() {
+            const a = idxRead() || [], s = a.find(x => x.id === cur);
+            if (!s) return;
+            const v = prompt('Slot name (leave blank for automatic naming):', s.name);
+            if (v === null) return;
+            const t = v.trim();
+            if (t) { s.name = t; s.custom = true; } else { delete s.custom; s.name = c.autoName() || s.name; }
+            idxWrite(a); fill();
+        }
+        function remove() {
+            const a = idxRead() || [], i = a.findIndex(x => x.id === cur);
+            if (i < 0) return;
+            const msg = a.length === 1
+                ? 'This is the last ' + c.noun + ' slot. Delete "' + a[i].name + '" and start a blank one?'
+                : 'Permanently delete ' + c.noun + ' slot "' + a[i].name + '" from browser memory?';
+            if (!confirm(msg)) return;
+            if (c.onRemove) c.onRemove(snapshot());
+            try { localStorage.removeItem(c.dataKey + cur); } catch (e) {}
+            a.splice(i, 1);
+            let next;
+            if (!a.length) { next = { id: c.prefix + Date.now(), name: c.defName + ' 1' }; a.push(next); }
+            else next = a[Math.max(0, i - 1)];
+            idxWrite(a); go(next.id); save();
+        }
+        function snapshot() {
+            save();
+            const s = find() || {};
+            return { id: cur, name: s.name || c.defName, custom: !!s.custom, data: c.build(true) };
+        }
+        function restore(en) {
+            const a = idxRead() || [];
+            if (!a.some(x => x.id === en.id)) {
+                if (a.length >= MAX_SLOTS) { alert('No free ' + c.noun + ' slot to restore into. Delete one first.'); return false; }
+                a.push(en.custom ? { id: en.id, name: en.name, custom: true } : { id: en.id, name: en.name });
+                idxWrite(a);
+            }
+            if (cur && cur !== en.id) save();
+            lsSet(c.dataKey + en.id, JSON.stringify(en.data));
+            go(en.id);
+            return true;
+        }
+        function exportAll() {
+            save();
+            const a = idxRead() || [], data = {};
+            a.forEach(x => { data[x.id] = lsJSON(c.dataKey + x.id); });
+            return { index: a, active: cur, data: data };
+        }
+        function importAll(o) {
+            (idxRead() || []).forEach(x => { try { localStorage.removeItem(c.dataKey + x.id); } catch (e) {} });
+            const src = (o && o.data) || {};
+            const a = ((o && o.index) || []).filter(x => x && src[x.id]).slice(0, MAX_SLOTS);
+            if (!a.length) a.push({ id: c.prefix + Date.now(), name: c.defName + ' 1' });
+            a.forEach(x => { if (src[x.id]) lsSet(c.dataKey + x.id, JSON.stringify(src[x.id])); });
+            idxWrite(a);
+            go(a.some(x => x.id === (o && o.active)) ? o.active : a[0].id);
+        }
+        function init() {
+            let a = idxRead();
+            if (!a) { a = (c.seed && c.seed()) || [{ id: c.prefix + '1', name: c.defName + ' 1' }]; idxWrite(a); }
+            const want = lsGet(c.activeKey);
+            go(a.some(x => x.id === want) ? want : a[0].id);
+            if (wired) return;
+            wired = true;
+            const s = selEl();
+            if (s) s.addEventListener('change', () => { save(); go(s.value); });
+            const on = (id, fn) => { const el = document.getElementById(c.ui + id); if (el) el.addEventListener('click', fn); };
+            on('btn-new', create); on('btn-dup', duplicate); on('btn-ren', rename); on('btn-del', remove);
+        }
+        return { init: init, save: save, count: count, create: create, snapshot: snapshot, restore: restore, exportAll: exportAll, importAll: importAll, name: () => { const s = find(); return s ? s.name : ''; } };
+    }
+    const charSlots = makeSlots({
+        ui: 'slot-', idxKey: 'sta2e_storage_slots_index', dataKey: 'sta2e_slot_data_', activeKey: 'sta2e_active_slot',
+        prefix: 'slot_', defName: 'Personnel File', noun: 'character', plural: 'character slots',
+        build: img => buildData(img, false),
+        onRemove: s => setUndo('Delete slot', [Object.assign({ type: 'char' }, s)]),
+        apply: d => applyData(d, 'char'),
+        blank: blankChar,
+        after: () => { sync(); updateModColors(); balance(); growAll(); },
+        autoName: () => { const f = form.elements['bio_name']; return f ? f.value.trim() : ''; },
+        seed: () => {
+            const old = lsGet(KEY);
+            if (old && !lsGet('sta2e_slot_data_slot_1')) lsSet('sta2e_slot_data_slot_1', old);
+            return null;
+        }
+    });
+    const shipSlots = makeSlots({
+        ui: 'ship-slot-', idxKey: 'sta2e_ship_slots_index', dataKey: 'sta2e_ship_data_', activeKey: 'sta2e_active_ship',
+        prefix: 'ship_', defName: 'Starship', noun: 'starship', plural: 'ship slots',
+        build: img => buildShipData(img),
+        onRemove: s => setUndo('Delete ship slot', [Object.assign({ type: 'ship' }, s)]),
+        apply: d => applyData(d, 'ship'),
+        blank: blankShip,
+        after: () => { sync(); growAll(); },
+        autoName: () => {
+            const n = form.elements['ship_name'], r = form.elements['ship_registry'];
+            return (n && n.value.trim()) || (r && r.value.trim()) || '';
+        },
+        seed: () => {
+            // one-time: pull any ship data embedded in older character slots into ship slots
+            const out = [], seen = new Set();
+            (lsJSON('sta2e_storage_slots_index') || []).forEach(s => {
+                if (out.length >= MAX_SLOTS) return;
+                const d = lsJSON('sta2e_slot_data_' + s.id);
+                if (!d) return;
+                const sd = { _bundle: 'sta2e-starship-v1' };
+                let has = false;
+                Object.keys(d).forEach(k => {
+                    if (k.indexOf('ship_') === 0 || k === 'cached_ship_ortho_data') {
+                        sd[k] = d[k];
+                        if (d[k] && d[k] !== 'NCC-80106-[PHOBOS_DEFAULT]') has = true;
+                    }
+                });
+                const sig = JSON.stringify(sd);
+                if (!has || seen.has(sig)) return;
+                seen.add(sig);
+                const id = 'ship_' + (out.length + 1);
+                lsSet('sta2e_ship_data_' + id, sig);
+                out.push({ id: id, name: sd.ship_name || sd.ship_registry || ('Starship ' + (out.length + 1)) });
+            });
+            return out.length ? out : null;
+        }
+    });
+    function offerShip(d) {
+        if (shipSlots.count() >= MAX_SLOTS) return;
+        showChoice('Starship Data Found', 'This file also contains a starship ("' + (d.ship_name || d.ship_registry || 'unnamed') + '"). Add it as a new ship slot?',
+            [{ label: 'Add Ship Slot', val: 'add', color: '#d96b27' }, { label: 'Skip', val: 'skip' }], v => {
+                if (v !== 'add' || !shipSlots.create()) return;
+                applyData(d, 'ship'); shipSlots.save(); setUnsaved(false);
+            });
+    }
+
+    // ===== Undo (1 step, session only), Backup All, Reset Ship, Quick Note, Theme, Wake Lock =====
+    let undoStack = null;
+    function updateUndoBtn() {
+        const b = document.getElementById('btn-undo');
+        if (!b) return;
+        b.disabled = !undoStack;
+        b.title = undoStack ? 'Undo: ' + undoStack.label : 'Nothing to undo';
+    }
+    function setUndo(label, entries) { undoStack = { label: label, entries: entries }; updateUndoBtn(); }
+    const snapChar = () => Object.assign({ type: 'char' }, charSlots.snapshot());
+    const snapShip = () => Object.assign({ type: 'ship' }, shipSlots.snapshot());
+    function doUndo() {
+        if (!undoStack) return;
+        const u = undoStack;
+        const ok = u.entries.every(en => (en.type === 'ship' ? shipSlots : charSlots).restore(en));
+        if (!ok) return;
+        undoStack = null; updateUndoBtn();
+        autosave();
+    }
+    function downloadJSON(name, obj) {
+        const blob = new Blob([JSON.stringify(obj)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.download = name; a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    function backupAll(prefix) {
+        downloadJSON((prefix || '') + 'sta2e_backup_all_' + new Date().toLocaleDateString('en-CA') + '.json',
+            { _bundle: 'sta2e-backup-v1', created: new Date().toISOString(), characters: charSlots.exportAll(), ships: shipSlots.exportAll() });
+    }
+    const onBtn = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); };
+    onBtn('btn-undo', doUndo);
+    onBtn('btn-backup-all', () => backupAll(''));
+    const bkLoader = document.getElementById('utility-backup-loader');
+    onBtn('btn-restore-all', () => { if (bkLoader) bkLoader.click(); });
+    if (bkLoader) {
+        bkLoader.addEventListener('change', function(e) {
+            const f = e.target.files[0];
+            if (!f) return;
+            const r = new FileReader();
+            r.onload = function(ev) {
+                let d;
+                try { d = JSON.parse(ev.target.result); if (!d || d._bundle !== 'sta2e-backup-v1' || !d.characters || !d.ships) throw 0; }
+                catch (err) { alert('Terminal Error: Not a valid Backup All file.'); return; }
+                const nc = (d.characters.index || []).length, ns = (d.ships.index || []).length;
+                showChoice('Restore All // Replace Everything', 'This replaces ALL character and ship slots in browser memory with the backup (' + nc + ' characters, ' + ns + ' ships). A backup of the current state downloads first.',
+                    [{ label: 'Replace All', val: 'go', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' }], v => {
+                        if (v !== 'go') return;
+                        backupAll('before_restore_');
+                        undoStack = null; updateUndoBtn();
+                        charSlots.importAll(d.characters); shipSlots.importAll(d.ships);
+                        setUnsaved(false);
+                    });
+            };
+            r.readAsText(f);
+            bkLoader.value = '';
+        });
+    }
+    onBtn('btn-reset-ship', () => {
+        if (!confirm('Reset Ship damage?\n\n\u2022 Clears all Shield boxes\n\u2022 Clears all System Breach boxes\n(Stats, attacks and talents are kept)')) return;
+        setUndo('Reset Ship', [snapShip()]);
+        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (/^ship_(shield_\d+|sys_[a-z]+_b\d+)$/.test(el.name)) el.checked = false; });
+        markDirty();
+    });
+    onBtn('btn-quick-note', () => {
+        const t = prompt('Quick note (added to Page 4 Logs with the current stardate):');
+        if (!t || !t.trim()) return;
+        addBlock('p4', activeSec('p4'), 'cap-tan', 'Stardate ' + getStardateVal(), t.trim());
+        markDirty();
+    });
+    let darkPlay = lsGet('sta2e_dark_play') !== '0';
+    function applyTheme() {
+        document.body.classList.toggle('dark-play', darkPlay);
+        const b = document.getElementById('btn-theme');
+        if (b) b.textContent = 'Theme: ' + (darkPlay ? 'Dark' : 'Light');
+    }
+    onBtn('btn-theme', () => { darkPlay = !darkPlay; lsSet('sta2e_dark_play', darkPlay ? '1' : '0'); applyTheme(); });
+    applyTheme(); updateUndoBtn();
+    let wakeLock = null;
+    async function setWake(on) {
+        try {
+            if (on && 'wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen');
+            else if (wakeLock) { await wakeLock.release(); wakeLock = null; }
+        } catch (e) {}
+    }
+    document.addEventListener('visibilitychange', () => { if (document.fullscreenElement && document.visibilityState === 'visible') setWake(true); });
+
+    // ===== User Manual overlay (text from readme.js: window.STA_README) =====
+    function mdInline(s) {
+        return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
+    }
+    function mdToHtml(md) {
+        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const out = [];
+        let list = null;
+        const close = () => { if (list) { out.push('</' + list + '>'); list = null; } };
+        String(md).split(/\r?\n/).forEach(raw => {
+            const line = esc(raw);
+            let m;
+            if (!line.trim()) { close(); return; }
+            if ((m = line.match(/^(#{1,3})\s+(.*)$/))) { close(); out.push('<h' + m[1].length + '>' + mdInline(m[2]) + '</h' + m[1].length + '>'); return; }
+            if (/^---+$/.test(line.trim())) { close(); out.push('<hr>'); return; }
+            if ((m = line.match(/^\s*[-*]\s+(.*)$/))) { if (list !== 'ul') { close(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + mdInline(m[1]) + '</li>'); return; }
+            if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) { if (list !== 'ol') { close(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + mdInline(m[1]) + '</li>'); return; }
+            close();
+            out.push('<p>' + mdInline(line) + '</p>');
+        });
+        close();
+        return out.join('');
+    }
+    function closeManual() { const o = document.getElementById('manual-overlay'); if (o) o.style.display = 'none'; }
+    function openManual() {
+        let o = document.getElementById('manual-overlay');
+        if (!o) {
+            o = document.createElement('div');
+            o.id = 'manual-overlay'; o.className = 'no-print';
+            o.innerHTML = '<div class="manual-backdrop"><div class="manual-box"><div class="manual-head"><div class="manual-head-cap"></div><div class="manual-head-title">User Manual // Console Guide</div><div class="manual-head-yellow"></div><button type="button" class="manual-close" title="Close (Esc)">Close &times;</button></div><div class="manual-body"></div></div></div>';
+            o.querySelector('.manual-body').innerHTML = mdToHtml(window.STA_README || '# Manual not loaded\n\nreadme.js was not found next to index.html.');
+            o.addEventListener('click', e => { if (e.target.classList.contains('manual-backdrop') || e.target.closest('.manual-close')) closeManual(); });
+            document.body.appendChild(o);
+        }
+        o.style.display = 'block';
+    }
+    onBtn('btn-manual', openManual);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeManual(); });
+
+    const UNS = 'sta2e-unsaved';
     let unsaved = false, autoTimer;
     try { unsaved = localStorage.getItem(UNS) === '1'; } catch (e) {}
     function updateAutosaveUI(state) {
@@ -368,25 +731,37 @@ function initConsole() {
         try { localStorage.setItem(UNS, v ? '1' : '0'); } catch (e) {}
         updateAutosaveUI(v ? 'pending' : 'saved');
     }
-    function buildData(withPortrait) {
+    function buildData(withImages, includeShip) {
         const data = { _bundle: 'sta2e-unified-v3' };
-        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name) data[el.name] = el.value; });
-        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name) data[el.name] = el.checked; });
+        const keep = el => el.name && (includeShip || el.name.indexOf('ship_') !== 0);
+        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (keep(el)) data[el.name] = el.value; });
+        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (keep(el)) data[el.name] = el.checked; });
         data.docs = { p3: collect('p3'), p4: collect('p4') };
-        data.base_equipment = (baseEquipment !== null) ? baseEquipment : (form.elements['ledger_equipment'] ? form.elements['ledger_equipment'].value : '');
+        const eq = form.elements['ledger_equipment'];
+        data.base_equipment = (isPlayMode && baseEquipment !== null) ? baseEquipment : (eq ? eq.value : '');
+        data._play_mode = isPlayMode;
         data.challenged_values = Array.from(form.querySelectorAll('.val-row'))
             .map((r, i) => r.classList.contains('challenged') ? (i + 1) : null)
             .filter(Boolean);
         const pi = document.getElementById('portrait-img');
-        if (withPortrait !== false && pi && pi.src && pi.style.display === 'block') data['cached_portrait_data'] = pi.src;
+        if (withImages !== false && pi && pi.src && pi.style.display === 'block') data['cached_portrait_data'] = pi.src;
         const si = document.getElementById('ship-ortho-img');
-        if (withPortrait !== false && si && si.src && si.style.display === 'block') data['cached_ship_ortho_data'] = si.src;
+        if (includeShip && withImages !== false && si && si.src && si.style.display === 'block') data['cached_ship_ortho_data'] = si.src;
         return data;
     }
+    function buildShipData(withImages) {
+        const d = { _bundle: 'sta2e-starship-v1' };
+        form.querySelectorAll('input, textarea').forEach(el => {
+            if (el.name && el.name.indexOf('ship_') === 0) d[el.name] = (el.type === 'checkbox') ? el.checked : el.value;
+        });
+        const si = document.getElementById('ship-ortho-img');
+        if (withImages !== false && si && si.src && si.style.display === 'block') d['cached_ship_ortho_data'] = si.src;
+        return d;
+    }
     function autosave() {
-        try { localStorage.setItem(KEY, JSON.stringify(buildData())); }
-        catch (e) { try { localStorage.setItem(KEY, JSON.stringify(buildData(false))); } catch (e2) {} }
-        updateAutosaveUI('saved');
+        clearTimeout(autoTimer);
+        const a = charSlots.save(), b = shipSlots.save();
+        setUnsaved(!(a && b));
     }
     function markDirty() {
         setUnsaved(true);
@@ -395,13 +770,11 @@ function initConsole() {
     }
     document.addEventListener('click', e => {
         if (e.target.classList.contains('autosave-indicator')) {
-            clearTimeout(autoTimer);
             autosave();
-            setUnsaved(false);
         }
     });
     function saveFile(prefix) {
-        const blob = new Blob([JSON.stringify(buildData(), null, 2)], { type: 'application/json' });
+        const blob = new Blob([JSON.stringify(buildData(true, true), null, 2)], { type: 'application/json' });
         let name = fileId.value.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '_');
         if (!name) name = 'unnamed_personnel';
         const a = document.createElement('a');
@@ -411,37 +784,42 @@ function initConsole() {
     }
     const saveBtn = document.getElementById('utility-btn-save');
     if (saveBtn) saveBtn.addEventListener('click', function() { saveFile(''); setUnsaved(false); });
-    const onEdit = e => { if (e.target.id !== 'utility-file-loader') markDirty(); };
+    const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, [id$="-search"], #talent-cat')) return; markDirty(); };
     form.addEventListener('input', onEdit);
     form.addEventListener('change', onEdit);
     form.addEventListener('click', e => { if (e.target.closest('.p3-mv, .p3-x, #p3-tools button')) markDirty(); });
-    window.addEventListener('beforeunload', e => { if (unsaved) { e.preventDefault(); e.returnValue = ''; } });
+    window.addEventListener('beforeunload', e => { if (unsaved) autosave(); if (unsaved) { e.preventDefault(); e.returnValue = ''; } });
 
     // Load
-    function applyData(d) {
-        if (d.ledger_mission_directives === undefined && (d.ledger_mission_profile || d.ledger_active_directives)) d.ledger_mission_directives = [d.ledger_mission_profile, d.ledger_active_directives].filter(Boolean).join('\n');
-        if (d.ledger_focuses && d.ledger_focus_1 === undefined) {
-            const f = String(d.ledger_focuses).split(/\r?\n/).filter(x => x.trim());
-            for (let i = 0; i < 6; i++) d['ledger_focus_' + (i + 1)] = i < 5 ? (f[i] || '') : f.slice(5).join('; ');
+    function applyData(d, scope) {
+        const wantChar = scope !== 'ship', wantShip = scope !== 'char';
+        const mine = el => (el.name.indexOf('ship_') === 0) ? wantShip : wantChar;
+        if (wantChar) {
+            if (d.ledger_mission_directives === undefined && (d.ledger_mission_profile || d.ledger_active_directives)) d.ledger_mission_directives = [d.ledger_mission_profile, d.ledger_active_directives].filter(Boolean).join('\n');
+            if (d.ledger_focuses && d.ledger_focus_1 === undefined) {
+                const f = String(d.ledger_focuses).split(/\r?\n/).filter(x => x.trim());
+                for (let i = 0; i < 6; i++) d['ledger_focus_' + (i + 1)] = i < 5 ? (f[i] || '') : f.slice(5).join('; ');
+            }
+            if (d.ledger_values && d.ledger_value_1 === undefined) String(d.ledger_values).split(/\r?\n/).slice(0, 4).forEach((t, i) => { d['ledger_value_' + (i + 1)] = t; });
         }
-        if (d.ledger_values && d.ledger_value_1 === undefined) String(d.ledger_values).split(/\r?\n/).slice(0, 4).forEach((t, i) => { d['ledger_value_' + (i + 1)] = t; });
-        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name && d[el.name] !== undefined) el.value = d[el.name]; });
-        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name && d[el.name] !== undefined) el.checked = d[el.name]; });
+        form.querySelectorAll('input[type="text"], textarea').forEach(el => { if (el.name && mine(el) && d[el.name] !== undefined) el.value = d[el.name]; });
+        form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (el.name && mine(el) && d[el.name] !== undefined) el.checked = d[el.name]; });
         follows.forEach(t => {
-            if (d[t.name] !== undefined) {
+            if (mine(t) && d[t.name] !== undefined) {
                 const baseVal = d[t.dataset.follow] || '';
                 t.dataset.touched = (d[t.name] && d[t.name] !== baseVal) ? '1' : '';
             }
         });
-        if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
-        else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
-        if (d['cached_portrait_data']) setPortrait(d['cached_portrait_data']);
-        if (d['cached_ship_ortho_data']) setShipGraphic(d['cached_ship_ortho_data']);
-        if (d.base_equipment !== undefined) baseEquipment = d.base_equipment;
-        const ch = Array.isArray(d.challenged_values) ? d.challenged_values : [];
-        form.querySelectorAll('.val-row').forEach((r, i) => {
-            r.classList.toggle('challenged', ch.includes(i + 1));
-        });
+        if (wantChar) {
+            if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
+            else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
+            setPortrait(d['cached_portrait_data'] || '');
+            baseEquipment = (d._play_mode && d.base_equipment !== undefined) ? d.base_equipment : null;
+            if (d._play_mode !== undefined) setPlayMode(!!d._play_mode, true);
+            const ch = Array.isArray(d.challenged_values) ? d.challenged_values : [];
+            form.querySelectorAll('.val-row').forEach((r, i) => { r.classList.toggle('challenged', ch.includes(i + 1)); });
+        }
+        if (wantShip) setShipGraphic(d['cached_ship_ortho_data'] || '');
         sync(); updateModColors(); growAll();
     }
     const loader = document.getElementById('utility-file-loader');
@@ -453,34 +831,37 @@ function initConsole() {
             if (!f) return;
             const r = new FileReader();
             r.onload = function(ev) {
-                try { applyData(JSON.parse(ev.target.result)); setUnsaved(false); autosave(); }
-                catch (err) { alert('Terminal Error: Incompatible file format or data string corrupted.'); }
+                let d;
+                try { d = JSON.parse(ev.target.result); if (!d || typeof d !== 'object') throw 0; }
+                catch (err) { alert('Terminal Error: Incompatible file format or data string corrupted.'); return; }
+                const btns = [];
+                if (charSlots.count() < MAX_SLOTS) btns.push({ label: 'New Slot', val: 'new', color: '#d96b27' });
+                btns.push({ label: 'Replace Current', val: 'replace', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' });
+                showChoice('Load File // Select Target', 'Load this file into a new slot, or replace "' + charSlots.name() + '"?', btns, v => {
+                    if (v !== 'new' && v !== 'replace') return;
+                    if (v === 'new') { if (!charSlots.create()) return; } else { setUndo('Replace with file', [snapChar()]); blankChar(); }
+                    applyData(d, 'char'); balance();
+                    charSlots.save(); setUnsaved(false);
+                    if (d.ship_name || d.ship_registry || d.cached_ship_ortho_data) offerShip(d);
+                });
             };
             r.readAsText(f);
             loader.value = '';
         });
     }
 
-    // Clear
+    // Clear (active character slot only; starships untouched)
     const clearBtn = document.getElementById('utility-btn-clear');
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
-            if (!confirm('Clear this station? A backup file will be downloaded first.')) return;
-            saveFile('backup_');
-            form.reset();
-            follows.forEach(t => { t.dataset.touched = ''; });
-            document.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
-            setPortrait('');
-            setShipGraphic('');
-            fileId.value = DEFAULT_ID;
-            Object.keys(DOCS).forEach(defaultDoc);
-            try { localStorage.removeItem(KEY); } catch (e) {}
-            setUnsaved(false);
-            sync();
+            if (!confirm('Clear character "' + charSlots.name() + '"? A backup file will be downloaded first. (Starships are not affected.)')) return;
+            saveFile('backup_'); setUndo('Clear Form', [snapChar()]);
+            blankChar(); sync(); balance(); growAll();
+            charSlots.save(); setUnsaved(false);
         });
     }
 
-	function setShipGraphic(src) {
+    function setShipGraphic(src) {
         const img = document.getElementById('ship-ortho-img');
         const ph = document.getElementById('ship-ortho-ph');
         if (img) { img.src = src || ''; img.style.display = src ? 'block' : 'none'; }
@@ -497,20 +878,11 @@ function initConsole() {
     }
 
     function exportShipFile() {
-        const shipData = { _bundle: 'sta2e-starship-v1' };
-        form.querySelectorAll('input, textarea').forEach(el => {
-            if (el.name && el.name.startsWith('ship_')) {
-                if (el.type === 'checkbox') shipData[el.name] = el.checked;
-                else shipData[el.name] = el.value;
-            }
-        });
-        const shipImg = document.getElementById('ship-ortho-img');
-        if (shipImg && shipImg.src && shipImg.style.display === 'block') {
-            shipData['cached_ship_ortho_data'] = shipImg.src;
-        }
-        let reg = (form.elements['ship_registry']?.value || '').trim().replace(/[^a-z0-9\-]/gi, '_');
-        let shipName = (form.elements['ship_name']?.value || 'starship').trim().replace(/[^a-z0-9\-]/gi, '_');
-        const filename = 'uss_' + (shipName || 'vessel') + (reg ? '_' + reg : '') + '.json';
+        const shipData = buildShipData();
+        const shipFileId = document.getElementById('ship-metadata-file-id');
+        let name = (shipFileId ? shipFileId.value : '').trim().toLowerCase().replace(/[^a-z0-9\-]/gi, '_');
+        if (!name) name = 'starship_vessel';
+        const filename = name + '_' + new Date().toLocaleDateString('en-CA') + '.json';
         const blob = new Blob([JSON.stringify(shipData, null, 2)], { type: 'application/json' });
         const a = document.createElement('a');
         a.download = filename.toLowerCase();
@@ -529,20 +901,18 @@ function initConsole() {
             if (!f) return;
             const r = new FileReader();
             r.onload = function(ev) {
-                try {
-                    const d = JSON.parse(ev.target.result);
-                    Object.keys(d).forEach(k => {
-                        if (k.startsWith('ship_') && form.elements[k]) {
-                            if (form.elements[k].type === 'checkbox') form.elements[k].checked = !!d[k];
-                            else form.elements[k].value = d[k];
-                        }
-                    });
-                    if (d['cached_ship_ortho_data']) setShipGraphic(d['cached_ship_ortho_data']);
-                    markDirty(); sync(); growAll();
-                    alert('Starship profile loaded successfully.');
-                } catch (err) {
-                    alert('Terminal Error: Unable to parse starship registry file.');
-                }
+                let d;
+                try { d = JSON.parse(ev.target.result); if (!d || typeof d !== 'object') throw 0; }
+                catch (err) { alert('Terminal Error: Unable to parse starship registry file.'); return; }
+                const btns = [];
+                if (shipSlots.count() < MAX_SLOTS) btns.push({ label: 'New Ship Slot', val: 'new', color: '#d96b27' });
+                btns.push({ label: 'Replace Current', val: 'replace', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' });
+                showChoice('Import Ship // Select Target', 'Import into a new ship slot, or replace "' + shipSlots.name() + '"?', btns, v => {
+                    if (v !== 'new' && v !== 'replace') return;
+                    if (v === 'new') { if (!shipSlots.create()) return; } else { setUndo('Replace ship', [snapShip()]); blankShip(); }
+                    applyData(d, 'ship');
+                    shipSlots.save(); setUnsaved(false);
+                });
             };
             r.readAsText(f);
             shipLoader.value = '';
@@ -693,10 +1063,13 @@ function initConsole() {
             if (after) { after(item); growAll(); }
         });
     }
-    makeAppender('talent-picker', 'ledger_talents', window.STA_TALENTS, 'Add a talent...', e => e.category || 'Other', e => e.talent, e => e.talent + (e.text ? ': ' + e.text : ''));
+    const allTalents = Array.isArray(window.STA_TALENTS) ? window.STA_TALENTS : [];
+    const charTalents = allTalents.filter(e => !/starship/i.test(e.category || ''));
+
+    makeAppender('talent-picker', 'ledger_talents', charTalents, 'Add a talent...', e => e.category || 'Other', e => e.talent, e => e.talent + (e.text ? ': ' + e.text : ''));
     (function talentFilters() {
         const sel = document.getElementById('talent-picker'), q = document.getElementById('talent-search'), cat = document.getElementById('talent-cat');
-        const items = Array.isArray(window.STA_TALENTS) ? window.STA_TALENTS : [];
+        const items = charTalents;
         if (!sel || !items.length || !q || !cat) return;
         const spp = new Set((Array.isArray(window.STA_SPECIES_ABILITIES) ? window.STA_SPECIES_ABILITIES : []).map(e => String(e.species).trim().toLowerCase()));
         const catOf = e => { const c = String(e.category || 'Other').trim(); return (spp.has(c.toLowerCase()) || /species/i.test(c)) ? 'Species' : c; };
@@ -717,12 +1090,44 @@ function initConsole() {
         q.addEventListener('input', refill);
         q.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
         cat.addEventListener('change', refill);
-        form.addEventListener('reset', () => setTimeout(refill, 0));
-        refill();
-    })();
-	const allEquip = Array.isArray(window.STA_EQUIPMENT) ? window.STA_EQUIPMENT : [];
+    form.addEventListener('reset', () => setTimeout(refill, 0));
+    refill();
+})();
+
+// Starship Talents Picker & Search
+const shipTalents = allTalents.filter(e => /starship/i.test(e.category || ''));
+const shipBoxName = form.elements['ledger_ship_talents'] ? 'ledger_ship_talents' : (form.elements['ship_talents'] ? 'ship_talents' : 'starship_talents');
+
+makeAppender('ship-talent-picker', shipBoxName, shipTalents, 'Add a ship talent...', e => e.source || 'Starship', e => e.talent, e => e.talent + (e.text ? ': ' + e.text : ''));
+
+(function shipTalentFilters() {
+    const sel = document.getElementById('ship-talent-picker'), q = document.getElementById('ship-talent-search');
+    if (!sel || !shipTalents.length || !q) return;
+    function refill() {
+        const term = q.value.trim().toLowerCase();
+        const hits = shipTalents.map((e, i) => [e, i]).filter(([e]) => !term || (e.talent + ' ' + (e.text || '')).toLowerCase().includes(term));
+        while (sel.children.length > 1) sel.removeChild(sel.lastChild);
+        sel.options[0].textContent = '\u25BE ' + (hits.length === shipTalents.length ? 'Add a ship talent...' : hits.length + (hits.length === 1 ? ' match' : ' matches') + '...');
+        const groups = {};
+        hits.forEach(h => { (groups[h[0].source || 'Starship'] = groups[h[0].source || 'Starship'] || []).push(h); });
+        Object.keys(groups).sort().forEach(g => {
+            const og = document.createElement('optgroup'); og.label = g;
+            groups[g].sort((a, b) => a[0].talent.localeCompare(b[0].talent)).forEach(([e, i]) => {
+                const o = document.createElement('option'); o.value = i; o.textContent = e.talent; og.appendChild(o);
+            });
+            sel.appendChild(og);
+        });
+    }
+    q.addEventListener('input', refill);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+    form.addEventListener('reset', () => setTimeout(refill, 0));
+    refill();
+})();
+
+const allEquip = Array.isArray(window.STA_EQUIPMENT) ? window.STA_EQUIPMENT : [];
     const gearList = allEquip.filter(e => !/weapon/i.test(e.type || ''));
-    const weaponList = allEquip.filter(e => /weapon/i.test(e.type || ''));
+    const weaponList = allEquip.filter(e => /weapon/i.test(e.type || '') && !/ship weapon/i.test(e.type || ''));
+    const shipWeaponList = allEquip.filter(e => /ship weapon/i.test(e.type || ''));
 
     function updateTotalOpportunityCost() {
         const base = parseInt(form.elements['logistics_base_cost']?.value, 10) || 0;
@@ -840,18 +1245,72 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
             markDirty(); sync(); growAll();
         });
     })();
-	// Row controls: Attack and Roster slot shift & clear
-    function getAttack(i) {
+
+    // Starship Weapons Picker & Search (Page 5)
+    (function initShipWeaponPicker() {
+        const swSel = document.getElementById('ship-weapon-picker'), swQ = document.getElementById('ship-weapon-search');
+        if (!swSel) return;
+        function refill() {
+            const term = swQ ? swQ.value.trim().toLowerCase() : '';
+            const hits = shipWeaponList.map((e, i) => [e, i]).filter(([e]) => !term || (e.name + ' ' + (e.qualities || '') + ' ' + (e.type || '')).toLowerCase().includes(term));
+            while (swSel.children.length > 1) swSel.removeChild(swSel.lastChild);
+            swSel.options[0].textContent = '\u25BE ' + (hits.length === shipWeaponList.length ? (shipWeaponList.length ? 'Add ship weapon...' : 'No weapons loaded') : hits.length + (hits.length === 1 ? ' match' : ' matches') + '...');
+            const groups = {};
+            hits.forEach(h => { (groups[h[0].type || 'Ship Weapons'] = groups[h[0].type || 'Ship Weapons'] || []).push(h); });
+            Object.keys(groups).sort().forEach(g => {
+                const og = document.createElement('optgroup'); og.label = g;
+                groups[g].sort((a, b) => a[0].name.localeCompare(b[0].name)).forEach(([e, i]) => {
+                    const o = document.createElement('option');
+                    o.value = i;
+                    o.textContent = e.name;
+                    og.appendChild(o);
+                });
+                swSel.appendChild(og);
+            });
+        }
+        const first = document.createElement('option');
+        first.value = '';
+        first.textContent = shipWeaponList.length ? '\u25BE Add ship weapon...' : '\u25BE No ship weapons loaded';
+        swSel.appendChild(first);
+        refill();
+        if (swQ) {
+            swQ.addEventListener('input', refill);
+            swQ.addEventListener('keydown', e => { if (e.key === 'Enter') e.preventDefault(); });
+            form.addEventListener('reset', () => setTimeout(refill, 0));
+        }
+        swSel.addEventListener('change', function() {
+            if (swSel.value === '') return;
+            const w = shipWeaponList[Number(swSel.value)];
+            let filled = false;
+            for (let n = 1; n <= 5; n++) {
+                const t = form.elements['ship_attack_' + n + '_type'], q = form.elements['ship_attack_' + n + '_qual'], sc = form.elements['ship_attack_' + n + '_score'];
+                if (t && !t.value.trim() && !q.value.trim() && !sc.value.trim()) {
+                    t.value = w.name;
+                    q.value = w.qualities || '';
+                    sc.value = w.severity || '';
+                    filled = true;
+                    break;
+                }
+            }
+            if (!filled) alert('All 5 starship attack rows are already in use.');
+            swSel.value = '';
+            markDirty(); sync(); growAll();
+        });
+    })();
+	// Row controls: Attack, Ship Attack, and Roster slot shift & clear
+    function getAttack(i, isShip) {
+        const p = isShip ? 'ship_attack_' : 'attack_';
         return {
-            type: form.elements['attack_' + i + '_type'] ? form.elements['attack_' + i + '_type'].value : '',
-            qual: form.elements['attack_' + i + '_qual'] ? form.elements['attack_' + i + '_qual'].value : '',
-            score: form.elements['attack_' + i + '_score'] ? form.elements['attack_' + i + '_score'].value : ''
+            type: form.elements[p + i + '_type'] ? form.elements[p + i + '_type'].value : '',
+            qual: form.elements[p + i + '_qual'] ? form.elements[p + i + '_qual'].value : '',
+            score: form.elements[p + i + '_score'] ? form.elements[p + i + '_score'].value : ''
         };
     }
-    function setAttack(i, d) {
-        if (form.elements['attack_' + i + '_type']) form.elements['attack_' + i + '_type'].value = d.type;
-        if (form.elements['attack_' + i + '_qual']) form.elements['attack_' + i + '_qual'].value = d.qual;
-        if (form.elements['attack_' + i + '_score']) form.elements['attack_' + i + '_score'].value = d.score;
+    function setAttack(i, d, isShip) {
+        const p = isShip ? 'ship_attack_' : 'attack_';
+        if (form.elements[p + i + '_type']) form.elements[p + i + '_type'].value = d.type;
+        if (form.elements[p + i + '_qual']) form.elements[p + i + '_qual'].value = d.qual;
+        if (form.elements[p + i + '_score']) form.elements[p + i + '_score'].value = d.score;
     }
     function getRoster(i) {
         return {
@@ -866,52 +1325,118 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         if (form.elements['roster_' + i + '_note']) form.elements['roster_' + i + '_note'].value = d.note;
     }
     function shiftRow(type, idx, dir) {
-        const max = type === 'attack' ? 7 : 6;
+        const max = type === 'attack' ? 7 : (type === 'ship_attack' ? 5 : 6);
         const target = idx + dir;
         if (target < 1 || target > max) return;
-        if (type === 'attack') {
-            const a = getAttack(idx), b = getAttack(target);
-            setAttack(idx, b); setAttack(target, a);
+        if (type === 'attack' || type === 'ship_attack') {
+            const isShip = (type === 'ship_attack');
+            const a = getAttack(idx, isShip), b = getAttack(target, isShip);
+            setAttack(idx, b, isShip); setAttack(target, a, isShip);
         } else {
             const a = getRoster(idx), b = getRoster(target);
             setRoster(idx, b); setRoster(target, a);
         }
         markDirty(); sync(); growAll();
     }
-    function deleteAndShiftRow(type, idx) {
-        const max = type === 'attack' ? 7 : 6;
-        const cur = type === 'attack' ? getAttack(idx) : getRoster(idx);
-        const hasData = Object.values(cur).some(v => String(v).trim() !== '');
-        if (hasData && !confirm('Clear this row and shift remaining rows up?')) return;
-        for (let k = idx; k < max; k++) {
-            if (type === 'attack') setAttack(k, getAttack(k + 1));
-            else setRoster(k, getRoster(k + 1));
+    function showRowDeletePrompt(callback) {
+        let dialog = document.getElementById('row-action-modal');
+        if (!dialog) {
+            dialog = document.createElement('div');
+            dialog.id = 'row-action-modal';
+            dialog.className = 'no-print';
+            dialog.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box">' +
+                '<div class="row-modal-header">CLEAR ROW // SELECT ACTION</div>' +
+                '<div class="row-modal-body">How would you like to clear this entry?</div>' +
+                '<div class="row-modal-btn-row">' +
+                '<button type="button" class="lcars-utility-btn" id="rm-btn-shift" style="background-color: #d96b27;">Clear &amp; Shift Up</button>' +
+                '<button type="button" class="lcars-utility-btn" id="rm-btn-noshift" style="background-color: #708699;">Don\'t Shift Up</button>' +
+                '<button type="button" class="lcars-utility-btn" id="rm-btn-cancel" style="background-color: #2c3a4d;">Cancel</button>' +
+                '</div></div></div>';
+            document.body.appendChild(dialog);
+            dialog.querySelector('.row-modal-backdrop').addEventListener('click', e => {
+                if (e.target === e.currentTarget) clean();
+            });
         }
-        if (type === 'attack') setAttack(max, { type: '', qual: '', score: '' });
-        else setRoster(max, { name: '', stat: '', note: '' });
-        markDirty(); sync(); growAll();
+        dialog.style.display = 'block';
+
+        const bShift = document.getElementById('rm-btn-shift');
+        const bNoShift = document.getElementById('rm-btn-noshift');
+        const bCancel = document.getElementById('rm-btn-cancel');
+
+        function clean() {
+            dialog.style.display = 'none';
+            bShift.onclick = null;
+            bNoShift.onclick = null;
+            bCancel.onclick = null;
+        }
+
+        bShift.onclick = () => { clean(); callback('shift'); };
+        bNoShift.onclick = () => { clean(); callback('noshift'); };
+        bCancel.onclick = () => { clean(); callback('cancel'); };
+    }
+
+    function deleteAndShiftRow(type, idx) {
+        const max = type === 'attack' ? 7 : (type === 'ship_attack' ? 5 : 6);
+        const isShip = (type === 'ship_attack');
+        const cur = (type === 'attack' || type === 'ship_attack') ? getAttack(idx, isShip) : getRoster(idx);
+        const hasData = Object.values(cur).some(v => String(v).trim() !== '');
+
+        if (!hasData) {
+            if (confirm('Shift remaining rows up to fill this empty slot?')) {
+                for (let k = idx; k < max; k++) {
+                    if (type === 'attack' || type === 'ship_attack') setAttack(k, getAttack(k + 1, isShip), isShip);
+                    else setRoster(k, getRoster(k + 1));
+                }
+                if (type === 'attack' || type === 'ship_attack') setAttack(max, { type: '', qual: '', score: '' }, isShip);
+                else setRoster(max, { name: '', stat: '', note: '' });
+                markDirty(); sync(); growAll();
+            }
+            return;
+        }
+
+        showRowDeletePrompt(action => {
+            if (action === 'cancel') return;
+            if (action === 'shift') {
+                for (let k = idx; k < max; k++) {
+                    if (type === 'attack' || type === 'ship_attack') setAttack(k, getAttack(k + 1, isShip), isShip);
+                    else setRoster(k, getRoster(k + 1));
+                }
+                if (type === 'attack' || type === 'ship_attack') setAttack(max, { type: '', qual: '', score: '' }, isShip);
+                else setRoster(max, { name: '', stat: '', note: '' });
+            } else if (action === 'noshift') {
+                if (type === 'attack' || type === 'ship_attack') setAttack(idx, { type: '', qual: '', score: '' }, isShip);
+                else setRoster(idx, { name: '', stat: '', note: '' });
+            }
+            markDirty(); sync(); growAll();
+        });
     }
     (function initRowControls() {
-        const ctlHtml = (t, i) => '<button type="button" class="row-btn-up" data-type="' + t + '" data-idx="' + i + '" title="Move Up">&#9650;</button><button type="button" class="row-btn-down" data-type="' + t + '" data-idx="' + i + '" title="Move Down">&#9660;</button><button type="button" class="row-btn-del" data-type="' + t + '" data-idx="' + i + '" title="Clear & shift up">&times;</button>';
+        const ctlHtml = (t, i) => '<button type="button" class="row-btn-up" data-type="' + t + '" data-idx="' + i + '" title="Move Up">&#9650;</button><button type="button" class="row-btn-down" data-type="' + t + '" data-idx="' + i + '" title="Move Down">&#9660;</button><button type="button" class="row-btn-del" data-type="' + t + '" data-idx="' + i + '" title="Clear row (with optional shift)">&times;</button>';
         document.querySelectorAll('#page-2 .lcars-attack-row-capsule').forEach((r, i) => {
             const d = document.createElement('div'); d.className = 'row-quick-ctl no-print';
             d.innerHTML = ctlHtml('attack', i + 1); r.appendChild(d);
+        });
+        document.querySelectorAll('#page-5 .lcars-attack-row-capsule').forEach((r, i) => {
+            const d = document.createElement('div'); d.className = 'row-quick-ctl no-print';
+            d.innerHTML = ctlHtml('ship_attack', i + 1); r.appendChild(d);
         });
         document.querySelectorAll('#page-2 .roster-row-capsule').forEach((r, i) => {
             const d = document.createElement('div'); d.className = 'row-quick-ctl no-print';
             d.innerHTML = ctlHtml('roster', i + 1); r.appendChild(d);
         });
-        const p2 = document.getElementById('page-2');
-        if (p2) {
-            p2.addEventListener('click', function(e) {
-                const b = e.target.closest('.row-btn-up, .row-btn-down, .row-btn-del');
-                if (!b) return;
-                const t = b.dataset.type, idx = Number(b.dataset.idx);
-                if (b.classList.contains('row-btn-up')) shiftRow(t, idx, -1);
-                else if (b.classList.contains('row-btn-down')) shiftRow(t, idx, 1);
-                else if (b.classList.contains('row-btn-del')) deleteAndShiftRow(t, idx);
-            });
-        }
+        ['page-2', 'page-5'].forEach(pid => {
+            const p = document.getElementById(pid);
+            if (p) {
+                p.addEventListener('click', function(e) {
+                    const b = e.target.closest('.row-btn-up, .row-btn-down, .row-btn-del');
+                    if (!b) return;
+                    const t = b.dataset.type, idx = Number(b.dataset.idx);
+                    if (b.classList.contains('row-btn-up')) shiftRow(t, idx, -1);
+                    else if (b.classList.contains('row-btn-down')) shiftRow(t, idx, 1);
+                    else if (b.classList.contains('row-btn-del')) deleteAndShiftRow(t, idx);
+                });
+            }
+        });
     })();
     // Value Challenge toggle (Play Mode only)
     form.addEventListener('click', e => {
@@ -941,7 +1466,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
     let isPlayMode = false;
     let baseEquipment = null;
 
-    function setPlayMode(active) {
+    function setPlayMode(active, restoring) {
         isPlayMode = active;
         document.body.classList.toggle('play-mode-active', isPlayMode);
         document.querySelectorAll('.val-num').forEach(el => {
@@ -952,8 +1477,9 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
             toggleBtn.textContent = isPlayMode ? 'Mode: Play 🔒' : 'Mode: Edit 🔓';
             toggleBtn.style.backgroundColor = isPlayMode ? '#d96b27' : '#2c3a4d';
         }
+        if (!isPlayMode) baseEquipment = null;
         if (isPlayMode && form.elements['ledger_equipment']) {
-            if (baseEquipment === null) baseEquipment = form.elements['ledger_equipment'].value;
+            if (!restoring || baseEquipment === null) baseEquipment = form.elements['ledger_equipment'].value;
         }
         const lockNames = [
             'bio_rank', 'bio_name', 'bio_pronouns', 'bio_species', 'bio_reputation',
@@ -975,13 +1501,14 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
     }
 
     const modeBtn = document.getElementById('btn-mode-toggle');
-    if (modeBtn) modeBtn.addEventListener('click', () => setPlayMode(!isPlayMode));
+    if (modeBtn) modeBtn.addEventListener('click', () => { setPlayMode(!isPlayMode); markDirty(); });
 
     const resetMissionBtn = document.getElementById('btn-reset-mission');
     if (resetMissionBtn) {
         resetMissionBtn.addEventListener('click', () => {
-            if (!confirm('Reset Mission Status?\n\n• Archives Active Directives to Page 4 Session Log\n• Clears Stress Track\n• Clears Stat Modifiers (±)\n• Clears Mission Requisitions & Restores Baseline Equipment')) return;
+            if (!confirm('Reset Mission Status?\n\n• Archives Active Directives to Page 4 Logs\n• Clears Stress Track\n• Clears Stat Modifiers (±)\n• Clears Mission Requisitions & Restores Baseline Equipment')) return;
 
+            setUndo('Reset Mission', [snapChar()]);
             const dirBox = form.elements['ledger_mission_directives'];
             const dirText = dirBox ? dirBox.value.trim() : '';
             if (dirText) {
@@ -993,6 +1520,17 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
 
             for (let i = 1; i <= 16; i++) {
                 if (form.elements['stress_' + i]) form.elements['stress_' + i].checked = false;
+            }
+
+            for (let i = 1; i <= 6; i++) {
+                if (form.elements['combat_momentum_' + i]) form.elements['combat_momentum_' + i].checked = false;
+            }
+            if (form.elements['ext_task_magnitude']) form.elements['ext_task_magnitude'].value = '';
+            for (let i = 1; i <= 15; i++) {
+                if (form.elements['ext_task_work_' + i]) form.elements['ext_task_work_' + i].checked = false;
+            }
+            for (let i = 1; i <= 5; i++) {
+                if (form.elements['ext_task_bt_' + i]) form.elements['ext_task_bt_' + i].checked = false;
             }
 
             document.querySelectorAll('.mod-input').forEach(m => { m.value = ''; });
@@ -1023,6 +1561,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         document.addEventListener('fullscreenchange', () => {
             const isFs = !!document.fullscreenElement;
             fsBtn.textContent = isFs ? 'Exit PADD ✕' : 'PADD ⛶';
+            setWake(isFs);
             fsBtn.style.backgroundColor = isFs ? '#d96b27' : '#708699';
         });
     }
@@ -1077,7 +1616,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         document.querySelectorAll('.popover-open').forEach(el => el.classList.remove('popover-open'));
     });
     Object.keys(DOCS).forEach(defaultDoc);
-		try { const saved = localStorage.getItem(KEY); if (saved) applyData(JSON.parse(saved)); } catch (e) {}
+		charSlots.init(); shipSlots.init();
 		sync();
 		balance(); growAll();
 		window.addEventListener('load', () => { balance(); growAll(); });
