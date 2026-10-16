@@ -132,17 +132,17 @@ function initConsole() {
         if (type === 'ruled') {
             d.className = 'p3-block p3-para p3-ruledblk';
             d.dataset.rows = rows || 5;
-            d.innerHTML = '<textarea class="p3-ruled p3-b-text" data-rows="' + d.dataset.rows + '" placeholder="' + DOCS[id].body + '"></textarea><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove these lines">&times;</button>' + DN + '</div>';
+            d.innerHTML = '<textarea class="p3-ruled p3-b-text" data-rows="' + d.dataset.rows + '" placeholder="' + DOCS[id].body + '"></textarea>';
         } else if (type === 'para') {
             d.className = 'p3-block p3-para';
-            d.innerHTML = '<div class="p3-text p3-b-text" contenteditable="true" data-placeholder="' + DOCS[id].body + '"></div><div class="p3-para-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this text">&times;</button>' + DN + '</div>';
+            d.innerHTML = '<div class="p3-text p3-b-text" contenteditable="true" data-placeholder="' + DOCS[id].body + '"></div>';
 		} else if (type.indexOf('cap-') === 0) {
             d.className = 'p3-block p3-cap ' + type;
-            d.innerHTML = '<div class="p3-cap-label-cell"><textarea class="p3-cap-label p3-b-title" rows="1" placeholder="Label"></textarea></div><div class="p3-cap-body"><textarea class="p3-cap-text p3-b-text" placeholder="' + DOCS[id].body + '"></textarea></div><div class="p3-cap-ctl">' + UP + '<button type="button" class="p3-x" title="Remove this row">&times;</button>' + DN + '</div>';
+            d.innerHTML = '<div class="p3-cap-label-cell"><textarea class="p3-cap-label p3-b-title" rows="1" placeholder="Label"></textarea></div><div class="p3-cap-body"><textarea class="p3-cap-text p3-b-text" placeholder="' + DOCS[id].body + '"></textarea></div><div class="p3-handle no-print" title="Tap to select this row (no keyboard)"></div>';
         } else {
             const cls = type === 'tan' ? ' alt' : (type === 'orange' ? ' orng' : (type === 'slate' ? ' slate-bar' : ''));
             d.className = 'p3-block';
-            d.innerHTML = '<div class="p3-heading-row' + cls + '"><div class="p3-slate"><input type="text" class="p3-b-title" placeholder="' + DOCS[id].head + '"></div><div class="p3-yellow"></div><div class="p3-orange">' + UP + DN + '<button type="button" class="p3-x" title="Remove this header bar">&times;</button></div></div>';
+            d.innerHTML = '<div class="p3-heading-row' + cls + '"><div class="p3-slate"><input type="text" class="p3-b-title" placeholder="' + DOCS[id].head + '"></div><div class="p3-yellow"></div><div class="p3-orange"></div></div>';
         }
         const t = d.querySelector('.p3-b-title'), x = d.querySelector('.p3-b-text');
         if (t) t.value = title || '';
@@ -343,13 +343,36 @@ function initConsole() {
     document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => showPage(b.dataset.page)));
 
     // Portrait upload (Page 1) mirrors to all other pages
+    // Shrink uploaded images (long side max, JPEG on white) so they don't fill browser storage
+    function shrinkImage(file, maxSide, cb) {
+        const r = new FileReader();
+        r.onload = ev => {
+            const src = ev.target.result, img = new Image();
+            img.onload = () => {
+                const w = img.naturalWidth, h = img.naturalHeight;
+                if (!w || !h) { cb(src); return; }
+                const s = Math.min(1, maxSide / Math.max(w, h));
+                if (s === 1 && file.size < 200000) { cb(src); return; }
+                const c = document.createElement('canvas');
+                c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+                const x = c.getContext('2d');
+                x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+                x.drawImage(img, 0, 0, c.width, c.height);
+                let out = src;
+                try { out = c.toDataURL('image/jpeg', 0.88); } catch (e) {}
+                cb(out.length < src.length ? out : src);
+            };
+            img.onerror = () => cb(src);
+            img.src = src;
+        };
+        r.readAsDataURL(file);
+    }
     const portraitUploader = document.getElementById('portrait-uploader');
     if (portraitUploader) {
         portraitUploader.addEventListener('change', function(e) {
             if (!e.target.files[0]) return;
-            const r = new FileReader();
-            r.onload = ev => { setPortrait(ev.target.result); markDirty(); };
-            r.readAsDataURL(e.target.files[0]);
+            shrinkImage(e.target.files[0], 640, src => { setPortrait(src); markDirty(); });
+            e.target.value = '';
         });
     }
 
@@ -553,7 +576,7 @@ function initConsole() {
         onRemove: s => setUndo('Delete ship slot', [Object.assign({ type: 'ship' }, s)]),
         apply: d => applyData(d, 'ship'),
         blank: blankShip,
-        after: () => { sync(); growAll(); },
+        after: () => { sync(); updateModColors(); growAll(); },
         autoName: () => {
             const n = form.elements['ship_name'], r = form.elements['ship_registry'];
             return (n && n.value.trim()) || (r && r.value.trim()) || '';
@@ -570,7 +593,7 @@ function initConsole() {
                 Object.keys(d).forEach(k => {
                     if (k.indexOf('ship_') === 0 || k === 'cached_ship_ortho_data') {
                         sd[k] = d[k];
-                        if (d[k] && d[k] !== 'NCC-80106-[PHOBOS_DEFAULT]') has = true;
+                        if (d[k] && d[k] !== 'NCC-80106-[PHOBOS_DEFAULT]' && d[k] !== 'SHIP_DEFAULT') has = true;
                     }
                 });
                 const sig = JSON.stringify(sd);
@@ -650,9 +673,11 @@ function initConsole() {
         });
     }
     onBtn('btn-reset-ship', () => {
-        if (!confirm('Reset Ship damage?\n\n\u2022 Clears all Shield boxes\n\u2022 Clears all System Breach boxes\n(Stats, attacks and talents are kept)')) return;
+        if (!confirm('Reset Ship damage?\n\n\u2022 Clears all Shield boxes\n\u2022 Clears all System Breach boxes\n\u2022 Clears ship \u00B1 modifiers\n(Stats, attacks and talents are kept)')) return;
         setUndo('Reset Ship', [snapShip()]);
         form.querySelectorAll('input[type="checkbox"]').forEach(el => { if (/^ship_(shield_\d+|sys_[a-z]+_b\d+)$/.test(el.name)) el.checked = false; });
+        form.querySelectorAll('.mod-input[name^="ship_"]').forEach(m => { m.value = ''; });
+        updateModColors();
         markDirty();
     });
     onBtn('btn-quick-note', () => {
@@ -715,7 +740,325 @@ function initConsole() {
         o.style.display = 'block';
     }
     onBtn('btn-manual', openManual);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeManual(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeManual(); const dm = document.getElementById('discord-modal'); if (dm) dm.remove(); } });
+
+    // ===== Log block selection: Export / Import / Discord / Delete (Pages 3 and 4) =====
+    function selBlocks(id) {
+        return Array.from(page(id).querySelectorAll('.p3-block')).filter(b => b.classList.contains('sel-on'));
+    }
+    function updateSel() {
+        const id = currentDoc(), el = document.getElementById('sel-count');
+        if (el) el.textContent = (id ? selBlocks(id).length : 0) + ' selected';
+    }
+    function clearSel(id) {
+        page(id).querySelectorAll('.p3-block.sel-on').forEach(b => b.classList.remove('sel-on'));
+        updateSel(); placePanel();
+    }
+    function noSel() { alert('Nothing selected. Tick the box on each block first.'); }
+    function blockData(b) {
+        const x = b.querySelector('.p3-b-text');
+        return {
+            tab: Number(b.parentElement.dataset.tab),
+            type: b.dataset.type,
+            title: (b.querySelector('.p3-b-title') || {}).value || '',
+            text: x ? (x.isContentEditable ? x.innerHTML : x.value) : '',
+            rows: b.dataset.rows || ''
+        };
+    }
+    // Imported files are untrusted: keep only simple formatting tags
+    function cleanHtml(html) {
+        const t = document.createElement('template');
+        t.innerHTML = html;
+        const keep = { B: 1, STRONG: 1, I: 1, EM: 1, BR: 1, DIV: 1, SPAN: 1, FONT: 1 };
+        const drop = { SCRIPT: 1, STYLE: 1, IFRAME: 1, OBJECT: 1, EMBED: 1, TEMPLATE: 1 };
+        const out = document.createElement('div');
+        (function walk(src, dst) {
+            src.childNodes.forEach(n => {
+                if (n.nodeType === 3) { dst.appendChild(document.createTextNode(n.nodeValue)); return; }
+                if (n.nodeType !== 1 || drop[n.tagName]) return;
+                if (!keep[n.tagName]) { walk(n, dst); return; }
+                const e = document.createElement(n.tagName.toLowerCase());
+                if (n.tagName === 'SPAN') {
+                    const s = n.style, st = [];
+                    if (/^(bold|[6-9]00)$/.test(s.fontWeight)) st.push('font-weight: bold');
+                    if (s.fontStyle === 'italic') st.push('font-style: italic');
+                    if (/antonio/i.test(s.fontFamily)) st.push('font-family: Antonio');
+                    else if (/arial/i.test(s.fontFamily)) st.push('font-family: Arial');
+                    if (st.length) e.setAttribute('style', st.join('; '));
+                } else if (n.tagName === 'FONT') {
+                    const f = n.getAttribute('face') || '';
+                    if (/antonio/i.test(f)) e.setAttribute('face', 'Antonio'); else if (/arial/i.test(f)) e.setAttribute('face', 'Arial');
+                }
+                walk(n, e); dst.appendChild(e);
+            });
+        })(t.content, out);
+        return out.innerHTML;
+    }
+    function htmlToText(html) {
+        const t = document.createElement('template');
+        t.innerHTML = html || '';
+        let out = '';
+        const nl = () => { if (out && !out.endsWith('\n')) out += '\n'; };
+        (function walk(n) {
+            n.childNodes.forEach(c => {
+                if (c.nodeType === 3) { out += c.nodeValue; return; }
+                if (c.nodeType !== 1) return;
+                if (c.tagName === 'BR') { out += '\n'; return; }
+                const blk = c.tagName === 'DIV' || c.tagName === 'P';
+                if (blk) nl();
+                walk(c);
+                if (blk) nl();
+            });
+        })(t.content);
+        return out.replace(/\n+$/, '');
+    }
+    // Split long text at line breaks, then sentence ends, then words, then hard
+    function splitLong(s, max) {
+        const out = [];
+        while (s.length > max) {
+            const head = s.slice(0, max);
+            let cut = head.lastIndexOf('\n');
+            if (cut < max * 0.4) {
+                let m, last = -1;
+                const re = /[.!?]["')\]]*\s/g;
+                while ((m = re.exec(head))) last = m.index + m[0].length;
+                if (last >= max * 0.4) cut = last;
+                else { const sp = head.lastIndexOf(' '); cut = sp > max * 0.4 ? sp : max; }
+            }
+            out.push(s.slice(0, cut).replace(/\s+$/, ''));
+            s = s.slice(cut).replace(/^\s+/, '');
+        }
+        if (s) out.push(s);
+        return out;
+    }
+    function discordParts(blocks) {
+        const MAX = 1990, HEAD = ['blue', 'tan', 'orange', 'slate'], units = [];
+        let prev = '';
+        blocks.forEach(b => {
+            let kind = '', txt = '';
+            if (HEAD.indexOf(b.type) >= 0) {
+                kind = 'head';
+                if (b.title.trim()) txt = '== ' + b.title.trim().toUpperCase() + ' ==';
+            } else if (b.type.indexOf('cap-') === 0) {
+                kind = 'row';
+                const l = b.title.trim().toUpperCase(), t = b.text.trim();
+                txt = l && t ? l + ': ' + t : (l ? l + ':' : t);
+            } else if (b.type === 'para') {
+                kind = 'para';
+                txt = htmlToText(b.text).trim();
+            }
+            if (!kind || !txt) return;
+            txt = txt.replace(/```/g, "'''");
+            const sep = !units.length ? '' : (kind === 'head' ? '\n\n' : (kind === 'row' ? ((prev === 'row' || prev === 'head') ? '\n' : '\n\n') : (prev === 'head' ? '\n' : '\n\n')));
+            splitLong(txt, MAX - 100).forEach((p, i) => units.push({ kind: kind, sep: i ? '\n' : sep, text: p }));
+            prev = kind;
+        });
+        const len = arr => arr.reduce((n, u, i) => n + (i ? u.sep.length : 0) + u.text.length, 0);
+        const join = arr => arr.map((u, i) => (i ? u.sep : '') + u.text).join('');
+        const parts = [];
+        let cur = [];
+        units.forEach(u => {
+            if (cur.length && len(cur.concat(u)) > MAX) {
+                let carry = [];
+                const lastU = cur[cur.length - 1];
+                if (cur.length > 1 && lastU.kind === 'head' && len([lastU, u]) <= MAX) carry = [cur.pop()];
+                parts.push(join(cur));
+                cur = carry;
+            }
+            cur.push(u);
+        });
+        if (cur.length) parts.push(join(cur));
+        return parts.map(p => '```\n' + p + '\n```');
+    }
+    function copyText(text, ta, btn) {
+        const done = () => { btn.textContent = 'Copied \u2713'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); };
+        const fallback = () => {
+            ta.focus(); ta.select();
+            let ok = false;
+            try { ok = document.execCommand('copy'); } catch (e) {}
+            if (ok) done(); else btn.textContent = 'Press Ctrl+C';
+        };
+        if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
+        else fallback();
+    }
+    function showDiscord(parts) {
+        const old = document.getElementById('discord-modal'); if (old) old.remove();
+        const dlg = document.createElement('div');
+        dlg.id = 'discord-modal'; dlg.className = 'no-print';
+        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box discord-box"><div class="row-modal-header"></div><div class="row-modal-body"></div><div class="discord-parts"></div><div class="row-modal-btn-row"><button type="button" class="lcars-utility-btn" style="background-color: #2c3a4d;">Close</button></div></div></div>';
+        dlg.querySelector('.row-modal-header').textContent = 'Copy for Discord // ' + parts.length + (parts.length === 1 ? ' message' : ' messages');
+        dlg.querySelector('.row-modal-body').textContent = parts.length === 1 ? 'Paste into Discord as one message.' : 'Discord limits messages to 2000 characters. Paste each part as its own message, in order.';
+        const host = dlg.querySelector('.discord-parts');
+        parts.forEach((p, i) => {
+            const wrap = document.createElement('div'); wrap.className = 'discord-part';
+            const head = document.createElement('div'); head.className = 'discord-part-head';
+            const lab = document.createElement('span'); lab.textContent = 'Part ' + (i + 1) + ' of ' + parts.length + ' \u2022 ' + p.length + ' chars';
+            const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'lcars-utility-btn'; btn.style.backgroundColor = '#d96b27'; btn.textContent = 'Copy';
+            const ta = document.createElement('textarea'); ta.readOnly = true; ta.value = p; ta.rows = Math.min(12, Math.max(4, p.split('\n').length + 1));
+            btn.addEventListener('click', () => copyText(p, ta, btn));
+            head.appendChild(lab); head.appendChild(btn); wrap.appendChild(head); wrap.appendChild(ta); host.appendChild(wrap);
+        });
+        dlg.querySelector('.row-modal-btn-row button').addEventListener('click', () => dlg.remove());
+        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) dlg.remove(); });
+        document.body.appendChild(dlg);
+    }
+    function importBlocks(id, raw) {
+        const TYPES = ['blue', 'tan', 'orange', 'slate', 'para', 'ruled', 'cap-tan', 'cap-orange', 'cap-slate', 'cap-navy'];
+        const HEAD = ['blue', 'tan', 'orange', 'slate'], list = [];
+        (Array.isArray(raw) ? raw : []).slice(0, 500).forEach(b => {
+            if (!b || TYPES.indexOf(b.type) < 0) return;
+            const title = String(b.title || '').slice(0, 300), text = typeof b.text === 'string' ? b.text.slice(0, 100000) : '';
+            if (b.type === 'para') list.push({ type: 'para', title: '', text: cleanHtml(text), rows: '' });
+            else if (b.type === 'ruled') list.push({ type: 'ruled', title: '', text: text, rows: Math.min(Math.max(parseInt(b.rows, 10) || 1, 1), 40) });
+            else if (HEAD.indexOf(b.type) >= 0) {
+                list.push({ type: b.type, title: title, text: '', rows: '' });
+                if (text.trim()) list.push({ type: 'para', title: '', text: cleanHtml(text), rows: '' });
+            } else list.push({ type: b.type, title: title, text: text, rows: '' });
+        });
+        if (!list.length) { alert('No importable blocks found in that file.'); return; }
+        const cur = activeSec(id), full = views(id).length >= MAX_SECTIONS;
+        const btns = [{ label: 'Add to Section ' + cur, val: 'end', color: '#d96b27' }];
+        if (!full) btns.push({ label: 'New Section', val: 'new', color: '#708699' });
+        btns.push({ label: 'Cancel', val: 'cancel' });
+        const msg = list.length + ' block' + (list.length === 1 ? '' : 's') + ' ready for ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs') + '. Add to the end of section ' + cur + ', or to a new section?' + (full ? ' This page already has the maximum of ' + MAX_SECTIONS + ' sections, so a new one is not available.' : '');
+        showChoice('Import Sections // Select Target', msg, btns, v => {
+            if (v !== 'end' && v !== 'new') return;
+            setUndo('Import log sections', [snapChar()]);
+            let tab = cur;
+            if (v === 'new') { tab = addSection(id); if (!tab) return; }
+            list.forEach(b => addBlock(id, tab, b.type, b.title, b.text, b.rows));
+            showSection(id, tab);
+            clearSel(id);
+            markDirty();
+        });
+    }
+    form.addEventListener('click', () => setTimeout(placePanel, 0));
+    document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => { updateSel(); placePanel(); }));
+    tool('sel-all', id => {
+        const t = activeSec(id);
+        view(id).querySelectorAll('.p3-blocks[data-tab="' + t + '"] .p3-block').forEach(b => b.classList.add('sel-on'));
+        updateSel();
+    });
+    tool('sel-none', clearSel);
+    tool('sel-export', id => {
+        const sel = selBlocks(id);
+        if (!sel.length) { noSel(); return; }
+        const nm = (fileId.value || '').trim().toLowerCase().replace(/[^a-z0-9\-]/g, '_') || 'sta2e';
+        downloadJSON(nm + '_' + id + '_sections_' + new Date().toLocaleDateString('en-CA') + '.json',
+            { _bundle: 'sta2e-logsel-v1', source: id, created: new Date().toISOString(), blocks: sel.map(blockData) });
+    });
+    tool('sel-discord', id => {
+        const sel = selBlocks(id);
+        if (!sel.length) { noSel(); return; }
+        const parts = discordParts(sel.map(blockData));
+        if (!parts.length) { alert('The selected blocks have no text to copy.'); return; }
+        showDiscord(parts);
+    });
+    tool('sel-delete', id => {
+        const sel = selBlocks(id);
+        if (!sel.length) { noSel(); return; }
+        if (!confirm('Delete ' + sel.length + ' selected block' + (sel.length === 1 ? '' : 's') + '? Undo is available.')) return;
+        setUndo('Delete log blocks', [snapChar()]);
+        sel.forEach(b => b.remove());
+        updateSel(); growAll(); markDirty(); placePanel();
+    });
+    const logselLoader = document.getElementById('utility-logsel-loader');
+    tool('sel-import', () => { if (logselLoader) logselLoader.click(); });
+    if (logselLoader) {
+        logselLoader.addEventListener('change', function(e) {
+            const f = e.target.files[0], id = currentDoc();
+            if (!f || !id) return;
+            const r = new FileReader();
+            r.onload = function(ev) {
+                let d;
+                try { d = JSON.parse(ev.target.result); if (!d || typeof d !== 'object') throw 0; }
+                catch (err) { alert('Terminal Error: Not a valid log selection file.'); return; }
+                if (d._bundle === 'sta2e-logsel-v1' && Array.isArray(d.blocks)) { importBlocks(id, d.blocks); return; }
+                if (d.docs && (d.docs.p3 || d.docs.p4)) {
+                    const btns = [];
+                    if (d.docs.p3) btns.push({ label: 'Page 3 Narrative', val: 'p3', color: '#d96b27' });
+                    if (d.docs.p4) btns.push({ label: 'Page 4 Logs', val: 'p4', color: '#d96b27' });
+                    btns.push({ label: 'Cancel', val: 'cancel' });
+                    showChoice('Import Sections // Character File', 'This is a full character file. Which log page do you want to import blocks from?', btns, v => {
+                        if (v === 'p3' || v === 'p4') importBlocks(id, d.docs[v].blocks);
+                    });
+                    return;
+                }
+                alert('Terminal Error: Not a valid log selection file.');
+            };
+            r.readAsText(f);
+            logselLoader.value = '';
+        });
+    }
+
+    // ===== Floating block panel: move / select / delete, shown over the left pillar =====
+    let activeBlk = null;
+    const panel = document.createElement('div');
+    panel.id = 'log-panel'; panel.className = 'no-print';
+    panel.innerHTML = '<div class="lp-name"></div><button type="button" class="lp-btn" data-act="up" title="Move up">&#9650;</button><button type="button" class="lp-btn" data-act="down" title="Move down">&#9660;</button><button type="button" class="lp-btn" data-act="sel" title="Select / deselect for Export, Discord, Delete Selected">&#10003;</button><button type="button" class="lp-btn lp-del" data-act="del" title="Delete this block">&times;</button>';
+    document.body.appendChild(panel);
+    function blkLabel(b) {
+        const t = b.dataset.type, ti = ((b.querySelector('.p3-b-title') || {}).value || '').trim();
+        const kind = t === 'para' ? 'Paragraph' : (t === 'ruled' ? 'Ruled lines' : (t.indexOf('cap-') === 0 ? 'Detail row' : 'Header bar'));
+        return kind + (ti ? ': ' + ti : '');
+    }
+    function setActive(b) {
+        if (activeBlk && activeBlk !== b) activeBlk.classList.remove('blk-active');
+        activeBlk = b || null;
+        if (b) b.classList.add('blk-active');
+        placePanel();
+    }
+    function placePanel() {
+        const id = currentDoc();
+        if (!activeBlk || !id || !page(id).contains(activeBlk) || activeBlk.offsetParent === null) { panel.style.display = 'none'; return; }
+        const br = activeBlk.getBoundingClientRect();
+        const vTop = Math.max(br.top, 0), vBot = Math.min(br.bottom, window.innerHeight);
+        if (vBot <= vTop) { panel.style.display = 'none'; return; }
+        panel.style.display = 'flex';
+        panel.querySelector('.lp-name').textContent = blkLabel(activeBlk);
+        panel.querySelector('[data-act="sel"]').classList.toggle('on', activeBlk.classList.contains('sel-on'));
+        const dock = window.innerWidth < 700;
+        panel.classList.toggle('lp-dock', dock);
+        if (dock) { panel.style.left = panel.style.top = panel.style.transform = ''; return; }
+        const pil = page(id).querySelector('.lcars-left-pillar-wrapper').getBoundingClientRect();
+        const s = Math.min(1, pil.width / 46), H = panel.offsetHeight * s, mid = (vTop + vBot) / 2;
+        const minTop = Math.max(pil.top + 54 * s, 8), maxTop = Math.max(minTop, Math.min(pil.bottom - H - 4, window.innerHeight - H - 8));
+        const top = Math.min(Math.max(mid - H / 2, minTop), maxTop);
+        const ay = Math.min(Math.max(mid - top, 16 * s), H - 16 * s) / s;
+        panel.style.left = (pil.left + (pil.width - 48 * s) / 2) + 'px';
+        panel.style.top = top + 'px';
+        panel.style.transform = 'scale(' + s + ')';
+        panel.style.setProperty('--ay', ay + 'px');
+    }
+    form.addEventListener('pointerdown', e => {
+        const b = e.target.closest && e.target.closest('.p3-block');
+        if (!b || !b.closest('.doc-page')) return;
+        if (e.target.closest('.p3-yellow, .p3-orange, .p3-handle')) {
+            const a = document.activeElement;
+            if (a && a !== document.body && a.blur) a.blur();
+        }
+        setActive(b);
+    });
+    form.addEventListener('focusin', e => { const b = e.target.closest && e.target.closest('.p3-block'); if (b && b.closest('.doc-page')) setActive(b); });
+    form.addEventListener('input', placePanel);
+    window.addEventListener('scroll', placePanel, true);
+    window.addEventListener('resize', placePanel);
+    onBtn('btn-fit-width', () => setTimeout(placePanel, 60));
+    panel.addEventListener('mousedown', e => e.preventDefault());
+    panel.addEventListener('click', e => {
+        const btn = e.target.closest('.lp-btn');
+        if (!btn || !activeBlk) return;
+        const b = activeBlk, act = btn.dataset.act;
+        if (act === 'up' || act === 'down') { moveBlock(b, act === 'up' ? -1 : 1); markDirty(); }
+        else if (act === 'sel') b.classList.toggle('sel-on');
+        else if (act === 'del') {
+            const filled = Array.from(b.querySelectorAll('.p3-b-title, .p3-b-text')).some(x => (x.isContentEditable ? x.textContent : x.value).trim());
+            if (filled && !confirm('Remove this item and its text?')) return;
+            setUndo('Delete log block', [snapChar()]);
+            b.remove(); activeBlk = null; growAll(); markDirty();
+        }
+        updateSel(); placePanel();
+    });
 
     const UNS = 'sta2e-unsaved';
     let unsaved = false, autoTimer;
@@ -784,7 +1127,7 @@ function initConsole() {
     }
     const saveBtn = document.getElementById('utility-btn-save');
     if (saveBtn) saveBtn.addEventListener('click', function() { saveFile(''); setUnsaved(false); });
-    const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, [id$="-search"], #talent-cat')) return; markDirty(); };
+    const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, #utility-logsel-loader, .sel-cb, [id$="-search"], #talent-cat')) return; markDirty(); };
     form.addEventListener('input', onEdit);
     form.addEventListener('change', onEdit);
     form.addEventListener('click', e => { if (e.target.closest('.p3-mv, .p3-x, #p3-tools button')) markDirty(); });
@@ -793,6 +1136,7 @@ function initConsole() {
     // Load
     function applyData(d, scope) {
         const wantChar = scope !== 'ship', wantShip = scope !== 'char';
+        if (wantShip && d.ship_file_id === 'NCC-80106-[PHOBOS_DEFAULT]') d.ship_file_id = 'SHIP_DEFAULT';
         const mine = el => (el.name.indexOf('ship_') === 0) ? wantShip : wantChar;
         if (wantChar) {
             if (d.ledger_mission_directives === undefined && (d.ledger_mission_profile || d.ledger_active_directives)) d.ledger_mission_directives = [d.ledger_mission_profile, d.ledger_active_directives].filter(Boolean).join('\n');
@@ -871,9 +1215,8 @@ function initConsole() {
     if (shipUploader) {
         shipUploader.addEventListener('change', function(e) {
             if (!e.target.files[0]) return;
-            const r = new FileReader();
-            r.onload = ev => { setShipGraphic(ev.target.result); markDirty(); };
-            r.readAsDataURL(e.target.files[0]);
+            shrinkImage(e.target.files[0], 1600, src => { setShipGraphic(src); markDirty(); });
+            e.target.value = '';
         });
     }
 
@@ -919,7 +1262,7 @@ function initConsole() {
         });
     }
 
-    function printFullDossier() {
+    function printFullDossier(blank) {
         const old = document.getElementById('print-all-container');
         if (old) old.remove();
 
@@ -928,13 +1271,38 @@ function initConsole() {
 
         function cloneWithValues(el) {
             const copy = el.cloneNode(true);
+            copy.style.zoom = ''; copy.style.transform = ''; copy.style.transformOrigin = '';
             const origs = el.querySelectorAll('input, textarea, select');
             const copies = copy.querySelectorAll('input, textarea, select');
             origs.forEach((orig, i) => {
-                if (orig.type === 'checkbox') copies[i].checked = orig.checked;
+                if (orig.type === 'checkbox') copies[i].checked = blank ? false : orig.checked;
+                else if (blank && 'defaultValue' in copies[i]) copies[i].value = copies[i].defaultValue;
                 else copies[i].value = orig.value;
             });
+            if (blank) blankify(copy);
             return copy;
+        }
+        function blankify(c) {
+            c.querySelectorAll('.fit-box, .fit-text').forEach(t => { t.style.fontSize = ''; t.style.lineHeight = ''; t.style.paddingTop = ''; t.style.paddingBottom = ''; });
+            c.querySelectorAll('.fit-box-wrap').forEach(w => w.style.removeProperty('--lh'));
+            c.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
+            c.querySelectorAll('.mod-input').forEach(m => m.classList.remove('pos', 'neg'));
+            c.querySelectorAll('.mirror-file-id').forEach(s => { s.textContent = DEFAULT_ID; });
+            c.querySelectorAll('[data-mirror]').forEach(s => { s.textContent = ''; });
+            c.querySelectorAll('#portrait-img, .mirror-portrait-img, #ship-ortho-img').forEach(i => { i.removeAttribute('src'); i.style.display = 'none'; });
+            c.querySelectorAll('#portrait-placeholder, .mirror-portrait-ph, #ship-ortho-ph').forEach(p => { p.style.display = 'block'; });
+        }
+        // Scoped CSS (#page-N) needs the id on the clone, so swap it during print
+        function scopedWrap(pid) {
+            const area = document.querySelector('#' + pid + ' .printable-page-area');
+            if (!area) return;
+            const orig = document.getElementById(pid);
+            if (orig) orig.id = pid + '-orig';
+            const wrap = document.createElement('div');
+            wrap.id = pid;
+            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
+            wrap.appendChild(cloneWithValues(area));
+            container.appendChild(wrap);
         }
 
         // Page 1
@@ -946,17 +1314,8 @@ function initConsole() {
             container.appendChild(wrap);
         }
 
-        // Page 2 (needs #page-2 ID for scoped CSS)
-        const p2 = document.querySelector('#page-2 .printable-page-area');
-        if (p2) {
-            const origP2 = document.getElementById('page-2');
-            if (origP2) origP2.id = 'page-2-orig';
-            const wrap = document.createElement('div');
-            wrap.id = 'page-2';
-            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
-            wrap.appendChild(cloneWithValues(p2));
-            container.appendChild(wrap);
-        }
+        // Page 2
+        scopedWrap('page-2');
 
         // Pages 3 & 4 (need .doc-page class for scoped CSS)
         ['p3', 'p4'].forEach(docId => {
@@ -965,7 +1324,8 @@ function initConsole() {
             const area = pg.querySelector('.printable-page-area');
             if (!area) return;
             const vs = views(docId);
-            for (let t = 1; t <= vs.length; t++) {
+            const count = blank ? 1 : vs.length;
+            for (let t = 1; t <= count; t++) {
                 const clonedArea = cloneWithValues(area);
                 clonedArea.querySelectorAll('.dossier-tab-view').forEach(v => {
                     v.classList.toggle('active', Number(v.dataset.tab) === t);
@@ -973,6 +1333,12 @@ function initConsole() {
                 clonedArea.querySelectorAll('.bio-page-link').forEach(btn => {
                     btn.classList.toggle('active', Number(btn.dataset.sub) === t);
                 });
+                if (blank) {
+                    const host = clonedArea.querySelector('.p3-blocks[data-tab="1"]');
+                    if (host) host.innerHTML = '<div class="p3-block"><div class="p3-heading-row"><div class="p3-slate"><input type="text" class="p3-b-title"></div><div class="p3-yellow"></div><div class="p3-orange"></div></div></div><textarea class="p3-ruled" data-blank="1" style="height:20px"></textarea>';
+                    const pg2 = clonedArea.querySelector('.p3-pagination'); if (pg2) pg2.classList.add('single');
+                    const wn = clonedArea.querySelector('.p3-warn'); if (wn) wn.classList.remove('on');
+                }
                 const wrap = document.createElement('div');
                 wrap.className = 'sheet-page active doc-page screen-only-view-padding print-page-break';
                 wrap.dataset.doc = docId;
@@ -982,34 +1348,30 @@ function initConsole() {
         });
 
         // Page 5
-        const p5 = document.querySelector('#page-5 .printable-page-area');
-        if (p5) {
-            const wrap = document.createElement('div');
-            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
-            wrap.appendChild(cloneWithValues(p5));
-            container.appendChild(wrap);
-        }
+        scopedWrap('page-5');
 
         // Page 6
-        const p6 = document.querySelector('#page-6 .printable-page-area');
-        if (p6) {
-            const wrap = document.createElement('div');
-            wrap.className = 'sheet-page active screen-only-view-padding print-page-break';
-            wrap.appendChild(cloneWithValues(p6));
-            container.appendChild(wrap);
-        }
+        scopedWrap('page-6');
 
         document.body.appendChild(container);
         document.body.classList.add('printing-all');
+        // Blank Logs pages: fill the page with ruled lines, measured from the real layout
+        container.querySelectorAll('textarea.p3-ruled[data-blank]').forEach(t => {
+            const vp = t.closest('.p3-viewport');
+            if (!vp) return;
+            const avail = vp.getBoundingClientRect().bottom - t.getBoundingClientRect().top;
+            t.style.height = Math.max(20, Math.floor(avail / 20) * 20) + 'px';
+        });
         window.print();
     }
     const printBtn = document.getElementById('utility-btn-print-all');
-    if (printBtn) printBtn.addEventListener('click', printFullDossier);
+    if (printBtn) printBtn.addEventListener('click', () => printFullDossier(false));
+    const printBlankBtn = document.getElementById('utility-btn-print-blank');
+    if (printBlankBtn) printBlankBtn.addEventListener('click', () => printFullDossier(true));
 
 	window.addEventListener('afterprint', () => {
         document.body.classList.remove('printing-all');
-        const origP2 = document.getElementById('page-2-orig');
-        if (origP2) origP2.id = 'page-2';
+        ['page-2', 'page-5', 'page-6'].forEach(pid => { const o = document.getElementById(pid + '-orig'); if (o) o.id = pid; });
         const c = document.getElementById('print-all-container');
         if (c) c.remove();
     });
@@ -1542,7 +1904,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
                 if (form.elements['ext_task_bt_' + i]) form.elements['ext_task_bt_' + i].checked = false;
             }
 
-            document.querySelectorAll('.mod-input').forEach(m => { m.value = ''; });
+            document.querySelectorAll('.mod-input:not([name^="ship_"])').forEach(m => { m.value = ''; });
             updateModColors();
 
             if (baseEquipment !== null && form.elements['ledger_equipment']) {
@@ -1626,6 +1988,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
     });
     Object.keys(DOCS).forEach(defaultDoc);
 		charSlots.init(); shipSlots.init();
+    if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol)) navigator.serviceWorker.register('sw.js').catch(() => {});
 		sync();
 		balance(); growAll();
 		window.addEventListener('load', () => { balance(); growAll(); });

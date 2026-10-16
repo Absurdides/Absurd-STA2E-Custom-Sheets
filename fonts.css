@@ -1,0 +1,5 @@
+/* Self-hosted LCARS fonts (variable weight axis limited to 400-700; heavier requests render as 700). */
+@font-face { font-family: 'Antonio'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('fonts/Antonio.woff') format('woff'); }
+@font-face { font-family: 'Oswald'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('fonts/Oswald.woff') format('woff'); }
+@font-face { font-family: 'Roboto'; font-style: normal; font-weight: 400 700; font-display: swap; src: url('fonts/Roboto.woff') format('woff'); }
+@font-face { font-family: 'Roboto'; font-style: italic; font-weight: 400 700; font-display: swap; src: url('fonts/Roboto-Italic.woff') format('woff'); }

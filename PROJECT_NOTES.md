@@ -13,7 +13,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - User is on long-term disability with limited usage. Keep replies SHORT, no pleasantries, minimal explanation.
 - Edit the existing files (`index.html`, `style.css`, `console.js`) with targeted edits (str_replace / small scripts). Do NOT rewrite whole files or re-read the whole file; search for the section you need.
 - After each change: check JS syntax (node), then present the file (present_files).
-- Claude cannot render the page. User tests in a browser and sends screenshots. Never claim layout was visually verified.
+- Verify layout and print before delivering when possible: some chats have headless Chromium in the sandbox (`from playwright.sync_api import sync_playwright`, browsers in `/opt/pw-browsers`). Load `file:///.../index.html` with `fonts/` beside it, stub `window.print`, click the button, then `page.emulate_media(media='print')` + `page.pdf(...)` and `pdftoppm` to view pages. Say what was and wasn't verified; if no browser is available, ask the user for screenshots and never claim layout was visually verified.
 - Batch changes. Ask at most one question when truly ambiguous.
 - Copyright: copy rulebook / fan-site rules text into files or replies where possible. Otherwise, names and structure only.
 - Runs locally from a folder on Windows (file://) or online via GitHub Pages. Browsers block fetch of .json, so data lists are `.js` files loaded with <script src>.
@@ -29,6 +29,8 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - `equipment.js` - `window.STA_EQUIPMENT = [{name, source, type, severity, standard_issue, opportunity_cost, qualities}]` (156 entries; 131 personal gear/weapons + 25 starship weapons, alphabetized by section).
 - `spends.js` - `window.STA_SPENDS = [{category, name, cost, type, source, text}]` (22 official 2E Momentum spends across 5 categories, alphabetized).
 - `README.md` - user manual (GitHub display). `readme.js` - identical text as `window.STA_README = "..."` (JSON string) for the in-app User Manual overlay (fetch of .md is blocked on file://).
+- `fonts.css` + `fonts/` - self-hosted Antonio, Oswald, Roboto, Roboto-Italic (Latin + Latin Extended subsets, WOFF, variable weight axis limited to 400-700, so weight 900 renders as 700). Made from the Google variable TTFs with fontTools; WOFF2 was not possible (no brotli). Keep each family's licence file in `fonts/`.
+- `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png` - install-as-app + offline support (https only). `sw.js` is network-first for the app's own files (updates arrive when online, cache used offline) It lists nothing by hand: on install it reads `index.html` (and the `url()`s inside local CSS) and caches every local file. Bump `CACHE` in `sw.js` only if a stale cache ever needs forcing out.
 - `add_ability_text.py` - user-run PDF text extractor utility.
 - `trekstar.png` - Starfleet insignia used by the headers.
 - `icon-ent.png` - Browser tab favicon and Ship View button icon.
@@ -36,13 +38,13 @@ Paste or attach this at the start of a new chat, together with the current `inde
 ## HTML & Off-Page Menu Structure
 - One form: `#unified-master-console-form`. Pages are `.sheet-page`; Pages 3 and 4 also `.doc-page` with `data-doc="p3"|"p4"`.
 - Top Utility Bar (`.external-top-bar.no-print`): Sits above the sheet. Five rows (Session, Tools, Crew, Ship, Pages), labels right-aligned in a 56px column + grey divider.
-  - Session (+ autosave dot): `Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `Reset Ship`; right-aligned `Clear Form` (red), `Print (PDF)` (navy).
+  - Session (+ autosave dot): `Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `Reset Ship`; right-aligned `Clear Form` (red), `Print Blank` and `Print (PDF)` (navy).
   - Tools: `PADD ⛶`, `Fit ↔`, `Theme: Dark/Light` (only affects Play Mode), `Quick Note` (Play Mode only); right-aligned fixed group `Undo` (slate), `Backup All` (orange), `Restore All` (slate), divider, `User Manual` (bright yellow `.btn-help`, black text; opens the manual overlay). Right group never shifts when Quick Note appears.
   - Crew / Ship (identical structure): `.lcars-select` dropdown + `+ New`, `Copy`, `Rename`, `Delete` (`.slot-btn`, 66px). Right-aligned `Export Crew` / `Import Crew` (Crew row; bundles active ship) and `Export Ship` / `Import Ship` (Ship row).
   - Pages: Page 1-6 tabs (`data-page`; Page 5 = `Page 5: Ship`, id `btn-ship-view`; Page 6 = `Page 6: Reference`, id `btn-ref-view`).
   - Colour rule: orange = save/export, slate = load/import/secondary, red = destructive, navy = neutral/tabs, tan = active tab / Quick Note, bright yellow = User Manual only.
 - Page 5 - Starship Registry: Utopia Planitia technical readout in 8.0 x 10.5 in portrait.
-  - Header: Click-to-upload ship orthographic graphic void (`#ship-ortho-img`, 96px). Generic LCARS flavor banner (`Starship Specification // Active Service Record`). Editable ship File ID (`#ship-metadata-file-id`, default `NCC-80106-[PHOBOS_DEFAULT]`), which sets the export filename.
+  - Header: Click-to-upload ship orthographic graphic void (`#ship-ortho-img`, 96px). Generic LCARS flavor banner (`Starship Specification // Active Service Record`). Editable ship File ID (`#ship-metadata-file-id`, default `SHIP_DEFAULT`), which sets the export filename.
   - Vitals: 3 rows (Name 2/5, Registry 2/5, Service Date 1/5; Mission Profile 1/2, Service Record 1/2; Traits 1/2, Refits 1/2).
   - Systems & Departments: Connected sweeping split-header (dark blue from pillar across Systems; light blue across Departments).
     - Systems (2/3 width, 3×2 grid): 3 division-coded columns (Blue: Comms/Sensors; Gold: Engines/Computers; Red: Structure/Weapons). 22×22px white score boxes, centered `BREACH` label, 15×15px breach checkboxes.
@@ -54,6 +56,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
     - Left (1fr): Starship Attacks (5 rows, Type, Qual, Sev with Page 2 boxed score styling).
     - Right (1fr): Shuttlebay // Support Craft Complement (top) and Special Rules // System Capabilities (bottom) stacked vertically.
     - Full-width below: Starship Talents (full-width lined `.fit-box` writein lines filling remaining vertical space down to the footer).
+  - Play Mode `±` modifiers (`ship_sys_<system>_mod`, `ship_dept_<dept>_mod`, class `mod-input`): Systems show the box beside the score (`.ship-sys-mod`), Departments reuse `.stat-input-mod-line`. Hidden in Edit Mode and print, saved in the ship slot, cleared by Reset Ship (never by Reset Mission).
   - Logistics & Export: Supports standalone `.json` ship export/import (`sta2e-starship-v1`) as well as full bundling and autosave in master character files (`cached_ship_ortho_data`). Included in multi-page "Print (PDF)".
 - Page 6 - Reference Manual: Field Operations Quick Reference Sheet in 8.0 x 10.5 in portrait.
   - Sweeping LCARS Headers: Left pillar-connected sweeping headers and split headers organize core rules.
@@ -65,12 +68,20 @@ Paste or attach this at the start of a new chat, together with the current `inde
 ## Feature Roadmap Queue
 - Interactive Task Roller / TN Calculator (Play Mode): tap Attribute + Department to show TN and Focus critical range, optional d20 roll.
 - Canonical Focuses Suggestion Picker: helper dropdown above Page 1 Focuses box.
-- Momentum Spends Modal / Quick Reference (Tools Row, browsing `spends.js`).
+- Momentum Spends Modal / Quick Reference (Tools Row, browsing `spends.js`; `spends.js` is loaded but not yet used by console.js).
+- Storage meter + Backup All reminder (Tools row).
+- Table Tracker overlay (Play Mode): group Momentum, Threat, round counter; floats over any page.
+- Scene Notes overlay (Traits, Advantages, Complications).
+- Print page chooser for Print (PDF).
+- Running totals for Attributes/Departments in Edit Mode (target values user-defined).
 
 ## Layout, Print & Mobile
-- Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, 4 Header bars, 4 Detail rows, Text, Format, and Sections tools.
+- Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, 4 Header bars, 4 Detail rows, Text, Format, Selection and Sections tools.
 - Print: `.printable-page-area` is 8.0 x 10.5 in, centered horizontally on 8.5 x 11 in Letter via `margin: 0 auto !important;` with 0.25 in top padding. Standard `Ctrl+P` prints only the active page. "Print (PDF)" compiles Page 1, Page 2, all tabs of Pages 3 & 4, Page 5, and Page 6 with repeated LCARS headers/footers into a single multi-page print stream with automatic `afterprint` cleanup.
-- Mobile / Tablet: Google Fonts (`Antonio`, `Oswald`, `Roboto`) and viewport meta in `<head>` guarantee correct condensed typography on mobile. Natural document scrolling prevents Android Firefox scroll cutoff.
+- Mobile / Tablet: Self-hosted fonts (`fonts.css` + `fonts/`, Antonio / Oswald / Roboto) and viewport meta in `<head>` guarantee correct condensed typography on mobile. Natural document scrolling prevents Android Firefox scroll cutoff.
+
+- Print (PDF) clones need their page id for scoped CSS: `scopedWrap()` in `printFullDossier()` swaps the `#page-2`, `#page-5` and `#page-6` ids to `-orig` while printing and `afterprint` restores them.
+- Print Blank (`#utility-btn-print-blank`): same print stream built from blanked clones (values reset to `defaultValue`, images hidden, Pages 3/4 = one header bar + ruled lines). The ruled textarea starts at 20px and `printFullDossier()` sets its height from the measured viewport after the print container is shown. Never give it a fixed tall height: it breaks the flex layout and pushes content onto the next pages. Never touches the live sheet or saved slots.
 
 ## Page 1 (visual master)
 - Top bio fields (`bio_name`, `bio_species`, `bio_rank`, `bio_assignment`, `bio_career_path`, `bio_traits`, etc.).
@@ -112,6 +123,10 @@ Paste or attach this at the start of a new chat, together with the current `inde
   - Ruled lines (5 lines or 1 line).
 - Stardate generator: Year, Month, Day inputs in `#p3-tools` compute 24th-century integer stardate in real time. "+ Header" spawns a titled blue header bar; "Insert" inserts into cursor/selection.
 - Sections: Max 8 tabs per doc page; pagination links; "Page full" warning.
+- Block controls (both doc pages): blocks carry no inline controls. One `#log-panel` (`position: fixed`, appended to body, `no-print`) holds ▲ ▼ ✓ × and follows the active block (`.blk-active`, set on pointerdown / focusin in `form`). `placePanel()` centres it on the block over the page's `.lcars-left-pillar-wrapper` using `getBoundingClientRect` (so Fit zoom and scroll are safe), scales it down if the pillar is narrower than 46px, and draws an arrow via `--ay`. Under 700px wide it docks along the bottom (`.lp-dock`) and shows the block name. No-keyboard activation spots: `.p3-yellow` / `.p3-orange` caps on header bars and `.p3-handle` (absolute strip over the label/text divide) on detail rows; pointerdown there blurs the active field. Paragraphs and ruled lines activate by tapping into them. Selection = `.sel-on` class (outline is `@media screen` only, never saved). `#p3-tools` Selection group: Select Section, Select None, Export Selected, Import Sections, Copy for Discord, Delete Selected. Export / Discord / Delete Selected act only on `.sel-on` blocks ("Nothing selected" alert otherwise). Panel delete takes an Undo snapshot.
+- Export file `_bundle: sta2e-logsel-v1` `{source, created, blocks[]}` (`blockData()`, same shape as `collect()` blocks). Import accepts it or a whole-character file (`docs.p3` / `docs.p4`, user picks), keeps only known block types, sanitizes paragraph HTML with `cleanHtml()` (allowlist b/strong/i/em/br/div/span/font, span style limited to bold/italic/Antonio/Arial), then asks End of section / New section (max 8). Undo snapshot via `snapChar()` first. All flattened into one target section.
+- Discord: `discordParts()` builds plain code blocks. Header `== TITLE ==`, detail row `LABEL: text`, paragraph via `htmlToText()`, ruled lines skipped, triple backticks become `'''`. Max 1990 chars per part (plus 8 fence chars), packed at block boundaries, a header is kept with its next block, long text split by `splitLong()` (line break, sentence, word, hard). Popup `#discord-modal`: one textarea + Copy per part (clipboard API on https, `execCommand('copy')` fallback for file://). Esc closes it.
+- Known issue (not fixed): `addBlock()` only treats paragraph text as HTML if it contains a tag. Plain paragraph text containing `&`, `<` or `>` is saved HTML-escaped by `collect()` and shown with literal entities after reload.
 
 ## Unified 2E Rules Popovers (Play Mode Only)
 All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoid blocking form inputs. In Play Mode (`body.play-mode-active`), clicking/tapping the `ⓘ` icon opens the guide:
@@ -144,5 +159,7 @@ All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoi
 - Autosave: debounced 500 ms into the active character slot and active ship slot; dot green = saved to browser memory. Names follow `bio_name` / `ship_name` unless renamed. Quota fallback drops images and warns once. Legacy `sta2e-autosave` migrated once.
 - Load File / Import Ship ask: New Slot / Replace Current / Cancel. Character file with a ship offers a new ship slot. Clear Form clears the active character only (downloads backup first). Save As File bundles the active ship.
 - Keep field `name` attributes stable; renaming breaks old saves.
-- Undo: one step, in memory only (lost on reload). Snapshots taken before Reset Mission, Reset Ship, Clear Form, Load/Import Replace, and slot Delete (restores deleted slot).
+- Undo: one step, in memory only (lost on reload). Snapshots taken before Reset Mission, Reset Ship, Clear Form, Load/Import Replace, Import Sections, Delete Selected, and slot Delete (restores deleted slot).
 - Backup All / Restore All: one JSON (`_bundle: sta2e-backup-v1`) with all character + ship slots. Restore replaces everything after auto-downloading a backup of the current state.
+- Images: `shrinkImage(file, maxSide, cb)` re-encodes uploads as JPEG (white background, quality 0.88) when over the size limit: portrait long side 640 px, ship graphic 1600 px. Small files (<200 KB and within limit) are kept unchanged. Already-stored images are not migrated.
+- Print hides UI-only hints on every printed sheet (screen placeholders in inputs/textareas, the portrait and ship-graphic upload text) via `@media print` rules; Print Blank relies on the same rules. Old ship files with the default id `NCC-80106-[PHOBOS_DEFAULT]` are converted to `SHIP_DEFAULT` on load.
