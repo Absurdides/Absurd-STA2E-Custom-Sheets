@@ -740,7 +740,7 @@ function initConsole() {
         o.style.display = 'block';
     }
     onBtn('btn-manual', openManual);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeManual(); const dm = document.getElementById('discord-modal'); if (dm) dm.remove(); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); const dm = document.getElementById('discord-modal'); if (dm) dm.remove(); } });
 
     // ===== Log block selection: Export / Import / Discord / Delete (Pages 3 and 4) =====
     function selBlocks(id) {
@@ -916,21 +916,60 @@ function initConsole() {
             } else list.push({ type: b.type, title: title, text: text, rows: '' });
         });
         if (!list.length) { alert('No importable blocks found in that file.'); return; }
-        const cur = activeSec(id), full = views(id).length >= MAX_SECTIONS;
-        const btns = [{ label: 'Add to Section ' + cur, val: 'end', color: '#d96b27' }];
+        const cur = activeSec(id), full = views(id).length >= MAX_SECTIONS, sel = selBlocks(id);
+        const btns = [];
+        if (sel.length) btns.push({ label: 'Replace ' + sel.length + ' Selected', val: 'replace', color: '#bd4b4b' });
+        btns.push({ label: 'Add to Section ' + cur, val: 'end', color: '#d96b27' });
         if (!full) btns.push({ label: 'New Section', val: 'new', color: '#708699' });
         btns.push({ label: 'Cancel', val: 'cancel' });
-        const msg = list.length + ' block' + (list.length === 1 ? '' : 's') + ' ready for ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs') + '. Add to the end of section ' + cur + ', or to a new section?' + (full ? ' This page already has the maximum of ' + MAX_SECTIONS + ' sections, so a new one is not available.' : '');
+        const msg = list.length + ' block' + (list.length === 1 ? '' : 's') + ' ready for ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs') + '. '
+            + (sel.length ? 'Replace the ' + sel.length + ' selected block' + (sel.length === 1 ? '' : 's') + ' with them, or add' : 'Add')
+            + ' to the end of section ' + cur + (full ? '' : ', or to a new section') + '?'
+            + (full ? ' This page already has the maximum of ' + MAX_SECTIONS + ' sections, so a new one is not available.' : '')
+            + ' Anything that does not fit a page flows into the next section.';
         showChoice('Import Sections // Select Target', msg, btns, v => {
-            if (v !== 'end' && v !== 'new') return;
+            if (v !== 'replace' && v !== 'end' && v !== 'new') return;
             setUndo('Import log sections', [snapChar()]);
+            const doomed = v === 'replace' ? selBlocks(id) : [];
+            const anchor = doomed.length ? doomed[0] : null;
             let tab = cur;
-            if (v === 'new') { tab = addSection(id); if (!tab) return; }
+            if (anchor) tab = Number(anchor.parentElement.dataset.tab);
+            else if (v === 'new') { tab = addSection(id); if (!tab) return; }
+            showSection(id, tab);
+            const host = view(id).querySelector('.p3-blocks[data-tab="' + tab + '"]');
+            const before = host.children.length;
             list.forEach(b => addBlock(id, tab, b.type, b.title, b.text, b.rows));
+            if (anchor) {
+                Array.from(host.children).slice(before).forEach(n => host.insertBefore(n, anchor));
+                doomed.forEach(b => b.remove());
+            }
+            const stuck = spillOverflow(id, tab);
             showSection(id, tab);
             clearSel(id);
             markDirty();
+            if (stuck) alert('Not everything fits: all ' + MAX_SECTIONS + ' sections are full, so the last blocks are cut off the bottom of the page. Use Undo, or import fewer blocks.');
         });
+    }
+    function overflows(id) { const v = view(id); return v.scrollHeight > v.clientHeight + 1; }
+    // Move trailing blocks of an overflowing section to the start of the next one (new sections up to the limit)
+    function spillOverflow(id, from) {
+        let stuck = false;
+        for (let t = from; t <= views(id).length; t++) {
+            showSection(id, t);
+            let guard = 0;
+            while (overflows(id) && guard++ < 1000) {
+                const host = view(id).querySelector('.p3-blocks[data-tab="' + t + '"]');
+                if (host.children.length < 2) break;
+                let next = view(id).querySelector('.p3-blocks[data-tab="' + (t + 1) + '"]');
+                if (!next) {
+                    if (!addSection(id)) { stuck = true; break; }
+                    showSection(id, t);
+                    next = view(id).querySelector('.p3-blocks[data-tab="' + (t + 1) + '"]');
+                }
+                next.insertBefore(host.lastElementChild, next.firstChild);
+            }
+        }
+        return stuck;
     }
     form.addEventListener('click', () => setTimeout(placePanel, 0));
     document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => { updateSel(); placePanel(); }));
@@ -939,7 +978,7 @@ function initConsole() {
         view(id).querySelectorAll('.p3-blocks[data-tab="' + t + '"] .p3-block').forEach(b => b.classList.add('sel-on'));
         updateSel();
     });
-    tool('sel-none', clearSel);
+    tool('sel-none', id => { clearSel(id); setActive(null); });
     tool('sel-export', id => {
         const sel = selBlocks(id);
         if (!sel.length) { noSel(); return; }
@@ -1036,6 +1075,7 @@ function initConsole() {
         if (e.target.closest('.p3-yellow, .p3-orange, .p3-handle')) {
             const a = document.activeElement;
             if (a && a !== document.body && a.blur) a.blur();
+            if (b === activeBlk) { setActive(null); return; }
         }
         setActive(b);
     });

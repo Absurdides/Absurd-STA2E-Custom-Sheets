@@ -720,6 +720,8 @@ body.play-mode-active .play-only { display: inline-block; }
     .doc-page .p3-handle::before { content: ''; position: absolute; left: 50%; top: 20%; bottom: 20%; border-left: 2px dotted #8a95a0; transform: translateX(-50%); }
     .doc-page .p3-yellow, .doc-page .p3-orange { cursor: pointer; }
 }
+/* Pages 3 / 4: only .p3-viewport (overflow hidden) may overflow, so the frame, footer and bottom bar never get pushed or covered */
+.doc-page .lcars-system-wrapper, .doc-page .lcars-body-grid, .doc-page .lcars-right-content-assembly, .doc-page .blank-workspace-canvas { min-height: 0; }
 #log-panel { display: none; position: fixed; z-index: 9000; width: 48px; flex-direction: column; gap: 4px; box-sizing: border-box; padding: 3px; transform-origin: 0 0; background-color: #18222f; border: 1px solid #eed292; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); }
 #log-panel::after { content: ''; position: absolute; right: -8px; top: var(--ay, 50%); transform: translateY(-50%); border: 8px solid transparent; border-right-width: 0; border-left-color: #d96b27; }
 .lp-name { display: none; }

@@ -18,10 +18,10 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 
 ## Log Selection (Pages 3 and 4)
 - Tap, click or type in any block to make it the active block. A panel of four large buttons appears over the left border beside it, with an arrow pointing at the block: ▲ ▼ move it, ✓ ticks it for selection and × deletes it (Undo restores it). On a narrow screen the panel docks along the bottom and names the block. Ticked blocks get an orange outline. Ticks are never saved and never print.
-- To pick a block without opening the keyboard, tap a Header Bar's coloured end caps or the dotted strip between a Detail Row's label and text. Both sides of a Detail Row can still be typed in.
+- To pick a block without opening the keyboard, tap a Header Bar's coloured end caps or the dotted strip between a Detail Row's label and text. Both sides of a Detail Row can still be typed in. To hide the panel again, tap the same end cap or divider strip once more, press Esc, or press **Select None**.
 - **Select Section** ticks every block in the open section. **Select None** clears the ticks. The count shows beside the buttons.
 - **Export Selected:** saves the ticked blocks as a `.json` file. With nothing ticked, nothing happens.
-- **Import Sections:** reads that file (or a whole Crew export, then you pick Page 3 or Page 4) and adds the blocks to the end of the open section or to a new section (8 sections maximum). Undo reverses it. This also moves blocks between Page 3 and Page 4.
+- **Import Sections:** reads that file (or a whole Crew export, then you pick Page 3 or Page 4). With blocks ticked you can **Replace Selected**: the imported blocks take the place of the ticked ones. Otherwise they go to the end of the open section or to a new section (8 sections maximum). Anything that does not fit on a page flows into the next section. Undo reverses it. This also moves blocks between Page 3 and Page 4.
 - **Copy for Discord:** opens a window with the ticked blocks as Discord code blocks. Header Bars become `== TITLE ==`, Detail Rows become `LABEL: text`, Paragraphs become plain text (bold and italic are dropped) and Ruled Lines are skipped. Text over 2000 characters splits into numbered parts, each with its own Copy button.
 - **Delete Selected:** removes the ticked blocks after a confirmation. Undo restores them.
 
