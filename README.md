@@ -17,7 +17,7 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - Pickers (Species Ability, Talents, Weapons, Equipment, Ship Weapons and Ship Talents) have a search box and add the entry for you.
 
 ## Log Selection (Pages 3 and 4)
-- Tap, click or type in any block to make it the active block. A panel of four large buttons appears over the left border beside it, with an arrow pointing at the block: ▲ ▼ move it, ✓ ticks it for selection and × deletes it (Undo restores it). On a narrow screen the panel docks along the bottom and names the block. Ticked blocks get an orange outline. Ticks are never saved and never print.
+- Tap, click or type in any block to make it the active block. A panel of large buttons appears over the left border beside it, with an arrow pointing at the block: ▲ ▼ move it, ✓ ticks it for selection and × deletes it (Undo restores it). On Header Bars and Detail Rows a colour swatch button also appears; each tap switches to the colour the swatch shows. On a narrow screen the panel docks along the bottom and names the block. Ticked blocks get an orange outline. Ticks are never saved and never print.
 - To pick a block without opening the keyboard, tap a Header Bar's coloured end caps or the dotted strip between a Detail Row's label and text. Both sides of a Detail Row can still be typed in. To hide the panel again, tap the same end cap or divider strip once more, press Esc, or press **Select None**.
 - **Select Section** ticks every block in the open section. **Select None** clears the ticks. The count shows beside the buttons.
 - **Export Selected:** saves the ticked blocks as a `.json` file. With nothing ticked, nothing happens.

@@ -1034,8 +1034,18 @@ function initConsole() {
     let activeBlk = null;
     const panel = document.createElement('div');
     panel.id = 'log-panel'; panel.className = 'no-print';
-    panel.innerHTML = '<div class="lp-name"></div><button type="button" class="lp-btn" data-act="up" title="Move up">&#9650;</button><button type="button" class="lp-btn" data-act="down" title="Move down">&#9660;</button><button type="button" class="lp-btn" data-act="sel" title="Select / deselect for Export, Discord, Delete Selected">&#10003;</button><button type="button" class="lp-btn lp-del" data-act="del" title="Delete this block">&times;</button>';
+    panel.innerHTML = '<div class="lp-name"></div><button type="button" class="lp-btn" data-act="up" title="Move up">&#9650;</button><button type="button" class="lp-btn" data-act="down" title="Move down">&#9660;</button><button type="button" class="lp-btn" data-act="sel" title="Select / deselect for Export, Discord, Delete Selected">&#10003;</button><button type="button" class="lp-btn lp-col" data-act="col" title="Next colour"><span class="lp-sw"></span></button><button type="button" class="lp-btn lp-del" data-act="del" title="Delete this block">&times;</button>';
     document.body.appendChild(panel);
+    const HEAD_CYCLE = ['blue', 'tan', 'orange', 'slate'], CAP_CYCLE = ['cap-tan', 'cap-orange', 'cap-slate', 'cap-navy'];
+    const HEAD_CLS = { blue: '', tan: ' alt', orange: ' orng', slate: ' slate-bar' };
+    const TYPE_HEX = { blue: '#2c3a4d', tan: '#eed292', orange: '#d96b27', slate: '#708699', 'cap-tan': '#eed292', 'cap-orange': '#d96b27', 'cap-slate': '#708699', 'cap-navy': '#2c3a4d' };
+    function nextType(t) { const c = t.indexOf('cap-') === 0 ? CAP_CYCLE : HEAD_CYCLE; return c[(c.indexOf(t) + 1) % c.length]; }
+    function cycleColour(b) {
+        const t = b.dataset.type, n = nextType(t);
+        if (t.indexOf('cap-') === 0) { b.classList.remove(t); b.classList.add(n); }
+        else { const row = b.querySelector('.p3-heading-row'); if (row) row.className = 'p3-heading-row' + HEAD_CLS[n]; }
+        b.dataset.type = n;
+    }
     function blkLabel(b) {
         const t = b.dataset.type, ti = ((b.querySelector('.p3-b-title') || {}).value || '').trim();
         const kind = t === 'para' ? 'Paragraph' : (t === 'ruled' ? 'Ruled lines' : (t.indexOf('cap-') === 0 ? 'Detail row' : 'Header bar'));
@@ -1056,6 +1066,9 @@ function initConsole() {
         panel.style.display = 'flex';
         panel.querySelector('.lp-name').textContent = blkLabel(activeBlk);
         panel.querySelector('[data-act="sel"]').classList.toggle('on', activeBlk.classList.contains('sel-on'));
+        const colBtn = panel.querySelector('[data-act="col"]'), at = activeBlk.dataset.type, canCol = at !== 'para' && at !== 'ruled';
+        colBtn.style.display = canCol ? '' : 'none';
+        if (canCol) colBtn.firstChild.style.backgroundColor = TYPE_HEX[nextType(at)];
         const dock = window.innerWidth < 700;
         panel.classList.toggle('lp-dock', dock);
         if (dock) { panel.style.left = panel.style.top = panel.style.transform = ''; return; }
@@ -1091,6 +1104,7 @@ function initConsole() {
         const b = activeBlk, act = btn.dataset.act;
         if (act === 'up' || act === 'down') { moveBlock(b, act === 'up' ? -1 : 1); markDirty(); }
         else if (act === 'sel') b.classList.toggle('sel-on');
+        else if (act === 'col') { cycleColour(b); markDirty(); }
         else if (act === 'del') {
             const filled = Array.from(b.querySelectorAll('.p3-b-title, .p3-b-text')).some(x => (x.isContentEditable ? x.textContent : x.value).trim());
             if (filled && !confirm('Remove this item and its text?')) return;
