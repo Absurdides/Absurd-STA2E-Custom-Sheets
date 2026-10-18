@@ -72,6 +72,16 @@ function initConsole() {
         document.querySelectorAll('.doc-page textarea').forEach(grow);
         document.querySelectorAll('.fit-text').forEach(fit);
         document.querySelectorAll('.fit-box').forEach(fitBox);
+        document.querySelectorAll('.lcars-writein-lines').forEach(w => {
+            const has = Array.from(w.querySelectorAll('input, textarea')).some(el => el.value && el.value.trim().length > 0);
+            w.classList.toggle('has-text', has);
+        });
+        document.querySelectorAll('textarea.p3-ruled').forEach(t => {
+            t.classList.toggle('has-text', !!(t.value && t.value.trim().length > 0));
+        });
+        document.querySelectorAll('input[name^="ledger_focus_"]').forEach(t => {
+            t.classList.toggle('has-text', !!(t.value && t.value.trim().length > 0));
+        });
         Object.keys(DOCS).forEach(id => {
             const v = view(id);
             if (v.offsetParent === null) return;
@@ -1547,6 +1557,7 @@ function initConsole() {
             c.querySelectorAll('.fit-box-wrap').forEach(w => w.style.removeProperty('--lh'));
             c.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
             c.querySelectorAll('.mod-input').forEach(m => m.classList.remove('pos', 'neg'));
+            c.querySelectorAll('.has-text').forEach(el => el.classList.remove('has-text'));
             c.querySelectorAll('.mirror-file-id').forEach(s => { s.textContent = DEFAULT_ID; });
             c.querySelectorAll('[data-mirror]').forEach(s => { s.textContent = ''; });
             c.querySelectorAll('#portrait-img, .mirror-portrait-img, #ship-ortho-img').forEach(i => { i.removeAttribute('src'); i.style.display = 'none'; });
@@ -2129,6 +2140,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
             const el = form.elements[name];
             if (el) el.readOnly = isPlayMode;
         });
+        growAll();
     }
 
     const modeBtn = document.getElementById('btn-mode-toggle');

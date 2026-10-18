@@ -646,6 +646,13 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 /* ==========================================================================
    SECTION 10b: SCREEN-ONLY UTILITIES (PLAY-ONLY BUTTONS, DISABLED STATE, DARK PLAY MODE)
    ========================================================================== */
+body.play-mode-active .lcars-writein-lines.has-text,
+body.play-mode-active textarea.p3-ruled.has-text {
+    background: none !important;
+}
+body.play-mode-active input[name^="ledger_focus_"].has-text {
+    border-bottom-color: transparent !important;
+}
 @media (pointer: coarse) {
     body.play-mode-active .ship-shield-grp .form-matrix-checkbox,
     body.play-mode-active .ship-sys-breach-pips .form-matrix-checkbox,
