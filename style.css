@@ -171,7 +171,12 @@ body.play-mode-active .val-num:hover { color: #bd4b4b; }
 .fit-box, .fit-text { font-size: 11.5px; }
 .species-picker { position: absolute; top: 2px; right: 6px; max-width: 220px; font-size: 9px; color: #2c3a4d; background-color: #ffffff; border: 1px solid #708699; border-radius: 3px; padding: 1px 2px; cursor: pointer; }
 [data-balance] { flex: 1 1 0; }
-.fit-box-wrap { background: repeating-linear-gradient(to bottom, transparent, transparent calc(var(--lh, 16px) - 1px), #8a95a0 calc(var(--lh, 16px) - 1px), #8a95a0 var(--lh, 16px)); background-size: 100% var(--lh, 16px); }
+.fit-box-wrap {
+    background-image: linear-gradient(to bottom, #ffffff 0px, #ffffff var(--mask-h, 0px), transparent var(--mask-h, 0px)),
+                      repeating-linear-gradient(to bottom, transparent, transparent calc(var(--lh, 16px) - 1px), #8a95a0 calc(var(--lh, 16px) - 1px), #8a95a0 var(--lh, 16px));
+    background-size: 100% 100%, 100% var(--lh, 16px);
+    background-repeat: no-repeat, repeat;
+}
 /* ==========================================================================
    SECTION 5: PAGE 1 ATTRIBUTES, DEPARTMENTS & PLAY MODE MODS
    ========================================================================== */
@@ -179,7 +184,13 @@ body.play-mode-active .val-num:hover { color: #bd4b4b; }
 .lcars-column-strip { display: flex; flex-direction: column; gap: 6px; }
 .lcars-terminal-box { border: 1px solid #2c3a4d; border-radius: 4px; padding: 4px 6px; background-color: #ffffff; display: flex; flex-direction: column; overflow: hidden; }
 .box-heading-label { font-size: 10px; font-weight: 900; color: #2c3a4d; letter-spacing: 0.5px; margin-bottom: 4px; line-height: 1; border-bottom: 1px solid #f0f2f5; padding-bottom: 1px; }
-.lcars-writein-lines { width: 100%; height: 100%; background: repeating-linear-gradient(to bottom, transparent, transparent 15px, #8a95a0 15px, #8a95a0 16px); background-size: 100% 16px; }
+.lcars-writein-lines {
+    width: 100%; height: 100%;
+    background-image: linear-gradient(to bottom, #ffffff 0px, #ffffff var(--mask-h, 0px), transparent var(--mask-h, 0px)),
+                      repeating-linear-gradient(to bottom, transparent, transparent 15px, #8a95a0 15px, #8a95a0 16px);
+    background-size: 100% 100%, 100% 16px;
+    background-repeat: no-repeat, repeat;
+}
 .lcars-sweeping-header-wrapper { display: flex; align-items: flex-end; width: calc(100% + 6px); height: 20px; position: relative; margin-top: 8px; margin-left: -6px; z-index: 10; }
 .lcars-sweeping-header-bar {
     flex-grow: 1; height: 20px; background-color: #2c3a4d; display: flex; align-items: center;
@@ -335,8 +346,10 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 #page-2 .lcars-attack-row-capsule .lcars-writein-lines,
 #page-5 .lcars-attack-row-capsule .lcars-writein-lines {
     width: 100%; height: 16px;
-    background: repeating-linear-gradient(to bottom, transparent, transparent 15px, #8a95a0 15px, #8a95a0 16px);
-    background-size: 100% 16px;
+    background-image: linear-gradient(to bottom, #ffffff 0px, #ffffff var(--mask-h, 0px), transparent var(--mask-h, 0px)),
+                      repeating-linear-gradient(to bottom, transparent, transparent 15px, #8a95a0 15px, #8a95a0 16px);
+    background-size: 100% 100%, 100% 16px;
+    background-repeat: no-repeat, repeat;
 }
 #page-2 .lcars-sweeping-header-wrapper {
     display: flex; align-items: flex-end; width: calc(100% + 6px); height: 18px;
@@ -524,7 +537,14 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 .doc-page .p3-para:hover .p3-para-ctl, .doc-page .p3-para:focus-within .p3-para-ctl { display: flex; }
 .doc-page .p3-para-ctl .p3-x, .doc-page .p3-para-ctl .p3-mv { width: 16px; height: 14px; padding: 0; background: none; border: none; color: #708699; font-size: 10px; line-height: 1; cursor: pointer; }
 .doc-page .p3-para-ctl .p3-x:hover, .doc-page .p3-para-ctl .p3-mv:hover { color: #d96b27; }
-.doc-page .p3-ruled { display: block; width: 100%; border: none; outline: none; resize: none; overflow: hidden; padding: 0 2px; font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; color: #222222; text-transform: none; text-align: left; background: repeating-linear-gradient(to bottom, transparent, transparent 19px, #8a95a0 19px, #8a95a0 20px); background-size: 100% 20px; }
+.doc-page .p3-ruled {
+    display: block; width: 100%; border: none; outline: none; resize: none; overflow: hidden; padding: 0 2px;
+    font-family: Arial, sans-serif; font-size: 12px; line-height: 20px; color: #222222; text-transform: none; text-align: left;
+    background-image: linear-gradient(to bottom, #ffffff 0px, #ffffff var(--mask-h, 0px), transparent var(--mask-h, 0px)),
+                      repeating-linear-gradient(to bottom, transparent, transparent 19px, #8a95a0 19px, #8a95a0 20px);
+    background-size: 100% 100%, 100% 20px;
+    background-repeat: no-repeat, repeat;
+}
 .doc-page .p3-ruledblk { margin-bottom: 0; }
 
 /* ==========================================================================
@@ -646,11 +666,10 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 /* ==========================================================================
    SECTION 10b: SCREEN-ONLY UTILITIES (PLAY-ONLY BUTTONS, DISABLED STATE, DARK PLAY MODE)
    ========================================================================== */
-body.play-mode-active .lcars-writein-lines.has-text,
-body.play-mode-active textarea.p3-ruled.has-text {
+.lcars-writein-lines.has-text {
     background: none !important;
 }
-body.play-mode-active input[name^="ledger_focus_"].has-text {
+input[name^="ledger_focus_"].has-text {
     border-bottom-color: transparent !important;
 }
 @media (pointer: coarse) {

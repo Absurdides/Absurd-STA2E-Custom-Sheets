@@ -68,16 +68,52 @@ function initConsole() {
         t.style.height = 'auto';
         let h = Math.max(t.scrollHeight, min); if (c.contains('p3-ruled')) h = Math.ceil(h / 20) * 20; t.style.height = h + 'px';
     }
+    let _textRuler = null;
+    function maskTextarea(ta) {
+        if (ta.offsetParent === null) return;
+        const host = ta.classList.contains('p3-ruled') ? ta : ta.closest('.lcars-writein-lines');
+        if (!host) return;
+        const val = ta.value;
+        if (!val || !val.trim()) {
+            host.style.removeProperty('--mask-h');
+            return;
+        }
+        if (!_textRuler) {
+            _textRuler = document.createElement('div');
+            _textRuler.style.cssText = 'position:fixed;top:-9999px;left:-9999px;visibility:hidden;white-space:pre-wrap;word-break:break-word;box-sizing:border-box;pointer-events:none;';
+            document.body.appendChild(_textRuler);
+        }
+        const cs = window.getComputedStyle(ta);
+        _textRuler.style.width = ta.clientWidth + 'px';
+        _textRuler.style.font = cs.font;
+        _textRuler.style.paddingLeft = cs.paddingLeft;
+        _textRuler.style.paddingRight = cs.paddingRight;
+        _textRuler.style.letterSpacing = cs.letterSpacing;
+        _textRuler.textContent = val.replace(/\s+$/, '');
+        const lh = parseFloat(host.style.getPropertyValue('--lh')) || parseFloat(cs.lineHeight) || 16;
+        const lines = Math.max(1, Math.ceil(_textRuler.offsetHeight / lh));
+        host.style.setProperty('--mask-h', (lines * lh) + 'px');
+    }
+
     function growAll() {
         document.querySelectorAll('.doc-page textarea').forEach(grow);
         document.querySelectorAll('.fit-text').forEach(fit);
         document.querySelectorAll('.fit-box').forEach(fitBox);
+        document.querySelectorAll('.lcars-form-textarea, textarea.p3-ruled').forEach(maskTextarea);
+        const valBox = document.querySelector('.val-row')?.closest('.lcars-writein-lines');
+        if (valBox && valBox.offsetParent !== null) {
+            let lastVal = 0;
+            for (let i = 1; i <= 4; i++) {
+                const el = form.elements['ledger_value_' + i];
+                if (el && el.value.trim().length > 0) lastVal = i;
+            }
+            if (lastVal > 0) valBox.style.setProperty('--mask-h', (lastVal * 16) + 'px');
+            else valBox.style.removeProperty('--mask-h');
+        }
         document.querySelectorAll('.lcars-writein-lines').forEach(w => {
-            const has = Array.from(w.querySelectorAll('input, textarea')).some(el => el.value && el.value.trim().length > 0);
+            if (w.querySelector('textarea') || w.querySelector('.val-row') || w.style.display === 'grid') return;
+            const has = Array.from(w.querySelectorAll('input')).some(el => el.value && el.value.trim().length > 0);
             w.classList.toggle('has-text', has);
-        });
-        document.querySelectorAll('textarea.p3-ruled').forEach(t => {
-            t.classList.toggle('has-text', !!(t.value && t.value.trim().length > 0));
         });
         document.querySelectorAll('input[name^="ledger_focus_"]').forEach(t => {
             t.classList.toggle('has-text', !!(t.value && t.value.trim().length > 0));
@@ -1558,6 +1594,7 @@ function initConsole() {
             c.querySelectorAll('.val-row').forEach(r => r.classList.remove('challenged'));
             c.querySelectorAll('.mod-input').forEach(m => m.classList.remove('pos', 'neg'));
             c.querySelectorAll('.has-text').forEach(el => el.classList.remove('has-text'));
+            c.querySelectorAll('.lcars-writein-lines, .p3-ruled').forEach(w => w.style.removeProperty('--mask-h'));
             c.querySelectorAll('.mirror-file-id').forEach(s => { s.textContent = DEFAULT_ID; });
             c.querySelectorAll('[data-mirror]').forEach(s => { s.textContent = ''; });
             c.querySelectorAll('#portrait-img, .mirror-portrait-img, #ship-ortho-img').forEach(i => { i.removeAttribute('src'); i.style.display = 'none'; });
