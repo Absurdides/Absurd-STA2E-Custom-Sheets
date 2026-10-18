@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STA 2E Game Toolkit Reference Cards</title>
+  <link rel="stylesheet" href="fonts.css">
+  <style>
+    :root {
+      --lcars-teal: #4b9bb5;
+      --lcars-light-teal: #68b8cf;
+      --lcars-dark-teal: #23586b;
+      --lcars-red: #c63b3b;
+      --lcars-orange: #d97824;
+      --lcars-tan: #e5a460;
+      --lcars-bg: #0a0a0f;
+      --card-bg: #ffffff;
+      --card-tint: #eaf3f6;
+      --text-dark: #111111;
+      --border-teal: #4b9bb5;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      background-color: var(--lcars-bg);
+      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 20px;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      color: var(--text-dark);
+      width: 100%;
+      max-width: 900px;
+      border: 3px solid var(--border-teal);
+      border-radius: 20px;
+      padding: 16px;
+      position: relative;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .card-title-pill {
+      background: var(--border-teal);
+      color: #fff;
+      font-family: 'Antonio', 'Oswald', sans-serif;
+      font-size: 1.15rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      padding: 4px 14px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-grid-2col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      border: 2px solid var(--border-teal);
+      border-radius: 14px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      line-height: 1.35;
+      background: #fff;
+      margin-bottom: 12px;
+    }
+
+    .panel-header {
+      font-family: 'Antonio', 'Oswald', sans-serif;
+      font-size: 1rem;
+      color: var(--lcars-teal);
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 2px;
+    }
+
+    .panel-header .page-ref {
+      font-size: 0.72rem;
+      color: #777;
+    }
+
+    ul.qualities-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    ul.qualities-list li {
+      margin-bottom: 6px;
+      padding: 3px 6px;
+    }
+
+    ul.qualities-list li:nth-child(even) {
+      background-color: var(--card-tint);
+      border-radius: 4px;
+    }
+
+    table.ref-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      margin-top: 4px;
+    }
+
+    table.ref-table th {
+      background-color: var(--lcars-teal);
+      color: white;
+      text-align: left;
+      padding: 4px 8px;
+      font-family: 'Antonio', 'Oswald', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    table.ref-table td {
+      padding: 6px 8px;
+      vertical-align: top;
+      border-bottom: 1px solid #e1e8ed;
+    }
+
+    table.ref-table tr:nth-child(even) td {
+      background-color: var(--card-tint);
+    }
+
+    .step-box {
+      border: 2px solid var(--border-teal);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      background: #fff;
+    }
+
+    .step-num {
+      background: var(--lcars-teal);
+      color: white;
+      font-family: 'Antonio', 'Oswald', sans-serif;
+      font-size: 1.8rem;
+      font-weight: bold;
+      border-radius: 8px;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-content {
+      font-size: 0.82rem;
+      line-height: 1.35;
+    }
+
+    .sub-bullet {
+      margin-left: 14px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .card-grid-2col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- RULES SUMMARY CARD 01 -->
+  <article class="card" id="card-01">
+    <div class="card-header">
+      <div class="card-title-pill">▷ RULES SUMMARY CARD | 01</div>
+    </div>
+    
+    <div class="card-grid-2col">
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: THE CORE MECHANIC</span>
+            <span class="page-ref">(PAGE 8)</span>
+          </div>
+          <p>When your character attempts a task, the gamemaster tells you the <strong>Difficulty</strong> of the task (a number, usually from 0–5). Check your character sheet and select an <strong>attribute</strong> and <strong>department</strong> best fitting the desired action. Add the selected ratings together to establish your <strong>target number</strong>.</p>
+          <p>Then, roll <strong>2d20</strong> (sometimes more, depending upon the situation) and check if any die rolls <strong>equal to or under</strong> the target number. If a die rolls lower, it counts as a <strong>success</strong> against the task's Difficulty. The more difficult the task, the more successes are needed.</p>
+          <p>Roll too high on the dice and you fail to accomplish the task. It may put your character in danger, or worse, but it makes the story more exciting. Rolling a 20 creates a <strong>complication</strong> (page 258).</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: PERSONAL WEAPON QUALITIES</span>
+            <span class="page-ref">(PAGES 241-242)</span>
+          </div>
+          <ul class="qualities-list">
+            <li><strong>ACCURATE:</strong> If you perform the <em>Aim</em> minor action before making an attack with this weapon, you may re-roll up to two d20s in your dice pool, rather than only one.</li>
+            <li><strong>AREA:</strong> When you succeed at an attack, additional targets in the same zone may be hit by spending 1 Momentum for each additional target (Repeatable). This attack may <em>Succeed at Cost</em>.</li>
+            <li><strong>CHARGE:</strong> If you perform the <em>Prepare</em> minor action before attacking with this weapon, you may add one of the following qualities to the attack: Area, Intense, or Piercing. If you choose Area, the attack's severity is reduced by 1.</li>
+            <li><strong>CUMBERSOME:</strong> You cannot attack with a cumbersome weapon unless you take the <em>Prepare</em> minor action on the same turn.</li>
+            <li><strong>DEBILITATING:</strong> The Difficulty to treat or to heal injuries caused by this weapon is increased by 1.</li>
+            <li><strong>GRENADE:</strong> You can attack a target at up to Medium range and have enough grenades for three separate attacks.</li>
+            <li><strong>HIDDEN X:</strong> You can use a minor action to conceal this weapon. Any search for the weapon requires an <strong>Insight</strong> or <strong>Reason + Security</strong> task with a Difficulty of X.</li>
+            <li><strong>INACCURATE:</strong> The weapon is imprecise and clumsy. You do not benefit from the <em>Aim</em> minor action when making an attack with this weapon.</li>
+            <li><strong>INTENSE:</strong> When making an attack with this weapon, you may increase the severity by spending 1 Momentum, rather than 2 (Repeatable).</li>
+            <li><strong>PIERCING:</strong> A successful attack with this weapon ignores the target's Protection rating.</li>
+          </ul>
+        </section>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: RECOVERING STRESS</span>
+            <span class="page-ref">(PAGES 290-293)</span>
+          </div>
+          <p>A character can recover <strong>Stress</strong> in several ways. Each time you recover 1 Stress, clear one marked space on your Stress track. If you're Fatigued, you can only recover from Stress by resting, or if an ally helps you. Ways to recover Stress include:</p>
+          <p>■ <strong>MOMENTUM:</strong> After a successful task, you may spend 2 Momentum to remove 1 Stress (Repeatable) from yourself or one ally who can hear you. A character cannot remove more than 3 Stress in this way on any single task.</p>
+          <p>■ <strong>REST:</strong> You can recover from Stress outside of conflict by spending time resting and relaxing:</p>
+          <div class="sub-bullet">▢ A <strong>breather</strong> is the most basic form of rest. This takes only a few minutes, during which you stop all strenuous activity. You remove <strong>4 Stress</strong> when you take a breather.</div>
+          <div class="sub-bullet">▢ A <strong>break</strong> is a more significant rest, taking at least half an hour, and up to a couple of hours. This may involve a modest meal, or taking some personal time for recreation. You remove <strong>8 Stress</strong> when you take a break.</div>
+          <div class="sub-bullet">▢ <strong>Sleep</strong> or a similar extended rest takes several hours, typically somewhere comfortable and quiet, and is normally accompanied by a meal and/or something to drink before or after sleep. You remove <strong>all your Stress</strong>, up to your normal maximum, when you sleep.</div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: RECOVERY AND HEALING</span>
+            <span class="page-ref">(PAGES 292-293)</span>
+          </div>
+          <p>The <em>First Aid</em> action allows you to attempt a <strong>Daring + Medicine</strong> task with a Difficulty of 2 to tend to another character within Reach. If you complete the task, the patient is no longer Defeated. Alternatively, you may attempt a <strong>Daring + Medicine</strong> task with a Difficulty equal to the Injury's severity to treat an Injury the patient has suffered.</p>
+          <p>A treated Injury no longer imposes any penalty, but it is still an Injury, and it will need proper medical treatment to remove entirely.</p>
+          <p>Longer-term healing cannot be done during combat. An Injured character requires medical treatment to remove the Injury completely. This treatment is normally a <strong>Control + Medicine</strong> task with a Difficulty of X and takes X hours, where X is the severity in both cases. Add 1 to the Difficulty and the complication range if the Injury was not treated.</p>
+          <p>If the patient has <em>multiple</em> Injuries, treating them all at once could be treated as a challenge, or even as an extended task (with a progress track of 3x the number of Injuries), at the gamemaster's discretion.</p>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- RULES SUMMARY CARD 02 -->
+  <article class="card" id="card-02">
+    <div class="card-header">
+      <div class="card-title-pill">▷ RULES SUMMARY CARD | 02</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 289)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">ACTION</th>
+            <th>EFFECT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Assist</strong></td>
+            <td>You <em>Assist</em> a character with a task roll during their turn. (See <em>Teamwork and Assistance</em>, page 255). If they have not yet acted, take this action on your turn, and <em>Assist</em> when they take their turn. If they attempt a task before your turn, you may choose to <em>Assist</em> them immediately, but you give up your turn later in the round to do so.</td>
+          </tr>
+          <tr>
+            <td><strong>Attack</strong></td>
+            <td>You <em>Attack</em> an enemy or other viable target and attempt to injure them. See <em>Attempting an Attack</em> (page 290) for details.</td>
+          </tr>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>This is a task with a Difficulty of 2, using an <strong>attribute + department</strong> and <strong>focus</strong> based on what you are doing. If successful, you create, change, or remove an existing trait, or increase or decrease the Potency of an existing trait.</td>
+          </tr>
+          <tr>
+            <td><strong>Direct</strong></td>
+            <td>This may only be attempted by one character on each side in a position of authority (the highest-ranking person, or a nominated leader). Spend 1 Momentum and select one ally who can hear you. They may immediately attempt a single action with no +1 Difficulty; you <em>Assist</em> them with your <strong>Control + Command</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>First Aid</strong></td>
+            <td>See the <em>Recovery and Healing</em> section on opposite side of card (also see pages 292-293).</td>
+          </tr>
+          <tr>
+            <td><strong>Guard</strong></td>
+            <td>You defend yourself, preparing for an attack. This is an <strong>Insight + Security</strong> task with a Difficulty of 0. Success increases the Difficulty of any attacks against you by 1 until the start of your next turn. You can confer the benefits of this task to an ally within Reach instead of yourself—this increases the Difficulty of this task by 1, and the benefit lasts until the start of your ally's next turn.</td>
+          </tr>
+          <tr>
+            <td><strong>Other Tasks</strong></td>
+            <td>Perform a task at the discretion of the gamemaster. Circumstances or objectives may dictate a task, and dangerous situations may require overcoming an extended task or completing a challenge.</td>
+          </tr>
+          <tr>
+            <td><strong>Pass</strong></td>
+            <td>You choose not to attempt a task.</td>
+          </tr>
+          <tr>
+            <td><strong>Ready</strong></td>
+            <td>You choose another major action to take as a reaction to something else. When the trigger event occurs, you temporarily interrupt the current character's turn to resolve your readied major action, then play proceeds as normal. If the triggering event does not occur before your next turn, the action is lost. You can still perform minor actions during your turn as normal.</td>
+          </tr>
+          <tr>
+            <td><strong>Sprint</strong></td>
+            <td>You run forward, trying to cross the area quickly. You move two zones, to any point within Long range. If there is difficult or hazardous terrain, you may attempt a <strong>Fitness + Conn</strong> task with Difficulty 0 as part of this action, to generate Momentum to cross the terrain as part of this action.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="card-grid-2col">
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: MINOR ACTIONS</span>
+          <span class="page-ref">(PAGE 288)</span>
+        </div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th style="width: 32%;">ACTION</th>
+              <th>EFFECT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Aim</strong></td>
+              <td>When you make an <em>Attack</em> this turn, you may re-roll a single d20 on the task roll.</td>
+            </tr>
+            <tr>
+              <td><strong>Draw Item</strong></td>
+              <td>You pick up an item within Reach or draw an item you are carrying. If using the item doesn't require a task to use, you can use it immediately.</td>
+            </tr>
+            <tr>
+              <td><strong>Interact</strong></td>
+              <td>You <em>Interact</em> with an object, such as opening a door by pressing the control panel or issuing a simple voice command to a computer.</td>
+            </tr>
+            <tr>
+              <td><strong>Movement</strong></td>
+              <td>You move up to one zone, to any point within Medium range. You cannot take this minor action in the same turn as a <em>Movement</em> major action. If there are any enemies within Reach of you, you cannot perform this action.</td>
+            </tr>
+            <tr>
+              <td><strong>Prepare</strong></td>
+              <td>You prepare for or set up a task. Some items require this minor action before they can be used, and some major actions require this minor action before they can be attempted.</td>
+            </tr>
+            <tr>
+              <td><strong>Stand/Drop Prone</strong></td>
+              <td>You drop to the ground or stand up from being prone. You cannot <em>Stand</em> and <em>Drop Prone</em> in the same turn.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: DETERMINATION SPENDS</span>
+          <span class="page-ref">(PAGE 262)</span>
+        </div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th style="width: 40%;">DETERMINATION SPEND</th>
+              <th>EFFECT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Moment of Inspiration</strong></td>
+              <td>You may spend Determination on a task roll, after the dice have been rolled, to re-roll any number of d20s in your dice pool.</td>
+            </tr>
+            <tr>
+              <td><strong>Perfect Opportunity</strong></td>
+              <td>You may spend Determination on a task roll—before any dice are rolled, but after you've purchased any extra dice—to select a single d20 and set it so that it counts as having rolled a 1 (and thus scoring a Critical Success).</td>
+            </tr>
+            <tr>
+              <td><strong>Special Technique</strong></td>
+              <td>Your character immediately gains the use of a single talent they do not possess. This talent remains for the rest of the current scene. You must meet the prerequisites for that talent, and the gamemaster may veto talents which make no sense for a character to suddenly obtain for a short while.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+  </article>
+
+  <!-- STARSHIP CONFLICT CARD 01 -->
+  <article class="card" id="card-starship-conflict-01">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP CONFLICT CARD | 01</div>
+    </div>
+
+    <div class="panel-header" style="border:none; margin-bottom:12px; font-size:1.2rem;">
+      <span>ATTEMPTING A STARSHIP ATTACK</span>
+      <span class="page-ref">(PAGE 307)</span>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>SELECT ATTACK:</strong> When you make a starship attack, the <em>Attack</em> action chosen will determine the type of weapon used—typically energy weapons or torpedoes. If your ship has multiple weapons, choose one to <em>Attack</em> with.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>SELECT TARGET:</strong> Choose a single vessel or another viable target visible to your ship. Some weapons have a limited range; you cannot choose a target beyond this limited range.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>ATTEMPT ATTACK:</strong> Attempt a <strong>Control + Security</strong> task, assisted by the ship's <strong>Weapons + Security</strong>, with a Difficulty determined by the <em>Attack</em> action chosen. For an energy weapon, the Difficulty is 2. For torpedoes, the Difficulty is 3. For a <em>Ram Attack</em> (see page 302), the Difficulty is 2.
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">4</div>
+      <div class="step-content" style="width: 100%;">
+        <strong>RESOLVE ATTACK:</strong> If the task is successful, it inflicts damage (see opposite). Roll on the <strong>Random System Hit</strong> table to determine which system was hit; the <em>Targeting Solutions</em> minor action allows you to select a choice.
+        
+        <table class="ref-table" style="margin-top:8px;">
+          <thead>
+            <tr>
+              <th colspan="2">.: RANDOM SYSTEM HIT</th>
+            </tr>
+            <tr>
+              <th style="width:25%;">D20</th>
+              <th>SYSTEM</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>1</strong></td><td>Communications</td></tr>
+            <tr><td><strong>2</strong></td><td>Computers</td></tr>
+            <tr><td><strong>3–6</strong></td><td>Engines</td></tr>
+            <tr><td><strong>7–9</strong></td><td>Sensors</td></tr>
+            <tr><td><strong>10–17</strong></td><td>Structure</td></tr>
+            <tr><td><strong>18–20</strong></td><td>Weapons</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-grid-2col" style="margin-top: 16px;">
+      <section class="panel">
+        <div class="panel-header">
+          <span>▷ TALKING IS A FREE ACTION</span>
+          <span class="page-ref">(PAGE 298)</span>
+        </div>
+        <p>Characters in the same physical space within the ship during starship combat can communicate freely: it doesn't take an action to talk unless the talking is part of another task. Most talking a character does should take place on their turn, but characters are free to comment on or interject during another character's turn.</p>
+        <p>Characters in different parts of the ship—say, the captain on the bridge and the chief engineer in main engineering—can communicate freely under normal circumstances, but damage to the ship's communications system may result in parts of the ship being cut off from communicating with one another.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <span>▷ COLLISION DAMAGE</span>
+          <span class="page-ref">(PAGE 309)</span>
+        </div>
+        <p>There are times when a ship may collide with another. This may happen accidentally—such as when a ship is attempting to dock or land and suffers a complication—or deliberately, by ramming. When one ship collides with another, each ship takes the other ship's <strong>collision damage</strong>.</p>
+        <p>A ship's collision damage rating is equal to the ship's <strong>Scale</strong>, plus half the number of zones moved before the collision. This has the Devastating and Piercing qualities. In addition, if a ship is ramming, then the ramming vessel gains the Intense quality as well.</p>
+      </section>
+    </div>
+  </article>
+
+  <!-- STARSHIP CONFLICT CARD 02 -->
+  <article class="card" id="card-starship-conflict-02">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP CONFLICT CARD | 02</div>
+    </div>
+
+    <div class="panel-header" style="border:none; margin-bottom:12px; font-size:1.2rem;">
+      <span>STARSHIP DAMAGE</span>
+      <span class="page-ref">(PAGE 309)</span>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <p><strong>DETERMINE DAMAGE:</strong> Your damage rating is determined by the weapon used, which may be modified by talents or other factors.</p>
+        <p>■ <strong>RESISTANCE:</strong> If the target ship has any Resistance, reduce your damage by 1 for each point of Resistance, to a minimum of 1.</p>
+        <p>■ <strong>COMPLICATIONS:</strong> A complication on an <em>Attack</em> may reduce your damage by 1 for each complication suffered—in essence, the complication means the <em>Attack</em> had less effect than expected. Refer to page 326 in <em>Chapter 9: Gamemastering</em> for more details on reduced effectiveness as a complication.</p>
+      </div>
+    </div>
+
+    <div class="step-box">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <p><strong>APPLY DAMAGE:</strong> Reduce the target ship's shields by 1 for each point of damage (after applying Resistance and other modifiers). If the ship's shields were already 0, the ship suffers a <strong>breach</strong> instead. Otherwise, check the ship's current shields against the three conditions below, and apply all of which are true.</p>
+        <p>■ <strong>SHIELDS AT 50%:</strong> If the damage reduces the ship's shields to below half its maximum value, the ship is <strong>shaken</strong>, with the commanding officer (or highest-ranking character) picking a damage result from the table below.</p>
+        <p>■ <strong>SHIELDS AT 25%:</strong> If the damage reduces the ship's shields to below one quarter of its maximum value, the ship is <strong>shaken</strong>, as above. If the ship was <em>already shaken</em> from that attack (from the shields at 50% condition, above), then the ship suffers a breach instead, as damage punches through the shields.</p>
+        <p>■ <strong>SHIELDS ARE DOWN:</strong> If the damage reduces the ship's shields to 0, the shields are down, and the ship suffers a breach.</p>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: STARSHIP COMBAT MOMENTUM SPENDS</span>
+        <span class="page-ref">(PAGE 307)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:30%;">MOMENTUM SPEND</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Added Damage</strong><br>(2 Momentum, Repeatable)</td>
+            <td>Increase the damage of a successful attack by 1 for every 2 Momentum spent.</td>
+          </tr>
+          <tr>
+            <td><strong>Devastating Attack</strong><br>(2 Momentum)</td>
+            <td>Roll an additional system; that system suffers a hit dealing half the attack's damage, rounding up.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: SHAKEN: MINOR DAMAGE RESULTS</span>
+        <span class="page-ref">(PAGE 308)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:18%;">D20</th>
+            <th style="width:28%;">MINOR DAMAGE</th>
+            <th>EFFECT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1–6</strong></td>
+            <td><strong>Brace for Impact!</strong></td>
+            <td>On the next turn this ship (or a character aboard this ship) takes, they may not take a major action.</td>
+          </tr>
+          <tr>
+            <td><strong>7–12</strong></td>
+            <td><strong>Losing Power!</strong></td>
+            <td>If you have Reserve Power, lose the use of Reserve Power. The next time you attempt to <em>Regain Power</em>, the Difficulty is increased by 1.</td>
+          </tr>
+          <tr>
+            <td><strong>13–18</strong></td>
+            <td><strong>Casualties and Minor Damage</strong></td>
+            <td>The ship suffers a complication.</td>
+          </tr>
+          <tr>
+            <td><strong>19–20</strong></td>
+            <td><strong>Roll Again</strong></td>
+            <td>Roll on this table again.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+
+  <!-- STARSHIP STANDARD ACTIONS -->
+  <article class="card" id="card-starship-standard-actions">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP STANDARD ACTIONS</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: STARSHIP STANDARD MINOR ACTIONS</span>
+        <span class="page-ref">(PAGE 300)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MINOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Change Position</strong></td>
+            <td>The character moves to any other station on the bridge, or to any other location on the ship. If that bridge station is unmanned, the character can take control of that station immediately; otherwise, the character takes control whenever the officer already at that station departs. If the character is moving to somewhere else on the ship, they will arrive in that location at the start of their next turn.</td>
+          </tr>
+          <tr>
+            <td><strong>Interact</strong></td>
+            <td>The character interacts with an object in the environment. Particularly complex interactions may require a major action (and a task) instead. This covers basic and routine interactions with ship systems that aren't otherwise covered here.</td>
+          </tr>
+          <tr>
+            <td><strong>Prepare</strong></td>
+            <td>The character prepares for, or spends time setting up, a task. Some tasks require this minor action to be taken before the task can be attempted.</td>
+          </tr>
+          <tr>
+            <td><strong>Restore</strong></td>
+            <td>The character performs the minor repairs and adjustments needed to restore a system after disruption or minor damage. Certain circumstances call for the use of this minor action.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="card-grid-2col">
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: MINOR ACTIONS</span>
+          <span class="page-ref">(PAGE 298)</span>
+        </div>
+        <p>As described on page 288, minor actions are activities a character can undertake that don't count as a task, and which don't require dice to be rolled. You can take 1 minor action on each of your turns, and may take an additional minor action per turn by spending 1 Momentum (Immediate).</p>
+        <p>The most common starship minor actions below are specific to starship operations during combat; a character can perform personal combat minor actions (page 288) if necessary, such as when being boarded.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: MAJOR ACTIONS</span>
+          <span class="page-ref">(PAGE 298)</span>
+        </div>
+        <p>A character can attempt a single major action (typically to attempt a task) during each turn, though there are two ways a character could attempt a second major action in a turn:</p>
+        <p>■ <strong>LEADERSHIP:</strong> The Direct major action allows a character to issue an order to a subordinate, granting them an extra major action.</p>
+        <p>■ <strong>MOMENTUM:</strong> A character may spend 2 Momentum after a successful task to attempt a second major action; however, any task attempted as part of this second major action increases in Difficulty by 1.</p>
+        <p>Regardless of the method used, a character cannot attempt more than two major actions in a round. The major actions apply to operating a starship in combat. Personal conflict tasks can also be attempted where relevant, such as when repelling boarders.</p>
+      </section>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: STARSHIP STANDARD MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 300)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Assist</strong></td>
+            <td>The character performs some activity that grants an ally an advantage. The character nominates a single ally they can communicate with and assists their next task (see <strong>Teamwork and Assistance</strong>, page 255). If a character attempts a task and you have not yet acted, you can give up your turn this round to assist them immediately.</td>
+          </tr>
+          <tr>
+            <td><strong>Alter Trait</strong></td>
+            <td>Create or change a trait in the scene, or remove one that's already present. This is a task with a Difficulty of 2, using an <strong>attribute + department</strong> and focus based on what you are doing. If successful, you create, change, or remove a trait.</td>
+          </tr>
+          <tr>
+            <td><strong>Other Tasks</strong></td>
+            <td>Perform a task at the discretion of the gamemaster. Circumstances or objectives may dictate a task, and particularly dangerous situations may require working to overcome an extended task or complete a challenge.</td>
+          </tr>
+          <tr>
+            <td><strong>Override</strong></td>
+            <td>The character overrides the controls of another position. The character may attempt a major action from any other position other than commanding officer, but increasing the Difficulty by 1, due to the sub-optimal controls.</td>
+          </tr>
+          <tr>
+            <td><strong>Pass</strong></td>
+            <td>The character chooses not to attempt a task.</td>
+          </tr>
+          <tr>
+            <td><strong>Ready</strong></td>
+            <td>You choose another major action to take as a reaction to something else. When the trigger event occurs, you temporarily interrupt the current character's turn to resolve your readied major action, then play proceeds as normal. If the triggering event does not occur before your next turn, the action is lost. You can still perform minor actions during your turn.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+
+  <!-- STARSHIP COMMAND & COMMUNICATIONS ACTIONS -->
+  <article class="card" id="card-starship-command-comms">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP COMMAND & COMMUNICATIONS ACTIONS</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: COMMAND MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 301)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Assist</strong></td>
+            <td>In addition to the standard <em>Assist</em> action description on page 289, if you use the <em>Assist</em> action on your turn while in command, you may pick <strong>two</strong> characters to assist, rather than one.</td>
+          </tr>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that while not unique to command, this action is useful for characters in command, and usually uses <strong>Control, Insight,</strong> or <strong>Reason + Command</strong>, to perform the task, normally representing battle plans, strategies, and similar.</td>
+          </tr>
+          <tr>
+            <td><strong>Direct</strong></td>
+            <td>Spend 1 Momentum and select one ally on the bridge who immediately attempts a single major action, and you assist them by rolling 1d20 with your <strong>Control + Command</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Rally</strong></td>
+            <td>You inspire and coordinate the crew, attempting a <strong>Presence + Command</strong> task with a Difficulty of 0; this task is specifically to generate Momentum, either to use immediately or to save for the group.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: COMMUNICATIONS MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 301)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, this action is often useful for creating traits which represent efforts to boost or recalibrate communications to pierce interference, or methods used to encrypt or decrypt messages. It can also be used to create traits that represent coordinating personnel aboard the ship or coordinating with other ships.</td>
+          </tr>
+          <tr>
+            <td><strong>Damage Control</strong></td>
+            <td>You direct a damage control team to begin stabilizing and repairing damage. Choose a single breach (see page 310), and attempt a <strong>Presence + Engineering</strong> task, with a Difficulty of 2; increase this by 1 per additional degree of Potency. If successful, the chosen breach is patched, and no longer imposes any penalties or effects. The breach itself is not fully removed, and will require proper repairs outside of combat.</td>
+          </tr>
+          <tr>
+            <td><strong>Transport</strong></td>
+            <td>You send instructions to one of the ship's transporter rooms to beam a group of people or objects, to or from the ship, or from one place to another. This follows the rules for transporters described on page 190, but operating them from the bridge increases the Difficulty by 1.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="card-grid-2col">
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: COMMAND STATION</span>
+        </div>
+        <p>Central to any bridge is the <strong>Command station</strong>, often a captain's chair. More than merely a centralized seat from which to oversee the bridge crew, most captain's chairs are equipped with a limited set of controls, configured to the captain's needs. These controls often tie into internal communications, navigation, or some other function to which the captain desires quick access or additional oversight.</p>
+        
+        <div class="panel-header" style="margin-top:12px;">
+          <span>.: COMMUNICATIONS</span>
+        </div>
+        <p>While communications functions can be accessed from several different stations, many ships have a dedicated <strong>comms station</strong>; this is especially the case with ships in the 22nd and 23rd centuries. This station controls all internal and external communications systems. The communications officer is responsible for maintaining and updating the universal translator, monitoring nearby transmissions (including distress calls and signals from hostiles), handling secure or encrypted communications, and coordinating crew activities such as security responses and damage control teams.</p>
+      </section>
+
+      <section class="panel">
+        <p>These actions are usually assisted by the ship's <strong>Communications + Engineering</strong>. The specialized nature of the controls at this station are designed to enable complex tasks, so any Communications-related tasks performed at this station reduce their Difficulty by 1.</p>
+
+        <div class="panel-header" style="margin-top:12px;">
+          <span>.: TRANSPORT</span>
+        </div>
+        <p>A transporter has an effective range of several thousand kilometers, and a standard transporter room can transport up to six people at once. Transporting from a transporter pad to a destination transporter pad is a <strong>Control + Engineering</strong> task with a Difficulty of 0, assisted by the ship's <strong>Sensors + Science</strong>. Transporting from a transporter pad to another site (one without a transporter pad), or vice versa, increases the Difficulty by 1, while a site-to-site transport increases the Difficulty by 2.</p>
+        <p>Deflector shields block transporter use—you cannot beam a target up or down when your own shields are active, and you cannot beam a target to or from a target whose shields are active.</p>
+      </section>
+    </div>
+  </article>
+
+  <!-- STARSHIP HELM & NAVIGATOR ACTIONS -->
+  <article class="card" id="card-starship-helm-navigator">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP HELM & NAVIGATOR ACTIONS</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: HELM / NAVIGATOR</span>
+        <span class="page-ref">(PAGE 187)</span>
+      </div>
+      <p>Characters at the helm can pilot the ship, directing where the ship goes and maneuvering it around hazards and dangers. These actions are usually assisted by the ship's <strong>Engines + Conn</strong>. If the helm also includes navigation, it allows a character to operate sensors and access star charts to plan a course to a specific destination.</p>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: HELM MINOR ACTIONS</span>
+        <span class="page-ref">(PAGE 302)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MINOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Impulse</strong></td>
+            <td>Using the ship's impulse engines, you fly the ship. You move up to 2 zones to anywhere within Long range. If you only move 1 zone, you may reduce the Momentum cost of movement through difficult or hazardous terrain by 1.</td>
+          </tr>
+          <tr>
+            <td><strong>Thrusters</strong></td>
+            <td>Using the ship's maneuvering thrusters, you make fine adjustments to the ship's position. You may move the ship to anywhere within your current zone, and you may move safely into Contact with another ship, station, or other object (this may include docking with another vessel or landing).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: HELM MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 302)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Attack Pattern</strong></td>
+            <td>You fly steadily to make it easier for your shipmates to target the enemy. If you take this action, each time your ship makes an attack before your next turn, you may <em>Assist</em> on that attack, using your <strong>Control + Conn</strong>. However, until your next turn, all attacks against the ship reduce their Difficulty by 1.</td>
+          </tr>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that, from the helm, this action is often useful for creating traits that reflect careful positioning or skilled maneuvering.</td>
+          </tr>
+          <tr>
+            <td><strong>Evasive Action</strong></td>
+            <td>You maneuver the ship in a quick, unpredictable way to foil enemy targeting. If you take this action, then until your next turn, all attacks against your ship become opposed tasks, opposed using your <strong>Daring + Conn</strong> and assisted by the ship's <strong>Structure + Conn</strong>. If you win the opposed task, you may move the ship 1 zone. However, until the start of your next turn, all attacks made by your ship suffer +1 Difficulty.<br>You cannot take this action if the ship is currently benefiting from the <em>Defensive Fire</em> action (page 305).</td>
+          </tr>
+          <tr>
+            <td><strong>Maneuver</strong></td>
+            <td>You focus on carefully controlling the ship's flight. Attempt a <strong>Control + Conn</strong> task with Difficulty 0, assisted by the ship's <strong>Engines + Conn</strong>. This is normally used to generate Momentum for crossing difficult terrain.</td>
+          </tr>
+          <tr>
+            <td><strong>Ram</strong></td>
+            <td>You choose a single enemy vessel or other target within Close range and move into Contact with them. This is an <em>Attack</em>, requiring a <strong>Daring + Conn</strong> task with a Difficulty of 2, assisted by the ship's <strong>Engines + Conn</strong>. If successful, the <em>Attack</em> inflicts the ship's collision damage (see sidebar) on the target, with the Intense quality, but suffers the target's collision damage in return.</td>
+          </tr>
+          <tr>
+            <td><strong>Warp</strong></td>
+            <td>Requires <strong>Reserve Power</strong>. You must take a <em>Prepare</em> minor action to take this action.<br>Attempt a <strong>Control + Conn</strong> task with a Difficulty of 1, assisted by the ship's <strong>Engines + Conn</strong>. If you succeed, you move the ship a number of zones equal to the ship's Engines score, or you leave the battlefield entirely. See <strong>Going to Warp</strong>, page 295.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: NAVIGATOR MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 303)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Assist</strong></td>
+            <td>When using the standard <em>Assist</em> action detailed on page 289, it's common for a navigator to assist the officer at the helm.</td>
+          </tr>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that, from the navigator's station, this action is often useful for creating traits that reflect plotting a careful course or studying the terrain.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+
+  <!-- STARSHIP TACTICAL ACTIONS -->
+  <article class="card" id="card-starship-tactical">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP TACTICAL ACTIONS</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: TACTICAL MINOR ACTIONS</span>
+        <span class="page-ref">(PAGE 305)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MINOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Calibrate Weapons</strong></td>
+            <td>You fine-tune the frequency of energy weapons, and the yield of torpedoes to achieve a desired result. On your next attack with the ship's weapons, increase the weapon's damage by 1.</td>
+          </tr>
+          <tr>
+            <td><strong>Prepare</strong></td>
+            <td>
+              The character prepares for, or spends time setting up, a task. Some tasks require this minor action to be taken before the task can be attempted. At tactical, this action can be used to raise or lower the ship's shields, or to arm or disarm the ship's weapons.
+              <p style="margin:4px 0 2px 0;">■ <strong>Shields:</strong> When the shields are lowered, the ship's maximum shields are 0. When raised, they are restored to their normal maximum, or to their previous total if the ship has taken any damage this scene.</p>
+              <p style="margin:0;">■ <strong>Weapons:</strong> The ship may only make <em>Weapons Attacks</em> if the weapons are armed. However, enemy ships can detect whether your ship's weapons are armed.</p>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Targeting Solution</strong></td>
+            <td>You lock targeting sensors onto an enemy vessel. Select a single enemy vessel within Long range. On the next attack against that vessel, either re-roll a d20 on the task, or choose which of the target's systems are hit by the attack, rather than rolling.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: TACTICAL MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 305)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that, from tactical, this action is often useful for creating traits that reflect modifications to weapon systems, or useful targeting data.</td>
+          </tr>
+          <tr>
+            <td><strong>Defensive Fire</strong></td>
+            <td>
+              Choose a single energy weapon on your ship. Until your next turn, any enemy attack against your ship becomes an opposed task, opposed by your <strong>Daring + Security</strong> (and assisted by your ship's <strong>Weapons + Security</strong>) at the same Difficulty. If you succeed, you may spend 2 Momentum to counterattack, inflicting your weapon's damage against the attacker.
+              <p style="margin:4px 0 0 0;">You cannot take this action if the ship is currently benefitting from <em>Evasive Action</em> (page 302).</p>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Fire</strong></td>
+            <td>You select a single energy weapon or a single torpedo weapon on the ship, choose a target for that weapon, and make an <em>Attack</em> following the process on page 306. If you attempt a torpedo attack, add 1 Threat.</td>
+          </tr>
+          <tr>
+            <td><strong>Modulate Shields</strong></td>
+            <td>This cannot be attempted if the shields are at 0. You try to tune your shields to resist enemy attacks. If you take this action, then until your next turn, increase the <strong>Resistance</strong> of your ship by 2.</td>
+          </tr>
+          <tr>
+            <td><strong>Tractor Beam</strong></td>
+            <td>
+              The character engages a tractor beam at a nearby object or vessel. This requires a <strong>Control + Security</strong> task, assisted by the ship's <strong>Structure + Security</strong> with a Difficulty of 2, and can only be directed at a target within Close range.
+              <p style="margin:4px 0 0 0;">If successful, the target vessel is immobilized and cannot move unless it can break free. This can be done in a number of ways, but the Difficulty is equal to the tractor beam strength of your vessel.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: TACTICAL</span>
+      </div>
+      <p>A character at tactical operates the ship's weapons and defensive systems. A ship may have a second tactical position as a separate station if it has a Security rating of 4+.</p>
+      <p>The <strong>tactical console</strong> (page 188) operates the ship's offensive and defensive systems: the weapons and shields, as well as related systems such as tractor beams. Many tactical stations allow the officer to monitor and coordinate the ship's internal security, including operation of communications—information security, handling of encrypted signals, and intercepting enemy transmissions—as well as coordinating security teams, internal doors, and forcefields. These actions are usually assisted by the ship's <strong>Weapons + Security</strong>.</p>
+    </section>
+  </article>
+
+  <!-- STARSHIP ENGINEERING & OPERATIONS ACTIONS -->
+  <article class="card" id="card-starship-engineering-operations">
+    <div class="card-header">
+      <div class="card-title-pill">▷ STARSHIP ENGINEERING & OPERATIONS ACTIONS</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: OPERATIONS/ENGINEERING MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 303)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that, from operations, this action is often useful for creating traits that reflect modifications to ship systems.</td>
+          </tr>
+          <tr>
+            <td><strong>Damage Control</strong></td>
+            <td>Choose a single breach and attempt a <strong>Presence + Engineering</strong> task, with a Difficulty of 2; increase this by 1 per additional degree of Potency. If successful, the breach is patched, and no longer imposes penalties or effects. The breach will require proper repairs outside of combat.</td>
+          </tr>
+          <tr>
+            <td><strong>Regain Power</strong></td>
+            <td>
+              You draw energy from another system to replenish the ship's Reserve Power. Attempt a <strong>Control + Engineering</strong> task, with a Difficulty of 1. This may <em>Succeed at Cost</em>. On success, you restore the ship's Reserve Power, allowing it to be used later during the scene. Complications should reflect subsystems shutdown to use their power.
+              <p style="margin:4px 0 0 0;">The Difficulty for this task increases by 1 each time it is attempted during a scene.</p>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Regenerate Shields</strong></td>
+            <td>Requires <strong>Reserve Power</strong>. You reroute Reserve Power to the shield emitters, attempting to restore their strength. This requires a <strong>Control + Engineering</strong> task with a Difficulty of 2, assisted by the ship's <strong>Structure + Engineering</strong>; the Difficulty increases by 1 if the ship's shields are at 0. If successful, the ship regains shields equal to your Engineering department, plus 2 more by spending 1 Momentum (Repeatable).</td>
+          </tr>
+          <tr>
+            <td><strong>Reroute Power</strong></td>
+            <td>Requires <strong>Reserve Power</strong>. You reroute Reserve Power to a specific system; the chosen system gains power which will apply to the next action using that system (as described on page 185).</td>
+          </tr>
+          <tr>
+            <td><strong>Transport</strong></td>
+            <td>You remotely operate the ship's transporters. This follows the rules for transporters described on page 190, but operating them from the bridge increases the Difficulty by 1.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: SENSOR OPERATIONS MINOR ACTIONS</span>
+        <span class="page-ref">(PAGE 304)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MINOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Calibrate Sensors</strong></td>
+            <td>You work to fine-tune the sensors to get the clearest readings. On your next <em>Sensor Operations</em> action, you may either ignore a single trait affecting the task, or re-roll 1d20.</td>
+          </tr>
+          <tr>
+            <td><strong>Launch Probe</strong></td>
+            <td>
+              You launch a sensor probe in order to study a situation or phenomenon in more depth or from a safe distance. Select a single zone anywhere within Long range: you launch a probe which flies to that zone. <em>Sensor Operations</em> major actions may determine range from the probe's location rather than the ship.
+              <p style="margin:4px 0 0 0;">The probe can be targeted as if a Small Craft, and it is destroyed if it takes any damage.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: SENSOR OPERATIONS MAJOR ACTIONS</span>
+        <span class="page-ref">(PAGE 304)</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:25%;">MAJOR ACTION</th>
+            <th>DESCRIPTION</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Create Trait</strong></td>
+            <td>In addition to the standard <em>Create Trait</em> action description on page 289, note that, from sensor operations, this action is often useful for creating traits that reflect important information that has been detected or discovered.</td>
+          </tr>
+          <tr>
+            <td><strong>Reveal</strong></td>
+            <td>You scan for the trace signals that may reveal the tell-tale presence of a cloaked vessel, or a vessel concealed by some other phenomenon. Attempt a <strong>Reason + Science</strong> task, assisted by the ship's <strong>Sensors + Science</strong>, with a Difficulty of 3. If you succeed, and there is a hidden vessel within Long range, you reveal which zone it is in (if there are multiple, this only reveals one such vessel, chosen at random). Until that vessel moves, your ship may attack that hidden vessel, but increasing the Difficulty by 2.</td>
+          </tr>
+          <tr>
+            <td><strong>Scan For Weakness</strong></td>
+            <td>You scan an enemy vessel, looking for vulnerabilities. Choose a single vessel and attempt a <strong>Control + Science</strong> task with a Difficulty of 2, assisted by the ship's <strong>Sensors + Security</strong>. If this succeeds, the next attack made against that ship increases its damage by 2, or gains the Piercing quality.</td>
+          </tr>
+          <tr>
+            <td><strong>Sensor Sweep</strong></td>
+            <td>You use the sensors to scan for information. Select a single zone to scan, and attempt a <strong>Reason + Science</strong> task, assisted by the ship's <strong>Sensors + Science</strong>, with a Difficulty of 1. If successful, the gamemaster provides basic information on any ships, objects, or other phenomena in that zone; you may spend Momentum to get extra information as normal.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </article>
+
+  <!-- BREACHES CARD 01 -->
+  <article class="card" id="card-breaches-01">
+    <div class="card-header">
+      <div class="card-title-pill">▷ BREACHES CARD | 01</div>
+    </div>
+
+    <p style="font-size:0.85rem; margin-bottom:12px;">
+      As an option, use these <strong>Breaches</strong> tables to generate thematic descriptions and traits for breaches affecting damaged ship systems. Use the <strong>Nature of Breach</strong> table to determine the nature of the breach inflicted, then use the other tables for the different systems to determine which subsystem is affected, and a suggested game effect.
+    </p>
+
+    <div class="card-grid-2col">
+      <div>
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: NATURE OF BREACH</span>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th style="width:20%;">D20</th>
+                <th>NATURE OF BREACH</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1–4</strong></td>
+                <td><strong>Damaged:</strong> The subsystem is mostly functional, but does occasionally pose problems. The gamemaster is encouraged to spend Threat to cause complications related to the subsystem.</td>
+              </tr>
+              <tr>
+                <td><strong>5–8</strong></td>
+                <td><strong>Malfunctioning:</strong> The subsystem is no longer fully functional. Each turn, one character must perform a Restore minor action for that system to allow tasks to be attempted with that subsystem that turn.</td>
+              </tr>
+              <tr>
+                <td><strong>9–12</strong></td>
+                <td><strong>Primary Offline, Switching to Backup:</strong> The subsystem has been rendered inoperable, but backup or secondary systems have taken over. Add 1 to the Difficulty of tasks using the subsystem.</td>
+              </tr>
+              <tr>
+                <td><strong>13–16</strong></td>
+                <td><strong>Failing:</strong> The subsystem is losing power and function rapidly, and while it is still functioning now, that may change soon. You add 1 to the Difficulty of tasks relating to this subsystem, and the gamemaster may spend 1 Threat subsequently to have the subsystem fail entirely.</td>
+              </tr>
+              <tr>
+                <td><strong>17–20</strong></td>
+                <td><strong>Offline:</strong> The subsystem has shut down or been rendered inoperable, and the backups have failed as well. You may not attempt tasks related to this subsystem.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: COMMUNICATIONS BREACHES</span>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th style="width:20%;">D20</th>
+                <th>COMMUNICATIONS BREACH</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1–7</strong></td>
+                <td><strong>Subspace Transceiver Array:</strong> This is a vital component of faster-than-light and long-ranged communications. Damage affects the ship's ability to call for assistance.</td>
+              </tr>
+              <tr>
+                <td><strong>8–14</strong></td>
+                <td><strong>Internal Communications:</strong> The internal communications network of the ship has been affected, limiting the ability of the crew to contact one another.</td>
+              </tr>
+              <tr>
+                <td><strong>15–20</strong></td>
+                <td><strong>Short-Range Communications:</strong> The ship's short-range communications—conventional radio, tight beam laser, and other electromagnetic signals—have been affected, limiting communication with other nearby vessels and stations.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <div>
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: COMPUTERS BREACHES</span>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th style="width:20%;">D20</th>
+                <th>COMPUTERS BREACHES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1–7</strong></td>
+                <td><strong>Main Computer:</strong> The ship's main computer system has been affected, preventing access to library information as well as most automation and control subroutines, leaving individual consoles to function alone. This may cause wider problems controlling the ship.</td>
+              </tr>
+              <tr>
+                <td><strong>8–14</strong></td>
+                <td><strong>Holodeck:</strong> The ship's holodeck (or comparable simulator—reroll if no such equivalent exists) is malfunctioning, and may behave unpredictably.</td>
+              </tr>
+              <tr>
+                <td><strong>15–20</strong></td>
+                <td><strong>ODN Network:</strong> The Optical Data Network has been affected, limiting the ability of data to move around the ship. This may render control consoles unreliable or inoperable as they can no longer connect to the systems they control.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <span>.: ENGINES BREACHES</span>
+          </div>
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th style="width:20%;">D20</th>
+                <th>ENGINE BREACHES</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>1–4</strong></td>
+                <td><strong>Impulse Engines:</strong> The ship's sublight propulsion system has been affected, impacting the ship's ability to move at sublight speeds.</td>
+              </tr>
+              <tr>
+                <td><strong>5–8</strong></td>
+                <td><strong>Reaction Control Thrusters:</strong> The ship's maneuvering thrusters have been affected, limiting the ship's ability to make fine adjustments to its position and maneuver around obstacles.</td>
+              </tr>
+              <tr>
+                <td><strong>9–12</strong></td>
+                <td><strong>EPS Grid:</strong> The ship's Electro-Plasma System, which feeds power to systems across the ship, has been damaged. Damaged EPS conduits often result in power failures to key systems, fires, injuries to personnel, or all three.</td>
+              </tr>
+              <tr>
+                <td><strong>13–16</strong></td>
+                <td><strong>Warp Nacelles:</strong> One of the ship's nacelles, which allow the ship to fly at warp speeds, has been damaged. These are seldom inhabited, but damage can result in fires, plasma leaks, or dangerous radiation leaks.</td>
+              </tr>
+              <tr>
+                <td><strong>17–20</strong></td>
+                <td><strong>Warp Core:</strong> The main reactor that powers the warp engines—and the rest of the ship—has been damaged. This can be extremely dangerous, as the ship is suddenly left without main power, and a containment failure may result in major casualties, massive damage, or even the destruction of the ship. On most ships, this will be a matter/antimatter reactor, though Romulan vessels tend to use a contained singularity drive.</td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <!-- BREACHES CARD 02 -->
+  <article class="card" id="card-breaches-02">
+    <div class="card-header">
+      <div class="card-title-pill">▷ BREACHES CARD | 02</div>
+    </div>
+
+    <section class="panel">
+      <div class="panel-header">
+        <span>.: STRUCTURE BREACHES</span>
+      </div>
+      <table class="ref-table">
+        <thead>
+          <tr>
+            <th style="width:15%;">D20</th>
+            <th>STRUCTURE BREACHES</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1–4</strong></td>
+            <td><strong>Inertial Dampers:</strong> An essential starship system which absorbs and counters inertial forces upon the ship; if damaged, this can make acceleration dangerous or even deadly, limiting how fast the ship can move safely.</td>
+          </tr>
+          <tr>
+            <td><strong>5–7</strong></td>
+            <td><strong>Structural Integrity:</strong> A system of forcefields that run through the ship's superstructure, reinforcing it against the stresses of spaceflight. If damaged, the ship may suffer even greater damage as the hull collapses. A possible effect of this may be to reduce or even remove the ship's <strong>Resistance</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>8–11</strong></td>
+            <td><strong>Hull Breach:</strong> A section of the ship's hull has been pierced, exposing the interior to hard vacuum, and potentially resulting in crew casualties. Normally, doors will seal and forcefields will be erected to isolate breaches like this, but severe damage can compromise these systems.</td>
+          </tr>
+          <tr>
+            <td><strong>12–14</strong></td>
+            <td><strong>Life Support:</strong> The ship's atmospheric and artificial gravity systems have been affected. Short-term, the crew can survive with whatever breathable air remains in the ship, but the longer life support is damaged, the worse the problem will get.</td>
+          </tr>
+          <tr>
+            <td><strong>15–17</strong></td>
+            <td><strong>Deflector Shields:</strong> The ship's shield generators are affected, compromising the ship's main defenses against attack.</td>
+          </tr>
+          <tr>
+            <td><strong>18–20</strong></td>
+            <td><strong>Launch Bay:</strong> The ship's shuttle bay or auxiliary craft bay has been affected, making it difficult to launch or receive small craft.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="card-grid-2col">
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: SENSORS BREACHES</span>
+        </div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th style="width:20%;">D20</th>
+              <th>SENSORS BREACH</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1–4</strong></td>
+              <td><strong>Long-Range Sensor Array:</strong> Sensor arrays used to detect warp signatures and stellar phenomena several light-years away are affected.</td>
+            </tr>
+            <tr>
+              <td><strong>5–8</strong></td>
+              <td><strong>Short-Range Sensor Array:</strong> Sensor arrays used to gain detailed information within a few hundred thousand kilometers are affected.</td>
+            </tr>
+            <tr>
+              <td><strong>9–12</strong></td>
+              <td><strong>Transporters:</strong> The transporter systems, which rely heavily on specialized sensors, are affected.</td>
+            </tr>
+            <tr>
+              <td><strong>13–16</strong></td>
+              <td><strong>Astrogation Sensors:</strong> A ship relies on a host of specialized navigation sensors for plotting courses and mapping hazards. Damage to these sensors can make maneuvering much riskier.</td>
+            </tr>
+            <tr>
+              <td><strong>17–20</strong></td>
+              <td><strong>Targeting Sensors:</strong> The ship's tactical sensor arrays have been affected, potentially hindering the accuracy of attacks.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: WEAPONS BREACHES</span>
+        </div>
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th style="width:20%;">D20</th>
+              <th>WEAPONS BREACHES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1–8</strong></td>
+              <td><strong>Energy Weapons:</strong> The ship's energy weapons have been affected, limiting their ability to fire.</td>
+            </tr>
+            <tr>
+              <td><strong>9–16</strong></td>
+              <td><strong>Torpedoes:</strong> The ship's torpedo launchers have been affected. This could be particularly dangerous if the ship's magazine—where the torpedoes are stored—is affected.</td>
+            </tr>
+            <tr>
+              <td><strong>17–20</strong></td>
+              <td><strong>Tractor Beam Emitter:</strong> The ship's tractor beam emitters have been affected.</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="card-grid-2col">
+      <section class="panel">
+        <div class="panel-header">
+          <span>▷ BREACHES AND POTENT TRAITS</span>
+          <span class="page-ref">(PAGE 310)</span>
+        </div>
+        <p>Multiple identical traits can be combined to create a <strong>Potent trait</strong>, with a <strong>Potency</strong> rating noted after the trait's name. The rating is equal to the number of traits combined in this way—three traits representing dense smoke would be combined into <strong>Dense Smoke 3</strong>, for example.</p>
+        <p>As breaches are a form of trait, this can be a useful way to handle especially severe damage inflicted, such as if a single attack inflicts multiple breaches.</p>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <span>.: BREACHES</span>
+          <span class="page-ref">(PAGES 310-311)</span>
+        </div>
+        <p>A breach is a trait representing serious damage to the ship and/or crew, and is associated with the system of the ship struck by the attack or hazard. As a negative trait, its usual effect is to increase the Difficulty of tasks attempted or to make some tasks impossible.</p>
+        
+        <div class="panel-header" style="margin-top:8px;">
+          <span>.: REPAIRING DAMAGE</span>
+        </div>
+        <p>If a ship has suffered breaches, characters can attempt tasks to try and repair the damage (see page 311).</p>
+
+        <div class="panel-header" style="margin-top:8px;">
+          <span>.: SYSTEMS DESTROYED</span>
+        </div>
+        <p>If a system suffers a number of breaches equal to or greater than half the ship's Scale, the system is destroyed. When a system is destroyed, any task which would be assisted by that system automatically fails.</p>
+        <p>If your ship suffers a number of breaches greater than the ship's Scale, the ship suffers critical damage and can no longer function. No further actions can be taken if the ship has taken critical damage. If the ship takes any additional breaches, it is destroyed.</p>
+      </section>
+    </div>
+  </article>
+
+</body>
+</html>
