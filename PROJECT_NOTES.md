@@ -98,6 +98,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Full width below: Talents (`ledger_talents`, search + category filter appends), Mission Profile & Active Directives (`ledger_mission_directives`), Pastimes (`ledger_background_notes`, 2 lines) split horizontally with LCARS Orange Momentum Pool (`combat_momentum_1..6`, Max 6, inset numbers) in the bottom-right corner.
 - LAYOUT RULES: Determination bottom border must align with Focuses bottom. Species Ability stays 3 lines, Focuses 6 lines, Values 4. Talents and Mission Profile share leftover height via JS `balance()` (Talents = ceil(lines/2)+2, Mission = floor(lines/2)-2).
 - Shrink-to-fit: `.fit-box` shrinks entire block; `.fit-text` shrinks per line. Default text 11.5px.
+- Dynamic ruled lines: textareas and writein boxes mask horizontal lines only where text appears (`--mask-h`), leaving ruled lines visible in remaining empty space below. Empty fields and Print Blank retain all ruled lines.
 
 ## Page 2 - Tactical Annex
 - Layout: 3 vertical bands on `.blank-workspace-canvas` with unified 6px gap.

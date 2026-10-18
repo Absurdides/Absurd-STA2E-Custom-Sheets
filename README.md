@@ -15,6 +15,7 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - **Page 5 Ship:** Systems, Breaches, Departments, Shields, Attacks, Talents and a schematic image. In Play Mode, Systems and Departments get `±` modifier boxes like the character stats.
 - **Page 6 Reference:** Printable 2E quick-reference sheet covering Task Resolution, Action Economy, Momentum Spends, Determination, and Stress, Injury and Recovery. Rules text here and in the ⓘ popovers is limited to the Quickstart Guide v1.1 and the official Momentum spends list.
 - Pickers (Species Ability, Talents, Weapons, Equipment, Ship Weapons and Ship Talents) have a search box and add the entry for you.
+- Ruled lines hide under typed text so they don't cut through your words, while remaining visible on empty lines below and on blank sheets.
 
 ## Log Selection (Pages 3 and 4)
 - Tap, click or type in any block to make it the active block. A panel of large buttons appears over the left border beside it, with an arrow pointing at the block: ▲ ▼ move it, ✓ ticks it for selection and × deletes it (Undo restores it). On Header Bars and Detail Rows a colour swatch button also appears; each tap switches to the colour the swatch shows. On a narrow screen the panel docks along the bottom and names the block. Ticked blocks get an orange outline. Ticks are never saved and never print.
