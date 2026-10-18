@@ -148,7 +148,7 @@ function initConsole() {
         if (t) t.value = title || '';
         if (x) {
             if (x.isContentEditable) {
-                if (text && /<[a-z][\s\S]*>/i.test(text)) x.innerHTML = text;
+                if (text) x.innerHTML = text;
                 else x.textContent = text || '';
             } else {
                 x.value = text || '';
@@ -185,7 +185,7 @@ function initConsole() {
         for (let i = 2; i <= n; i++) addSection(id);
 		blocks.forEach(b => {
             const tb = Number(b.tab) || 1;
-            if (['blue', 'tan', 'orange', 'slate'].includes(b.type) && b.text) { addBlock(id, tb, b.type, b.title, ''); addBlock(id, tb, 'para', '', b.text); }
+            if (['blue', 'tan', 'orange', 'slate'].includes(b.type) && b.text) { addBlock(id, tb, b.type, b.title, ''); addBlock(id, tb, 'para', '', escHtml(b.text)); }
             else addBlock(id, tb, b.type, b.title, b.text, b.rows);
         });
         showSection(id, 1);
@@ -740,7 +740,7 @@ function initConsole() {
         o.style.display = 'block';
     }
     onBtn('btn-manual', openManual);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); const dm = document.getElementById('discord-modal'); if (dm) dm.remove(); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); ['discord-modal', 'md-modal'].forEach(mid => { const dm = document.getElementById(mid); if (dm) dm.remove(); }); } });
 
     // ===== Log block selection: Export / Import / Discord / Delete (Pages 3 and 4) =====
     function selBlocks(id) {
@@ -881,27 +881,6 @@ function initConsole() {
         if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(done, fallback);
         else fallback();
     }
-    function showDiscord(parts) {
-        const old = document.getElementById('discord-modal'); if (old) old.remove();
-        const dlg = document.createElement('div');
-        dlg.id = 'discord-modal'; dlg.className = 'no-print';
-        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box discord-box"><div class="row-modal-header"></div><div class="row-modal-body"></div><div class="discord-parts"></div><div class="row-modal-btn-row"><button type="button" class="lcars-utility-btn" style="background-color: #2c3a4d;">Close</button></div></div></div>';
-        dlg.querySelector('.row-modal-header').textContent = 'Copy for Discord // ' + parts.length + (parts.length === 1 ? ' message' : ' messages');
-        dlg.querySelector('.row-modal-body').textContent = parts.length === 1 ? 'Paste into Discord as one message.' : 'Discord limits messages to 2000 characters. Paste each part as its own message, in order.';
-        const host = dlg.querySelector('.discord-parts');
-        parts.forEach((p, i) => {
-            const wrap = document.createElement('div'); wrap.className = 'discord-part';
-            const head = document.createElement('div'); head.className = 'discord-part-head';
-            const lab = document.createElement('span'); lab.textContent = 'Part ' + (i + 1) + ' of ' + parts.length + ' \u2022 ' + p.length + ' chars';
-            const btn = document.createElement('button'); btn.type = 'button'; btn.className = 'lcars-utility-btn'; btn.style.backgroundColor = '#d96b27'; btn.textContent = 'Copy';
-            const ta = document.createElement('textarea'); ta.readOnly = true; ta.value = p; ta.rows = Math.min(12, Math.max(4, p.split('\n').length + 1));
-            btn.addEventListener('click', () => copyText(p, ta, btn));
-            head.appendChild(lab); head.appendChild(btn); wrap.appendChild(head); wrap.appendChild(ta); host.appendChild(wrap);
-        });
-        dlg.querySelector('.row-modal-btn-row button').addEventListener('click', () => dlg.remove());
-        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) dlg.remove(); });
-        document.body.appendChild(dlg);
-    }
     function importBlocks(id, raw) {
         const TYPES = ['blue', 'tan', 'orange', 'slate', 'para', 'ruled', 'cap-tan', 'cap-orange', 'cap-slate', 'cap-navy'];
         const HEAD = ['blue', 'tan', 'orange', 'slate'], list = [];
@@ -989,9 +968,9 @@ function initConsole() {
     tool('sel-discord', id => {
         const sel = selBlocks(id);
         if (!sel.length) { noSel(); return; }
-        const parts = discordParts(sel.map(blockData));
+        const data = sel.map(blockData), parts = discordParts(data);
         if (!parts.length) { alert('The selected blocks have no text to copy.'); return; }
-        showDiscord(parts);
+        showDiscord(data);
     });
     tool('sel-delete', id => {
         const sel = selBlocks(id);
@@ -1030,6 +1009,233 @@ function initConsole() {
         });
     }
 
+    // ===== Markdown <-> blocks (Import Markdown, Discord markdown, .md download) =====
+    function escHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    const MD_ESC = { '\\': '\uE000', '*': '\uE001', '_': '\uE002', '`': '\uE003', '~': '\uE004', '|': '\uE005', '#': '\uE006', '>': '\uE007', '[': '\uE008', ']': '\uE009', '(': '\uE00A', ')': '\uE00B', '-': '\uE00C', '!': '\uE00D', '.': '\uE00E', '+': '\uE00F' };
+    const MD_UNESC = {};
+    Object.keys(MD_ESC).forEach(k => { MD_UNESC[MD_ESC[k]] = k; });
+    const HEAD_TYPES = ['blue', 'tan', 'orange', 'slate'];
+    function escMd(s) { return String(s).replace(/([\\*_`~|])/g, '\\$1').replace(/^(\s*)([#>])/gm, '$1\\$2'); }
+    // Inline markdown to HTML (<b>/<i>) or plain text. No regex lookbehind (older Safari).
+    function mdInline(s, html) {
+        let t = String(s).replace(/\\([\\*_`~|#>\[\]()\-!.+])/g, (m, c) => MD_ESC[c]);
+        if (html) t = escHtml(t);
+        t = t.replace(/!\[([^\]]*)\]\([^)]*\)/g, '$1').replace(/\[([^\]]+)\]\([^)]*\)/g, '$1').replace(/`([^`]+)`/g, '$1').replace(/~~(\S(?:[\s\S]*?\S)?)~~/g, '$1');
+        const B = html ? ['<b>', '</b>'] : ['', ''], I = html ? ['<i>', '</i>'] : ['', ''];
+        t = t.replace(/\*\*\*(\S(?:[\s\S]*?\S)?)\*\*\*/g, B[0] + I[0] + '$1' + I[1] + B[1])
+            .replace(/\*\*(\S(?:[\s\S]*?\S)?)\*\*/g, B[0] + '$1' + B[1])
+            .replace(/__(\S(?:[\s\S]*?\S)?)__/g, B[0] + '$1' + B[1])
+            .replace(/\*(\S(?:[^*]*?\S)?)\*/g, I[0] + '$1' + I[1])
+            .replace(/(^|[^\w])_(\S(?:[^_]*?\S)?)_(?!\w)/g, '$1' + I[0] + '$2' + I[1]);
+        return t.replace(/[\uE000-\uE00F]/g, c => MD_UNESC[c]);
+    }
+    function mdToBlocks(md) {
+        const lines = String(md).replace(/\r\n?/g, '\n').split('\n'), out = [];
+        let para = [], kind = '', inCode = false;
+        const flush = () => {
+            if (para.length) {
+                let s = '';
+                para.forEach((p, i) => { s += p.t; if (i < para.length - 1) s += p.h ? '\n' : ' '; });
+                const R1 = /^\*\*([^*]{1,40}?):\*\*\s*(\S[\s\S]*)$/, R2 = /^\*\*([^*]{1,40}?)\*\*:\s*(\S[\s\S]*)$/;
+                const rows = kind === 'text' ? para.map(p => p.t.match(R1) || p.t.match(R2)) : [];
+                if (rows.length && rows.every(Boolean)) rows.forEach(r => out.push({ type: 'cap-tan', title: mdInline(r[1], false).trim(), text: mdInline(r[2], false).trim(), rows: '' }));
+                else out.push({ type: 'para', title: '', text: mdInline(s, true), rows: '' });
+            }
+            para = []; kind = '';
+        };
+        lines.forEach(line => {
+            let m;
+            if (/^\s*(```|~~~)/.test(line)) { flush(); inCode = !inCode; return; }
+            if (inCode) {
+                if (!line.trim()) { flush(); return; }
+                if (kind !== 'code') { flush(); kind = 'code'; }
+                para.push({ t: line.replace(/([\\*_`~|])/g, '\\$1'), h: true });
+                return;
+            }
+            if (!line.trim()) { flush(); return; }
+            if ((m = line.match(/^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$/))) {
+                flush();
+                const t = mdInline(m[2], false).trim();
+                if (t) out.push({ type: 'blue', title: t, text: '', rows: '' });
+                return;
+            }
+            if (/^\s{0,3}([-*_])(\s*\1){2,}\s*$/.test(line)) { flush(); return; }
+            line = line.replace(/^\s{0,3}>\s?/, '');
+            if (/^\s*\|.*\|\s*$/.test(line)) {
+                if (/^[\s|:-]+$/.test(line)) return;
+                if (kind !== 'table') { flush(); kind = 'table'; }
+                para.push({ t: line.trim().replace(/^\||\|$/g, '').split('|').map(c => c.trim()).join(' | '), h: true });
+                return;
+            }
+            if ((m = line.match(/^(\s*)([-*+]|\d+[.)])\s+(.*)$/))) {
+                if (kind !== 'list') { flush(); kind = 'list'; }
+                para.push({ t: m[1] + (/^[-*+]$/.test(m[2]) ? '-' : m[2]) + ' ' + m[3], h: true });
+                return;
+            }
+            if (kind === 'list' && /^\s+\S/.test(line)) { para[para.length - 1].t += ' ' + line.trim(); return; }
+            if (kind !== 'text') { flush(); kind = 'text'; }
+            para.push({ t: line.trim().replace(/\\$/, ''), h: / {2,}$|\\$/.test(line) });
+        });
+        flush();
+        return out;
+    }
+    function htmlToMd(html) {
+        const t = document.createElement('template');
+        t.innerHTML = html || '';
+        const wrap = (inner, m) => { const mm = inner.match(/^(\s*)([\s\S]*?)(\s*)$/); return mm[2] ? mm[1] + m + mm[2] + m + mm[3] : inner; };
+        function walk(n) {
+            let s = '';
+            n.childNodes.forEach(c => {
+                if (c.nodeType === 3) { s += escMd(c.nodeValue); return; }
+                if (c.nodeType !== 1) return;
+                if (c.tagName === 'BR') { s += '\n'; return; }
+                let inner = walk(c);
+                const st = c.style || {};
+                if (c.tagName === 'B' || c.tagName === 'STRONG' || /^(bold|[6-9]00)$/.test(st.fontWeight || '')) inner = wrap(inner, '**');
+                if (c.tagName === 'I' || c.tagName === 'EM' || st.fontStyle === 'italic') inner = wrap(inner, '*');
+                if (c.tagName === 'DIV' || c.tagName === 'P') {
+                    if (s && !s.endsWith('\n')) s += '\n';
+                    s += inner;
+                    if (!s.endsWith('\n')) s += '\n';
+                    return;
+                }
+                s += inner;
+            });
+            return s;
+        }
+        return walk(t.content).replace(/\n+$/, '');
+    }
+    function blockMd(b, compact) {
+        const hard = x => compact ? x : x.replace(/([^\n])\n(?=[^\n])/g, '$1  \n');
+        if (HEAD_TYPES.indexOf(b.type) >= 0) { const t = b.title.trim(); return t ? { kind: 'head', text: '## ' + escMd(t) } : null; }
+        if (b.type.indexOf('cap-') === 0) {
+            const l = b.title.trim().toUpperCase(), t = b.text.trim();
+            const txt = l && t ? '**' + escMd(l) + ':** ' + hard(escMd(t)) : (l ? '**' + escMd(l) + ':**' : hard(escMd(t)));
+            return txt ? { kind: 'row', text: txt } : null;
+        }
+        if (b.type === 'para') { const t = htmlToMd(b.text).trim(); return t ? { kind: 'para', text: hard(t) } : null; }
+        return null;
+    }
+    function mdSep(prev, kind, compact) {
+        if (!compact || kind === 'head') return '\n\n';
+        if (kind === 'row') return (prev === 'row' || prev === 'head') ? '\n' : '\n\n';
+        return prev === 'head' ? '\n' : '\n\n';
+    }
+    function blocksToMd(blocks, compact) {
+        let out = '', prev = '';
+        blocks.forEach(b => {
+            const u = blockMd(b, compact);
+            if (!u) return;
+            out += (out ? mdSep(prev, u.kind, compact) : '') + u.text;
+            prev = u.kind;
+        });
+        return out;
+    }
+    // Discord messages as rendered markdown, packed under 2000 characters
+    function mdDiscordParts(blocks) {
+        const MAX = 1950, units = [];
+        let prev = '';
+        blocks.forEach(b => {
+            const u = blockMd(b, true);
+            if (!u) return;
+            const sep = units.length ? mdSep(prev, u.kind, true) : '';
+            splitLong(u.text, MAX - 100).forEach((p, i) => units.push({ kind: u.kind, sep: i ? '\n' : sep, text: p }));
+            prev = u.kind;
+        });
+        const len = arr => arr.reduce((n, u, i) => n + (i ? u.sep.length : 0) + u.text.length, 0);
+        const join = arr => arr.map((u, i) => (i ? u.sep : '') + u.text).join('');
+        const parts = [];
+        let cur = [];
+        units.forEach(u => {
+            if (cur.length && len(cur.concat(u)) > MAX) {
+                let carry = [];
+                const lastU = cur[cur.length - 1];
+                if (cur.length > 1 && lastU.kind === 'head' && len([lastU, u]) <= MAX) carry = [cur.pop()];
+                parts.push(join(cur));
+                cur = carry;
+            }
+            cur.push(u);
+        });
+        if (cur.length) parts.push(join(cur));
+        return parts;
+    }
+    function downloadMd(data) {
+        const md = blocksToMd(data, false);
+        if (!md.trim()) { alert('The selected blocks have no text to export.'); return; }
+        const nm = (fileId.value || '').trim().toLowerCase().replace(/[^a-z0-9\-]/g, '_') || 'sta2e';
+        const a = document.createElement('a');
+        a.download = nm + '_' + (currentDoc() || 'log') + '_log_' + new Date().toLocaleDateString('en-CA') + '.md';
+        a.href = URL.createObjectURL(new Blob([md + '\n'], { type: 'text/markdown' }));
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    }
+    function showDiscord(data) {
+        const old = document.getElementById('discord-modal'); if (old) old.remove();
+        const dlg = document.createElement('div');
+        dlg.id = 'discord-modal'; dlg.className = 'no-print';
+        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box discord-box"><div class="row-modal-header">Copy for Discord</div><div class="discord-ctl"></div><div class="row-modal-body"></div><div class="discord-parts"></div><div class="row-modal-btn-row"></div></div></div>';
+        const ctl = dlg.querySelector('.discord-ctl'), body = dlg.querySelector('.row-modal-body'), host = dlg.querySelector('.discord-parts');
+        let fmt = lsGet('sta2e_discord_fmt') === 'md' ? 'md' : 'code';
+        const mk = (box, label, color, fn) => {
+            const x = document.createElement('button');
+            x.type = 'button'; x.className = 'lcars-utility-btn'; x.style.backgroundColor = color; x.textContent = label;
+            x.addEventListener('click', fn); box.appendChild(x); return x;
+        };
+        const setFmt = f => { fmt = f; lsSet('sta2e_discord_fmt', f); render(); };
+        const bCode = mk(ctl, 'Code block', '#708699', () => setFmt('code'));
+        const bMd = mk(ctl, 'Markdown', '#708699', () => setFmt('md'));
+        mk(ctl, 'Download .md', '#d96b27', () => downloadMd(data));
+        mk(dlg.querySelector('.row-modal-btn-row'), 'Close', '#2c3a4d', () => dlg.remove());
+        function render() {
+            [[bCode, 'code'], [bMd, 'md']].forEach(([b, f]) => { b.style.backgroundColor = fmt === f ? '#eed292' : '#708699'; b.style.color = fmt === f ? '#000000' : '#ffffff'; });
+            const parts = fmt === 'md' ? mdDiscordParts(data) : discordParts(data);
+            body.textContent = (fmt === 'md' ? 'Rendered markdown: headings, bold and italic show in Discord. ' : 'Plain code block: keeps the sheet layout, no bold or italic. ')
+                + (parts.length > 1 ? 'Over 2000 characters, so paste each part as its own message, in order. ' : 'Paste into Discord as one message. ')
+                + 'Or use Download .md and drag the file into Discord: it shows as one collapsed preview you can expand.';
+            host.innerHTML = '';
+            parts.forEach((p, i) => {
+                const wrap = document.createElement('div'); wrap.className = 'discord-part';
+                const head = document.createElement('div'); head.className = 'discord-part-head';
+                const lab = document.createElement('span'); lab.textContent = 'Part ' + (i + 1) + ' of ' + parts.length + ' \u2022 ' + p.length + ' chars';
+                const ta = document.createElement('textarea'); ta.readOnly = true; ta.value = p; ta.rows = Math.min(12, Math.max(4, p.split('\n').length + 1));
+                const btn = mk(head, 'Copy', '#d96b27', () => copyText(p, ta, btn));
+                head.insertBefore(lab, btn); wrap.appendChild(head); wrap.appendChild(ta); host.appendChild(wrap);
+            });
+        }
+        render();
+        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) dlg.remove(); });
+        document.body.appendChild(dlg);
+    }
+    function openMdImport(id) {
+        const old = document.getElementById('md-modal'); if (old) old.remove();
+        const dlg = document.createElement('div');
+        dlg.id = 'md-modal'; dlg.className = 'no-print';
+        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box md-box"><div class="row-modal-header"></div><div class="row-modal-body">Paste markdown (for example from an AI chat) or choose a .md / .txt file. Headings become header bars. Paragraphs keep bold and italic.</div><textarea class="md-text" placeholder="# Backstory&#10;&#10;**Ensign Vael** grew up on a *mining colony*..."></textarea><div class="row-modal-btn-row"></div></div></div>';
+        dlg.querySelector('.row-modal-header').textContent = 'Import Markdown // ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs');
+        const ta = dlg.querySelector('textarea'), row = dlg.querySelector('.row-modal-btn-row');
+        const fi = document.createElement('input');
+        fi.type = 'file'; fi.accept = '.md,.markdown,.txt,text/markdown,text/plain'; fi.style.display = 'none';
+        fi.addEventListener('change', () => {
+            const f = fi.files[0]; if (!f) return;
+            const r = new FileReader(); r.onload = ev => { ta.value = String(ev.target.result); }; r.readAsText(f); fi.value = '';
+        });
+        const mk = (label, color, fn) => {
+            const x = document.createElement('button');
+            x.type = 'button'; x.className = 'lcars-utility-btn'; x.style.backgroundColor = color; x.textContent = label;
+            x.addEventListener('click', fn); row.appendChild(x);
+        };
+        mk('Choose File...', '#708699', () => fi.click());
+        mk('Import', '#d96b27', () => {
+            const blocks = mdToBlocks(ta.value);
+            if (!blocks.length) { alert('No importable text found.'); return; }
+            dlg.remove(); importBlocks(id, blocks);
+        });
+        mk('Cancel', '#2c3a4d', () => dlg.remove());
+        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget && !ta.value.trim()) dlg.remove(); });
+        document.body.appendChild(dlg);
+        dlg.appendChild(fi);
+        ta.focus();
+    }
+    tool('md-import', id => openMdImport(id));
     // ===== Floating block panel: move / select / delete, shown over the left pillar =====
     let activeBlk = null;
     const panel = document.createElement('div');
@@ -1939,7 +2145,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
             if (dirText) {
                 const sd = typeof getStardateVal === 'function' ? getStardateVal() : 'ARCHIVE';
                 addBlock('p4', activeSec('p4'), 'orange', 'Mission Debrief: Stardate ' + sd);
-                addBlock('p4', activeSec('p4'), 'para', '', dirText);
+                addBlock('p4', activeSec('p4'), 'para', '', escHtml(dirText));
                 dirBox.value = '';
             }
 

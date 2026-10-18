@@ -13,7 +13,7 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - **Page 2 Tactical:** Stress Track, Injuries, Away Team Roster, Attacks, Requisitions & Logistics, Equipment, and Tactical Operations (left 2/3: Scene Traits & Advantages, Tactical Notes; right 1/3: Extended Task Objective, 15 Work Track pips, Ratings, Breakthroughs, and 2E Momentum Spends rules popover).
 - **Pages 3 and 4 Narrative and Logs:** free-form logs. The bar under the sheet adds Header Bars, Detail Rows, Paragraphs, Ruled Lines and Stardates. Each page holds up to 8 Sections.
 - **Page 5 Ship:** Systems, Breaches, Departments, Shields, Attacks, Talents and a schematic image. In Play Mode, Systems and Departments get `±` modifier boxes like the character stats.
-- **Page 6 Reference:** Printable 2E quick-reference sheet covering Task Resolution, Action Economy, Momentum Spends, Determination, Extended Tasks, and Medical Recovery.
+- **Page 6 Reference:** Printable 2E quick-reference sheet covering Task Resolution, Action Economy, Momentum Spends, Determination, and Stress, Injury and Recovery. Rules text here and in the ⓘ popovers is limited to the Quickstart Guide v1.1 and the official Momentum spends list.
 - Pickers (Species Ability, Talents, Weapons, Equipment, Ship Weapons and Ship Talents) have a search box and add the entry for you.
 
 ## Log Selection (Pages 3 and 4)
@@ -22,7 +22,8 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - **Select Section** ticks every block in the open section. **Select None** clears the ticks. The count shows beside the buttons.
 - **Export Selected:** saves the ticked blocks as a `.json` file. With nothing ticked, nothing happens.
 - **Import Sections:** reads that file (or a whole Crew export, then you pick Page 3 or Page 4). With blocks ticked you can **Replace Selected**: the imported blocks take the place of the ticked ones. Otherwise they go to the end of the open section or to a new section (8 sections maximum). Anything that does not fit on a page flows into the next section. Undo reverses it. This also moves blocks between Page 3 and Page 4.
-- **Copy for Discord:** opens a window with the ticked blocks as Discord code blocks. Header Bars become `== TITLE ==`, Detail Rows become `LABEL: text`, Paragraphs become plain text (bold and italic are dropped) and Ruled Lines are skipped. Text over 2000 characters splits into numbered parts, each with its own Copy button.
+- **Import Markdown:** paste markdown (for example a backstory written by an AI chat) or choose a `.md` or `.txt` file. `#` headings become header bars, paragraphs become Paragraph blocks with bold and italic kept, and a one-line `**Label:** text` becomes a Detail Row. Lists stay as text lines with their markers. Tables, code, links and images become plain text, and `---` lines are dropped. It uses the same Replace Selected / End of section / New section choice as Import Sections, and Undo reverses it.
+- **Copy for Discord:** opens a window with the ticked blocks as text to paste. Choose **Code block** (keeps the sheet layout, no bold or italic) or **Markdown** (headings, bold and italic show in Discord). Text over 2000 characters splits into numbered parts, each with its own Copy button. **Download .md** saves the ticked blocks as a markdown file: drag it into Discord and it appears as one compact card with a collapsed preview you can expand.
 - **Delete Selected:** removes the ticked blocks after a confirmation. Undo restores them.
 
 ## Crew and Ship Slots

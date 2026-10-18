@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="STA 2E">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css?v=3.0">
+<link rel="stylesheet" href="style.css?v=3.1">
 <style>
 .lcars-help-popover, .det-popover, .injury-popover { display: none; }
 </style>
@@ -161,16 +161,16 @@
 <!-- Block 2 END -->
 <!-- Block 3 START -->
                     <div class="tactical-stats-container" style="flex-grow: 0;"><div class="lcars-column-strip">
-                            <div class="lcars-sweeping-header-wrapper has-popover" style="position: relative;">
+                            <div class="lcars-sweeping-header-wrapper has-popover" style="position: relative; z-index: 20;">
                                 <div class="lcars-sweeping-header-bar help-trigger" title="Hover or tap to view Attribute guide">Attributes <span class="no-print info-icon" style="color: #eed292;">ⓘ</span></div>
                                 <div class="lcars-help-popover no-print" style="top: calc(100% + 4px); left: 0; width: 330px;">
                                     <div class="lcars-help-header">ATTRIBUTES // 2E CORE GUIDE</div>
-                                    <div class="lcars-help-item"><strong>Control:</strong> Precision, manual dexterity, coordination, and emotional restraint.</div>
-                                    <div class="lcars-help-item"><strong>Daring:</strong> Decisive action, instinct, courage under pressure, and boldness.</div>
-                                    <div class="lcars-help-item"><strong>Fitness:</strong> Physical health, endurance, raw strength, and muscular stamina.</div>
-                                    <div class="lcars-help-item"><strong>Insight:</strong> Empathy, psychological perception, awareness, and reading subtext.</div>
-                                    <div class="lcars-help-item"><strong>Presence:</strong> Charisma, command authority, willpower, and inspiring others.</div>
-                                    <div class="lcars-help-item"><strong>Reason:</strong> Logic, deduction, scientific method, and abstract analysis.</div>
+                                    <div class="lcars-help-item"><strong>Control:</strong> Self-discipline, coordination and fine motor skills.</div>
+                                    <div class="lcars-help-item"><strong>Daring:</strong> Bravery and quick thinking, or acting without hesitation.</div>
+                                    <div class="lcars-help-item"><strong>Fitness:</strong> Physical strength and stamina.</div>
+                                    <div class="lcars-help-item"><strong>Insight:</strong> Understanding of their environment and other people.</div>
+                                    <div class="lcars-help-item"><strong>Presence:</strong> Personality, and ability to command attention or respect.</div>
+                                    <div class="lcars-help-item"><strong>Reason:</strong> Logical and problem-solving abilities.</div>
                                 </div>
                             </div>
                             <div class="stat-column-panel-segmented">
@@ -198,11 +198,10 @@
                                 <div class="vital-header-label det-info-trigger" title="Hover or tap to view 2E Determination rules">Determination <span class="no-print" style="font-size: 8.5px; color: #708699;">ⓘ</span></div>
                                 <div class="det-popover no-print">
                                     <div class="det-popover-header">Determination Spends // Requires Value or Directive</div>
-                                    <div class="det-popover-item"><strong>Perfect Opportunity:</strong> Before rolling, set one d20 to a 1 (counts as a critical success).</div>
-                                    <div class="det-popover-item"><strong>Moment of Inspiration:</strong> After rolling, re-roll any number of d20s in your pool.</div>
-                                    <div class="det-popover-item"><strong>Surge of Activity:</strong> Perform one additional major action immediately.</div>
-                                    <div class="det-popover-item"><strong>Make It So:</strong> Immediately create a new Advantage trait in the scene.</div>
-                                    <div class="det-popover-item"><strong>Special Technique:</strong> Gain the benefits of any talent for the current scene.</div>
+                                    <div class="det-popover-item"><strong>Perfect Opportunity:</strong> On a task roll, before rolling but after buying extra dice, set one d20 to count as a 1 (a critical success).</div>
+                                    <div class="det-popover-item"><strong>Moment of Inspiration:</strong> On a task roll, after rolling, re-roll any number of d20s in your dice pool.</div>
+                                    <div class="det-popover-item"><strong>Special Technique:</strong> Gain the use of one talent you do not possess for the rest of the scene. You must meet its prerequisites; the gamemaster may veto talents that make no sense.</div>
+                                    <div class="det-popover-item"><strong>Limits:</strong> Start each mission with 1 Determination; maximum 3. Spend only when a Value or Directive applies.</div>
                                 </div>
                                 <div class="det-boxes-row-large" style="display: flex; gap: 6px; flex-shrink: 0;">
                                     <input type="checkbox" name="determination_1" class="form-matrix-checkbox">
@@ -214,13 +213,13 @@
                         <div class="lcars-column-strip">
                             <div class="lcars-terminal-box" style="margin-top:8px;position:relative;"><span class="box-heading-label">Species Ability</span><select id="species-ability-picker" class="no-print species-picker" title="Choose a species ability"></select><div class="lcars-writein-lines fit-box-wrap" style="height:48px;"><textarea name="ledger_species_ability" class="lcars-form-textarea fit-box"></textarea></div></div>
                             <div class="lcars-terminal-box"><span class="box-heading-label">Values</span><div class="lcars-writein-lines" style="height:64px;"><div class="val-row"><span class="val-num">1.</span><input type="text" name="ledger_value_1" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">2.</span><input type="text" name="ledger_value_2" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">3.</span><input type="text" name="ledger_value_3" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div><div class="val-row"><span class="val-num">4.</span><input type="text" name="ledger_value_4" class="bio-form-input fit-text" style="height:16px; flex:1; min-width:0;"></div></div></div>
-                            <div class="lcars-terminal-box has-popover" style="flex:1 1 0;min-height:0;position: relative;">
+                            <div class="lcars-terminal-box has-popover" style="flex:1 1 0;min-height:0;position: relative; overflow: visible;">
                                 <span class="box-heading-label help-trigger" title="Hover or tap to view Focus rules" style="display: inline-flex; align-items: center; justify-content: space-between; width: 100%;"><span>Focuses <span class="no-print info-icon" style="color: #708699;">ⓘ</span></span></span>
                                 <div class="lcars-help-popover no-print" style="bottom: calc(100% + 4px); left: 0; width: 320px;">
                                     <div class="lcars-help-header">FOCUSES &amp; CRITICAL SUCCESSES // 2E RULES</div>
-                                    <div class="lcars-help-item"><strong>Focus Rule:</strong> When an applicable Focus applies to a task, any d20 rolling equal to or below your Department score scores two successes (a Critical Success).</div>
-                                    <div class="lcars-help-item"><strong>Assists:</strong> If an assisting ally has an applicable Focus, their assist die also scores two successes if it rolls &le; their Department rating.</div>
-                                    <div class="lcars-help-item"><strong>Opposed Tasks:</strong> Critical successes break ties in opposed task contests.</div>
+                                    <div class="lcars-help-item"><strong>Focus Rule:</strong> If a Focus applies, each d20 rolling equal to or below your Department rating is a critical success (2 successes).</div>
+                                    <div class="lcars-help-item"><strong>No Focus:</strong> If no Focus applies, each d20 rolling a 1 is a critical success.</div>
+                                    <div class="lcars-help-item"><strong>Assists:</strong> Each assistant rolls 1d20 with their own target number and their own Focus (if any).</div>
                                 </div>
                                 <div class="lcars-writein-lines" style="flex-grow:1;min-height:0;display:grid;grid-template-rows:repeat(6,1fr);background:none;"><input type="text" name="ledger_focus_1" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_2" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_3" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_4" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_5" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"><input type="text" name="ledger_focus_6" class="bio-form-input fit-text" style="height:100%;border-bottom:1px solid #8a95a0;"></div>
                             </div>
@@ -298,10 +297,12 @@
                                     <div class="vital-header-label help-trigger" title="Hover or tap to view Stress & Recovery rules">STRESS TRACK <span class="no-print info-icon" style="color: #708699;">ⓘ</span></div>
                                     <div class="lcars-help-popover no-print" style="top: calc(100% + 4px); left: 0; width: 330px;">
                                         <div class="lcars-help-header">STRESS &amp; RECOVERY // 2E RULES</div>
-                                        <div class="lcars-help-item"><strong>Avoid Injury:</strong> Suffer Stress equal to incoming attack Severity to avoid taking an Injury outright.</div>
-                                        <div class="lcars-help-item"><strong>Breather (Short Rest, ~5 min):</strong> Resting for a few minutes at the end of an action scene removes 4 Stress.</div>
-                                        <div class="lcars-help-item"><strong>Break (Full Rest, ~30–60 min):</strong> A significant rest in a secure environment removes 8 Stress (sleep removes all).</div>
-                                        <div class="lcars-help-item"><strong>First Aid:</strong> Spending Momentum on a First Aid / Medicine task clears 1 Stress per Momentum spent.</div>
+                                        <div class="lcars-help-item"><strong>Max Stress:</strong> Equal to your Fitness attribute (species, talents and other factors may change it).</div>
+                                        <div class="lcars-help-item"><strong>Avoid Injury:</strong> When you suffer an Injury, suffer Stress equal to the attack's severity to ignore it.</div>
+                                        <div class="lcars-help-item"><strong>Breather:</strong> A few minutes of rest removes 4 Stress.</div>
+                                        <div class="lcars-help-item"><strong>Break:</strong> At least half an hour, up to a couple of hours, removes 8 Stress.</div>
+                                        <div class="lcars-help-item"><strong>Sleep:</strong> Several hours of rest removes all Stress, up to your normal maximum.</div>
+                                        <div class="lcars-help-item"><strong>Recover Stress (2 Mom, Rep):</strong> After a successful task, remove 1 Stress from yourself or an ally who can hear you (max 3 per task).</div>
                                     </div>
                                     <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">MAX STRESS [BASE: FITNESS]<input type="text" name="combat_max_stress" maxlength="2" class="score-input" data-follow="attr_fitness"></div>
                                 </div>
@@ -315,11 +316,13 @@
                                     <div class="vital-header-label help-trigger" title="Hover or tap to view 2E Injury & Medical rules">INJURIES <span class="no-print info-icon" style="color: #708699;">ⓘ</span></div>
                                     <div class="lcars-help-popover no-print" style="top: calc(100% + 4px); left: 0; width: 340px;">
                                         <div class="lcars-help-header">INJURIES &amp; MEDICAL TREATMENT // 2E RULES</div>
-                                        <div class="lcars-help-item"><strong>Avoid Injury:</strong> Suffer Stress equal to incoming attack Severity to avoid suffering an Injury.</div>
-                                        <div class="lcars-help-item"><strong>Stun vs Deadly:</strong> Stun clears at scene end. An untreated Deadly injury kills the character at the end of the scene.</div>
-                                        <div class="lcars-help-item"><strong>First Aid (Stabilize):</strong> Daring + Medicine, Difficulty 2 (within Reach). Removes Defeated status and prevents death. Spend 2 Momentum to rejoin the fight immediately.</div>
-                                        <div class="lcars-help-item"><strong>Treat Injury:</strong> Control + Medicine, Difficulty = Injury Severity. Removes trait/complication penalties for the rest of the mission.</div>
-                                        <div class="lcars-help-item"><strong>Revival:</strong> Daring + Medicine, Difficulty 3 (costs 1 Determination). Attempted before the subsequent scene ends to revive a deceased ally.</div>
+                                        <div class="lcars-help-item"><strong>Defeated:</strong> When you suffer an Injury you are Defeated: you fall prone and cannot act for the rest of the scene.</div>
+                                        <div class="lcars-help-item"><strong>Avoid Injury:</strong> Suffer Stress equal to the attack's severity to ignore the Injury (and not be Defeated by it).</div>
+                                        <div class="lcars-help-item"><strong>Protection:</strong> Reduces the severity of an Injury you suffer by your Protection, to a minimum of 1.</div>
+                                        <div class="lcars-help-item"><strong>Stun Injury:</strong> Lasts only while you are Defeated; removed at the end of your next turn after you stop being Defeated.</div>
+                                        <div class="lcars-help-item"><strong>Deadly Injury:</strong> While Defeated with a Deadly Injury you are Dying, and die at the end of the scene without medical attention.</div>
+                                        <div class="lcars-help-item"><strong>First Aid:</strong> Daring + Medicine, Difficulty 2, within Reach: the patient is no longer Defeated. Or, Difficulty = the Injury's severity to treat an Injury (it then imposes no penalty).</div>
+                                        <div class="lcars-help-item"><strong>Long-term Healing:</strong> Control + Medicine, Difficulty X and X hours (X = severity). Add 1 to Difficulty and complication range if the Injury was not treated.</div>
                                     </div>
                                     <div class="vital-header-label" style="color: #708699; display: flex; align-items: center; gap: 6px;">PROTECTION <input type="text" name="combat_protection" maxlength="2" class="score-input"></div>
                                 </div>
@@ -360,21 +363,21 @@
 <!-- Block 6 START -->
                     <div class="tactical-middle-container-2col">
                         <div class="lcars-column-strip">
-                            <div class="lcars-terminal-box" style="flex-grow: 1; padding-bottom: 4px; position: relative;">
+                            <div class="lcars-terminal-box" style="flex-grow: 1; padding-bottom: 4px; position: relative; overflow: visible;">
                                 <div class="has-popover" style="display: inline-block; position: relative;">
                                     <span class="box-heading-label help-trigger" title="Hover or tap to view Weapon Qualities">ATTACKS <span class="no-print info-icon" style="color: #708699;">ⓘ</span></span>
                                     <div class="lcars-help-popover no-print" style="top: 20px; left: 0; width: 340px;">
                                         <div class="lcars-help-header">WEAPON QUALITIES // 2E COMBAT RULES</div>
-                                        <div class="lcars-help-item"><strong>Accurate:</strong> Performing the Aim minor action before attacking allows re-rolling up to two d20s.</div>
-                                        <div class="lcars-help-item"><strong>Area:</strong> Strikes the target and all characters/objects in the target zone.</div>
-                                        <div class="lcars-help-item"><strong>Charge:</strong> Spend a Minor Action preparing the weapon to add +1 Severity.</div>
-                                        <div class="lcars-help-item"><strong>Cumbersome:</strong> Two-handed; cannot fire on the move without penalty.</div>
-                                        <div class="lcars-help-item"><strong>Debilitating:</strong> Target suffers a lingering physical Hindrance trait.</div>
-                                        <div class="lcars-help-item"><strong>Intense:</strong> Target must pay +1 extra Stress to avoid an Injury.</div>
-                                        <div class="lcars-help-item"><strong>Knockdown:</strong> Target is knocked Prone on a successful hit.</div>
-                                        <div class="lcars-help-item"><strong>Piercing X:</strong> Ignores X points of the target's personal Protection.</div>
-                                        <div class="lcars-help-item"><strong>Stun / Non-Lethal:</strong> Inflicts Stun injuries; clears at scene end.</div>
-                                        <div class="lcars-help-item"><strong>Vicious X:</strong> Adds +X to the Severity of an Injury inflicted.</div>
+                                        <div class="lcars-help-item"><strong>Accurate:</strong> With the Aim minor action, re-roll up to two d20s instead of one.</div>
+                                        <div class="lcars-help-item"><strong>Area:</strong> On a hit, spend 1 Momentum (Repeatable) per extra target in the same zone. May Succeed at Cost.</div>
+                                        <div class="lcars-help-item"><strong>Charge:</strong> With the Prepare minor action, add Area, Intense or Piercing to the attack (Area reduces severity by 1).</div>
+                                        <div class="lcars-help-item"><strong>Cumbersome:</strong> Cannot attack unless you take the Prepare minor action the same turn.</div>
+                                        <div class="lcars-help-item"><strong>Debilitating:</strong> Difficulty to treat or heal its injuries is +1.</div>
+                                        <div class="lcars-help-item"><strong>Grenade:</strong> Throwable up to Medium range; enough for three attacks.</div>
+                                        <div class="lcars-help-item"><strong>Hidden X:</strong> Minor action to conceal; searching needs Insight or Reason + Security, Difficulty X.</div>
+                                        <div class="lcars-help-item"><strong>Inaccurate:</strong> You do not benefit from the Aim minor action.</div>
+                                        <div class="lcars-help-item"><strong>Intense:</strong> Increase severity for 1 Momentum instead of 2 (Repeatable).</div>
+                                        <div class="lcars-help-item"><strong>Piercing:</strong> A successful attack ignores the target's Protection.</div>
                                     </div>
                                 </div>
                                 <div class="no-print weapon-picker-wrap" style="position: absolute; top: 2px; right: 34px; display: flex; gap: 3px; align-items: center;">
@@ -434,13 +437,7 @@
                             <div class="lcars-terminal-box logistics-requisition-panel">
                                 <div class="logistics-header-line">
                                     <div class="has-popover" style="display: inline-block; position: relative;">
-                                        <span class="box-heading-label help-trigger" style="border: none; margin: 0; padding: 0;" title="Hover or tap to view Opportunity Cost rules">REQUISITIONS &amp; LOGISTICS <span class="no-print info-icon" style="color: #708699;">ⓘ</span></span>
-                                        <div class="lcars-help-popover no-print" style="bottom: calc(100% + 4px); left: 0; width: 330px;">
-                                            <div class="lcars-help-header">REQUISITIONS &amp; LOGISTICS // 2E RULES</div>
-                                            <div class="lcars-help-item"><strong>Standard Issue (Cost 0):</strong> Routine gear (Combadge, Uniform, sidearm) carries zero Opportunity Cost.</div>
-                                            <div class="lcars-help-item"><strong>Mission Allowance:</strong> The GM sets an Opportunity Cost budget based on mission profile and department roles.</div>
-                                            <div class="lcars-help-item"><strong>Field Requisitions:</strong> Acquire non-standard gear mid-mission by spending Momentum or adding to Threat.</div>
-                                        </div>
+                                        <span class="box-heading-label" style="border: none; margin: 0; padding: 0;">REQUISITIONS &amp; LOGISTICS</span>
                                     </div>
                                     <div class="logistics-field-unit">
                                         <span class="logistics-sublabel">ALLOWANCE:</span>
@@ -473,15 +470,15 @@
                         <div class="lcars-sweeping-header-bar help-trigger" title="Hover or tap to view 2E Combat Momentum Spends">TACTICAL OPERATIONS // STATUS &amp; OBJECTIVES <span class="no-print info-icon" style="color: #eed292;">ⓘ</span></div>
                         <div class="lcars-help-popover no-print" style="bottom: calc(100% + 4px); left: 0; width: 340px;">
                             <div class="lcars-help-header">COMBAT MOMENTUM SPENDS // 2E RULES</div>
-                            <div class="lcars-help-item"><strong>Added Severity (2 Mom, Rep):</strong> Increase attack Severity by +1 per 2 Momentum (max +2).</div>
-                            <div class="lcars-help-item"><strong>Disarm (1–2 Mom):</strong> Target drops weapon within Reach (1 Mom 1-handed, 2 Mom 2-handed).</div>
-                            <div class="lcars-help-item"><strong>Counterattack (2 Mom, Imm):</strong> Inflict Injury on attacker after winning melee defense.</div>
-                            <div class="lcars-help-item"><strong>Extra Minor Action (1 Mom):</strong> Take 1 additional minor action on your turn.</div>
-                            <div class="lcars-help-item"><strong>Extra Major Action (2 Mom):</strong> Take 1 additional major action (task Difficulty increases by +1).</div>
-                            <div class="lcars-help-item"><strong>Keep the Initiative (2 Mom, Imm):</strong> Pass turn directly to an ally instead of an enemy.</div>
-                            <div class="lcars-help-item"><strong>Alter Trait (2 Mom):</strong> Create, change, or remove a scene trait (or adjust its Potency).</div>
-                            <div class="lcars-help-item"><strong>Avoid Injury (2 Mom/Threat, Imm):</strong> Suffer Stress equal to attack Severity to avoid Injury.</div>
-                            <div class="lcars-help-item"><strong>First Aid (1+ Mom):</strong> Clear 1 additional Stress per Momentum spent on treatment.</div>
+                            <div class="lcars-help-item"><strong>Added Severity (2 Mom, Rep):</strong> +1 attack Severity per 2 Momentum (max +2).</div>
+                            <div class="lcars-help-item"><strong>Counterattack (2 Mom, Imm):</strong> If your opposed Attack was won by the target, they may spend 2 Momentum to inflict an Injury on you.</div>
+                            <div class="lcars-help-item"><strong>Disarm (1&ndash;2 Mom):</strong> Target drops a held weapon within Reach (1 Mom one-handed, 2 Mom two-handed).</div>
+                            <div class="lcars-help-item"><strong>Recover Stress (2 Mom, Rep):</strong> After a successful task, remove 1 Stress from yourself or an ally who can hear you (max 3 per task).</div>
+                            <div class="lcars-help-item"><strong>Difficult Terrain / Obstacles (1&ndash;3 Mom, Imm):</strong> Pay Momentum to move out of difficult terrain or cross an obstacle.</div>
+                            <div class="lcars-help-item"><strong>Create a Trait (2 Mom):</strong> Create, change, increase/decrease potency of, or remove a trait.</div>
+                            <div class="lcars-help-item"><strong>Swift Action (2 Mom):</strong> Take an additional major action (task Difficulty +1).</div>
+                            <div class="lcars-help-item"><strong>Extra Minor Action (1 Mom):</strong> Take an additional minor action (each once per turn).</div>
+                            <div class="lcars-help-item"><strong>Keep the Initiative (2 Mom, Imm):</strong> Hand the action to an ally instead of the opposition; not again until the opposition has had a turn.</div>
                         </div>
                     </div>
                     <div class="lcars-terminal-box tactical-ops-box-layout">
@@ -882,17 +879,19 @@
                     <div class="ref-grid-2col">
                         <div class="ref-card">
                             <div class="tactical-pill-bar tan-pill">TASK RESOLUTION // D20 RULES</div>
-                            <div class="ref-item"><strong>Target Number (TN):</strong> Add Attribute + Department. Roll equal to or under TN on 2d20 (base pool).</div>
-                            <div class="ref-item"><strong>Critical Success:</strong> Any d20 rolling &le; Department scores <strong>2 successes</strong> if an applicable Focus applies. Natural 1s always score 2 successes.</div>
-                            <div class="ref-item"><strong>Complications:</strong> Any d20 rolling 20 (or within active Complication Range) inflicts a Complication or adds +1 Threat.</div>
-                            <div class="ref-item"><strong>Assisting:</strong> Ally rolls 1d20 using their Attribute + Department. If lead has Focus, ally's Focus applies.</div>
+                            <div class="ref-item"><strong>Target Number (TN):</strong> Attribute + Department. Roll 2d20 (up to 5d20 with bonus dice); each d20 equal to or under the TN is a success.</div>
+                            <div class="ref-item"><strong>Success:</strong> Successes equal to or above the Difficulty (0&ndash;5) pass. Each extra success becomes 1 Momentum.</div>
+                            <div class="ref-item"><strong>Critical Success:</strong> With an applicable Focus, a d20 rolling &le; Department scores <strong>2 successes</strong>. With no Focus, a roll of 1 scores 2.</div>
+                            <div class="ref-item"><strong>Complications:</strong> A d20 rolling 20 (or in the complication range, max 5) causes a Complication. Buy it off by adding 2 Threat.</div>
+                            <div class="ref-item"><strong>Assisting:</strong> One assistant is free; each extra costs 1 Momentum or 1 Threat. Each rolls 1d20 with their own TN and Focus. Counts only if the leader scores 1+ success.</div>
                         </div>
                         <div class="ref-card">
                             <div class="tactical-pill-bar slate-pill">ACTION ECONOMY // TURN SEQUENCE</div>
-                            <div class="ref-item"><strong>1 Minor Action:</strong> Aim (re-roll 1d20), Draw/Stow, Interact, Move (within Reach / to Close), Prepare (Charge).</div>
-                            <div class="ref-item"><strong>1 Major Action:</strong> Attack, Create/Alter Trait, First Aid (Diff 2), Pass, Sprint, Task (Attribute + Department).</div>
-                            <div class="ref-item"><strong>Free Actions:</strong> Speak briefly, drop held item, spend Momentum/Determination.</div>
-                            <div class="ref-item"><strong>Initiative:</strong> Alternating PC &harr; NPC turns. Spend 2 Momentum to <em>Keep the Initiative</em>.</div>
+                            <div class="ref-item"><strong>Turn:</strong> 1 major action and 1 minor action. No character takes more than one turn per round.</div>
+                            <div class="ref-item"><strong>Minor Actions:</strong> No task. Aim (re-roll 1d20 on an Attack), Draw Item, Prepare, move up to Medium range. Extra minor action: 1 Momentum.</div>
+                            <div class="ref-item"><strong>Major Actions:</strong> Normally a task: Assist, Attack, Direct, First Aid, Pass, Sprint. A second major action costs 2 Momentum (task Difficulty +1); max two per round.</div>
+                            <div class="ref-item"><strong>Attack:</strong> Melee: Daring + Security, Difficulty 1. Ranged: Control + Security, Difficulty 2. Becomes opposed if the target is aware (melee) or in Cover (ranged).</div>
+                            <div class="ref-item"><strong>Initiative:</strong> Play passes to the opposing side after each turn. Spend 2 Momentum to <em>Keep the Initiative</em>.</div>
                         </div>
                     </div>
 
@@ -903,46 +902,45 @@
                     <div class="ref-grid-3col">
                         <div class="ref-card">
                             <div class="tactical-pill-bar navy-pill">GENERAL TASK SPENDS</div>
-                            <div class="ref-item"><strong>Bonus d20s (1–3 M/T):</strong> Buy bonus d20s before rolling (1st: 1, 2nd: 2, 3rd: 3; max 5d20 pool).</div>
-                            <div class="ref-item"><strong>Obtain Information (1 M):</strong> Ask GM 1 truthful question about scene or deduction.</div>
-                            <div class="ref-item"><strong>Alter Trait (2 M):</strong> Create, change, or remove a scene trait (or adjust Potency &plusmn;1).</div>
-                            <div class="ref-item"><strong>Reduce Time (2 M):</strong> Halve task time (outside action scenes only).</div>
+                            <div class="ref-item"><strong>Create Opportunity (1&ndash;3 M):</strong> Before rolling, buy up to 3 extra d20s (1st: 1, 2nd: 2, 3rd: 3 Momentum). Max 5d20.</div>
+                            <div class="ref-item"><strong>Create a Trait (2 M):</strong> Create, change, increase/decrease potency of, or remove a trait.</div>
+                            <div class="ref-item"><strong>Obtain Information (1 M):</strong> Ask the GM 1 question about the scene; must be answered truthfully.</div>
+                            <div class="ref-item"><strong>Reduce Time (2 M):</strong> Halve the time a task takes (not in action scenes).</div>
                         </div>
                         <div class="ref-card">
                             <div class="tactical-pill-bar navy-pill">COMBAT &amp; ATTACK SPENDS</div>
-                            <div class="ref-item"><strong>Added Severity (2 M):</strong> +1 attack Severity per 2 Momentum (max +2 Severity).</div>
-                            <div class="ref-item"><strong>Disarm (1–2 M):</strong> Target drops weapon to Reach (1 M one-handed, 2 M two-handed).</div>
-                            <div class="ref-item"><strong>Counterattack (2 M, Imm):</strong> Inflict Injury on attacker after winning melee defense.</div>
-                            <div class="ref-item"><strong>Extra Minor Action (1 M):</strong> Take 1 additional minor action on your turn.</div>
+                            <div class="ref-item"><strong>Added Severity (2 M):</strong> +1 attack Severity per 2 Momentum (max +2).</div>
+                            <div class="ref-item"><strong>Counterattack (2 M, Imm):</strong> Opposed Attack won by target: inflict an Injury on the attacker.</div>
+                            <div class="ref-item"><strong>Disarm (1&ndash;2 M):</strong> Target drops weapon in Reach (1 M one-handed, 2 M two-handed).</div>
+                            <div class="ref-item"><strong>Recover Stress (2 M):</strong> Remove 1 Stress from self or ally (max 3 per task).</div>
                         </div>
                         <div class="ref-card">
                             <div class="tactical-pill-bar navy-pill">TACTICAL &amp; REACTION SPENDS</div>
-                            <div class="ref-item"><strong>Extra Major Action (2 M):</strong> Take 1 additional major action (task Difficulty +1).</div>
-                            <div class="ref-item"><strong>Keep the Initiative (2 M, Imm):</strong> Pass turn order to an ally instead of enemy.</div>
-                            <div class="ref-item"><strong>Avoid Injury (2 M/T, Imm):</strong> Suffer Stress = Severity to avoid an Injury.</div>
-                            <div class="ref-item"><strong>First Aid (1+ M):</strong> Remove 1 extra Stress per Momentum during treatment.</div>
+                            <div class="ref-item"><strong>Swift Action (2 M):</strong> Take 1 additional major action (task Difficulty +1).</div>
+                            <div class="ref-item"><strong>Extra Minor Action (1 M):</strong> Take 1 additional minor action (each once per turn).</div>
+                            <div class="ref-item"><strong>Keep the Initiative (2 M, Imm):</strong> Hand turn to an ally; not again until opposition has acted.</div>
+                            <div class="ref-item"><strong>Difficult Terrain (1&ndash;3 M, Imm):</strong> Pay to leave difficult terrain or cross an obstacle.</div>
                         </div>
                     </div>
 
-                    <!-- Section 3: Determination, Extended Tasks & Medical Recovery -->
+                    <!-- Section 3: Determination, Stress & Recovery -->
                     <div class="ship-sweeping-split-header" style="margin-left: -6px; width: calc(100% + 6px); height: 18px; margin-top: 1px;">
-                        <div class="ship-head-segment-systems" style="width: 50%; height: 18px; font-size: 10.5px;">DETERMINATION SPENDS [MAX 3]</div>
-                        <div class="ship-head-segment-dept" style="height: 18px; font-size: 10.5px;">EXTENDED TASKS &amp; MEDICAL RECOVERY</div>
+                        <div class="ship-head-segment-systems" style="width: 50%; height: 18px; font-size: 10.5px;">DETERMINATION [MAX 3]</div>
+                        <div class="ship-head-segment-dept" style="height: 18px; font-size: 10.5px;">STRESS, INJURY &amp; RECOVERY</div>
                     </div>
                     <div class="ref-grid-2col">
                         <div class="ref-card">
-                            <div class="ref-item"><strong>Perfect Opportunity:</strong> Set one d20 to a 1 before rolling (counts as a Critical Success).</div>
-                            <div class="ref-item"><strong>Moment of Inspiration:</strong> Re-roll any number of d20s in your dice pool after rolling.</div>
-                            <div class="ref-item"><strong>Surge of Activity:</strong> Perform one additional major action immediately.</div>
-                            <div class="ref-item"><strong>Make It So:</strong> Immediately create, change, or remove a trait (or adjust Potency &plusmn;1).</div>
-                            <div class="ref-item"><strong>Special Technique:</strong> Gain the full benefits of any talent for the current scene.</div>
+                            <div class="ref-item"><strong>Perfect Opportunity:</strong> Before rolling (after buying extra dice), set one d20 to a 1 (critical success).</div>
+                            <div class="ref-item"><strong>Moment of Inspiration:</strong> After rolling, re-roll any number of d20s in your dice pool.</div>
+                            <div class="ref-item"><strong>Special Technique:</strong> Gain one talent you do not possess for the rest of the scene. Prerequisites apply; the GM may veto it.</div>
+                            <div class="ref-item"><strong>Gaining &amp; Limits:</strong> Start each mission with 1; maximum 3. Spend only when a Value or Directive applies. Gain it when your Values conflict with your goals.</div>
                         </div>
                         <div class="ref-card">
-                            <div class="ref-item"><strong>Extended Work Track:</strong> Track length = 3&ndash;5 &times; Magnitude. Resistance flatly reduces Impact.</div>
-                            <div class="ref-item"><strong>Breakthroughs:</strong> Milestones scored along track. Total required = task Magnitude (1&ndash;5).</div>
-                            <div class="ref-item"><strong>Avoid Injury:</strong> Suffer Stress equal to incoming attack Severity to avoid taking an Injury.</div>
-                            <div class="ref-item"><strong>Breather / Break:</strong> Breather (~5 min rest) removes 4 Stress. Break (~30&ndash;60 min) removes 8.</div>
-                            <div class="ref-item"><strong>First Aid:</strong> Daring + Medicine, Difficulty 2. Stabilizes patient and removes Defeated status.</div>
+                            <div class="ref-item"><strong>Stress:</strong> Maximum = Fitness. At maximum you are Fatigued: pick one attribute (tasks using it fail, other tasks +1 Difficulty).</div>
+                            <div class="ref-item"><strong>Avoid Injury:</strong> When you suffer an Injury, suffer Stress equal to its severity to ignore it.</div>
+                            <div class="ref-item"><strong>Breather / Break / Sleep:</strong> Breather (a few minutes) removes 4 Stress. Break (30 min or more) removes 8. Sleep removes all.</div>
+                            <div class="ref-item"><strong>First Aid:</strong> Daring + Medicine, Difficulty 2: patient is no longer Defeated. Difficulty = severity treats an Injury.</div>
+                            <div class="ref-item"><strong>Additional Progress (2 M):</strong> During an extended task, add 1 to your Impact for 2 Momentum.</div>
                         </div>
                     </div>
                 </div>
@@ -1000,6 +998,7 @@
         <button type="button" class="lcars-utility-btn btn-tab" id="sel-none" style="background-color: #708699;" title="Clear all ticks on this page">Select None</button>
         <button type="button" class="lcars-utility-btn btn-tab" id="sel-export" style="background-color: #d96b27;" title="Save ticked blocks as a file">Export Selected</button>
         <button type="button" class="lcars-utility-btn btn-tab" id="sel-import" style="background-color: #708699;" title="Add blocks from an exported file">Import Sections</button>
+        <button type="button" class="lcars-utility-btn btn-tab" id="md-import" style="background-color: #708699;" title="Paste markdown (for example from an AI chat) and turn it into log blocks">Import Markdown</button>
         <button type="button" class="lcars-utility-btn btn-tab" id="sel-discord" style="background-color: #2c3a4d;" title="Copy ticked blocks as Discord code blocks">Copy for Discord</button>
         <button type="button" class="lcars-utility-btn btn-tab" id="sel-delete" style="background-color: #bd4b4b;" title="Delete ticked blocks (Undo available)">Delete Selected</button>
         <span id="sel-count">0 selected</span>
@@ -1014,9 +1013,9 @@
 <script src="species_abilities.js?v=2.1"></script>
 <script src="talents.js?v=2.1"></script>
 <script src="equipment.js?v=2.1"></script>
-<script src="readme.js?v=1.1"></script>
-<script src="spends.js?v=1.0"></script>
-<script src="console.js?v=3.0"></script>
+<script src="readme.js?v=1.2"></script>
+<script src="spends.js?v=1.1"></script>
+<script src="console.js?v=3.1"></script>
 </body>
 </html>
 <!-- Block 8 END -->

@@ -1,226 +1,142 @@
 /* ==========================================================================
    Star Trek Adventures 2nd Edition - Official Momentum Spends Reference
-   Sources: Core Rulebook 2E (2024), Game Toolkit GM Screen & Reference Sheets
+   Sources: Quickstart Guide v1.1 (2024), Core Rulebook 2E
    ========================================================================== */
 
 window.STA_SPENDS = [
   /* ------------------------------------------------------------------------
-     1. CORE / GENERAL TASKS
+     1. COMMON MOMENTUM SPENDS
      ------------------------------------------------------------------------ */
   {
-    category: "Core / General Tasks",
-    name: "Alter Trait",
+    category: "Common Spends",
+    name: "Create Opportunity (buy d20s)",
+    cost: "1–3 Momentum",
+    type: "Immediate, Repeatable",
+    source: "Quickstart v1.1, p. 15",
+    text: "Before you roll a task (but after the gamemaster sets its Difficulty), you may buy up to three more d20s for your dice pool. The cost increases for each die purchased: the first d20 costs 1 Momentum, the second costs 2 Momentum, and the third costs 3 Momentum. You can’t roll more than 5d20 on a task attempt."
+  },
+  {
+    category: "Common Spends",
+    name: "Create a Trait",
     cost: "2 Momentum",
     type: "Standard",
-    source: "Core 2E, p. 251",
-    text: "Create a new trait in the scene, remove an existing trait, or alter the Potency (+1 or -1) of an active trait related to the task completed."
+    source: "Quickstart v1.1, p. 15",
+    text: "You can spend 2 Momentum to establish a new trait in the scene or to change, increase or decrease the potency of, or remove a trait currently in play. A trait you create must relate to the task you just passed, and it must be something that would result from your actions."
   },
   {
-    category: "Core / General Tasks",
-    name: "Create Opportunity (Bonus d20s)",
-    cost: "1–3 Momentum or Threat",
-    type: "Immediate, Repeatable",
-    source: "Core 2E, p. 248",
-    text: "Purchase additional d20s before rolling a task. The 1st die costs 1 Momentum, the 2nd costs 2, and the 3rd costs 3 (total 6 Momentum for +3d20). Maximum dice pool is 5d20."
+    category: "Common Spends",
+    name: "Keep the Initiative",
+    cost: "2 Momentum",
+    type: "Immediate",
+    source: "Quickstart v1.1, p. 15",
+    text: "After taking a turn in an action scene, instead of handing the action to the opposing side, a character may choose to Keep the Initiative. To Keep the Initiative, the character who has just completed their turn may spend 2 Momentum and then hand the action to another character on their own side. Once one side has opted to Keep the Initiative, nobody on that side may do so again until the opposition has taken at least one turn of their own. Both player characters and NPCs may use Keep the Initiative."
   },
   {
-    category: "Core / General Tasks",
-    name: "Extra Assistance",
-    cost: "1 Momentum per Assistant",
-    type: "Immediate, Repeatable",
-    source: "Core 2E, p. 250",
-    text: "Allow additional characters to assist your task beyond the first free assistant. Each extra assistant contributes 1d20."
-  },
-  {
-    category: "Core / General Tasks",
+    category: "Common Spends",
     name: "Obtain Information",
     cost: "1 Momentum",
     type: "Repeatable",
-    source: "Core 2E, p. 251",
-    text: "Ask the Gamemaster one question about the scene, environment, or situation. The GM must answer truthfully based on deduction (Momentum is refunded if unanswerable)."
+    source: "Quickstart v1.1, p. 15",
+    text: "You can ask the gamemaster a single question about the scene by spending 1 Momentum. The question must be related to the task attempted, and the gamemaster must answer truthfully but doesn’t have to give complete information. If there’s no information your character could determine, the gamemaster may answer “you don’t know,” but they must refund the Momentum spent for that question."
   },
   {
-    category: "Core / General Tasks",
-    name: "Reduce Time (Swift Task)",
+    category: "Common Spends",
+    name: "Reduce Time",
     cost: "2 Momentum",
     type: "Standard",
-    source: "Core 2E, p. 251",
-    text: "Halve the amount of time required to complete an activity or extended task. Applicable outside action scenes only."
-  },
-
-  /* ------------------------------------------------------------------------
-     2. EXTENDED TASKS
-     ------------------------------------------------------------------------ */
-  {
-    category: "Extended Tasks",
-    name: "Additional Impact",
-    cost: "2, 4, or 6 Momentum",
-    type: "Standard, Repeatable",
-    source: "Core 2E, p. 254",
-    text: "Add +1, +2, or +3 to the task's Impact rating on the Progress Track for every 2 Momentum spent."
+    source: "Quickstart v1.1, p. 15",
+    text: "You can spend 2 Momentum to reduce the time it takes to complete the activity represented by the task, typically taking half the normal amount of time. You can’t use this option during an action scene."
   },
   {
-    category: "Extended Tasks",
-    name: "Scrutinize",
+    category: "Common Spends",
+    name: "Swift Action",
+    cost: "2 Momentum",
+    type: "Standard",
+    source: "Quickstart v1.1, p. 15",
+    text: "During your turn in an action scene, you may spend 2 Momentum to take an additional major action. However, any task roll attempted as part of this action increases in Difficulty by 1."
+  },
+  {
+    category: "Common Spends",
+    name: "Extra Minor Action",
     cost: "1 Momentum",
-    type: "Repeatable",
-    source: "Core 2E, p. 255",
-    text: "Ask the GM one specific question regarding Breakthrough thresholds, Resistance ratings, or hidden complications on the extended task."
+    type: "Standard",
+    source: "Quickstart v1.1, p. 15",
+    text: "During your turn in an action scene, you may spend 1 Momentum to take an additional minor action. Each minor action may only be performed once per turn."
   },
 
   /* ------------------------------------------------------------------------
-     3. PERSONAL COMBAT
+     2. COMBAT MOMENTUM SPENDS
      ------------------------------------------------------------------------ */
   {
     category: "Personal Combat",
     name: "Added Severity",
     cost: "2 Momentum",
     type: "Repeatable",
-    source: "Core 2E, p. 293",
-    text: "Increase the Severity of a successful attack by +1 for every 2 Momentum spent (maximum +2 Severity / 4 Momentum total)."
-  },
-  {
-    category: "Personal Combat",
-    name: "Avoid Injury",
-    cost: "2 Momentum or Threat",
-    type: "Immediate",
-    source: "Core 2E, p. 294",
-    text: "Suffer Stress equal to incoming attack Severity to avoid suffering an Injury. Usable once per scene without medical recovery."
+    source: "Quickstart v1.1, p. 25, 27",
+    text: "Increase the severity of a successful attack by 1 for every 2 Momentum spent. This is repeatable, but you cannot increase the severity by more than 2."
   },
   {
     category: "Personal Combat",
     name: "Counterattack",
     cost: "2 Momentum",
     type: "Immediate",
-    source: "Core 2E, p. 292",
-    text: "If you win an opposed defense roll against a melee attack, immediately inflict an Injury on the attacker (Stun or Deadly depending on weapon)."
-  },
-  {
-    category: "Personal Combat",
-    name: "Direct Ally",
-    cost: "1 Momentum",
-    type: "Repeatable",
-    source: "Game Toolkit / Core 2E, p. 290",
-    text: "Issue an order allowing an ally to take an immediate action or assist outside normal sequence."
+    source: "Quickstart v1.1, p. 25",
+    text: "If the Attack was an opposed task, and the target won, then they may either move out of Reach (if in melee) or spend 2 Momentum to Counterattack, inflicting an Injury upon you in return."
   },
   {
     category: "Personal Combat",
     name: "Disarm",
-    cost: "1 or 2 Momentum",
+    cost: "1–2 Momentum",
     type: "Standard",
-    source: "Core 2E, p. 293",
-    text: "Target drops one weapon they are holding to the ground within Reach. Costs 1 Momentum for a one-handed weapon, or 2 Momentum for a two-handed weapon."
+    source: "Quickstart v1.1, p. 27",
+    text: "Target drops one weapon they are holding to within their Reach. This costs 1 Momentum if the weapon is held in one hand. If the weapon is two-handed, the cost increases to 2 Momentum."
   },
   {
     category: "Personal Combat",
-    name: "Extra Major Action",
+    name: "Recover Stress",
     cost: "2 Momentum",
-    type: "Standard",
-    source: "Core 2E, p. 291",
-    text: "Take one additional major action during your turn. Any task roll attempted as part of this extra action increases in Difficulty by +1."
-  },
-  {
-    category: "Personal Combat",
-    name: "Extra Minor Action",
-    cost: "1 Momentum",
-    type: "Standard",
-    source: "Core 2E, p. 291",
-    text: "Take one additional minor action on your turn. Each specific minor action (e.g. Aim, Move, Draw) may only be taken once per turn."
-  },
-  {
-    category: "Personal Combat",
-    name: "First Aid (Stress Recovery)",
-    cost: "1+ Momentum",
     type: "Repeatable",
-    source: "Core 2E, p. 295",
-    text: "During a First Aid or Medicine task, clear 1 additional point of Stress from the patient per Momentum spent."
+    source: "Quickstart v1.1, p. 20",
+    text: "After a successful task, you may spend 2 Momentum to remove 1 Stress (Repeatable) from yourself or one ally who can hear you. A character cannot remove more than 3 Stress in this way on any single task."
   },
   {
     category: "Personal Combat",
-    name: "Keep the Initiative",
-    cost: "2 Momentum",
+    name: "Difficult Terrain / Obstacles",
+    cost: "1–3 Momentum",
     type: "Immediate",
-    source: "Core 2E, p. 290",
-    text: "At the end of your turn, pass the next turn directly to an ally instead of an enemy. Your side cannot chain this spend consecutively."
-  },
-  {
-    category: "Personal Combat",
-    name: "Traverse Terrain",
-    cost: "1+ Momentum or Threat",
-    type: "Immediate",
-    source: "Core 2E, p. 289",
-    text: "Move through difficult terrain, hazardous zones, or physical obstacles without requiring a separate movement roll."
+    source: "Quickstart v1.1, p. 22",
+    text: "When you attempt to move from an area of difficult terrain, or cross an obstacle, you must spend one or more Momentum to do so, depending on how difficult the terrain or obstacle is."
   },
 
-  /* ------------------------------------------------------------------------
-     4. SOCIAL CONFLICT
+/* ------------------------------------------------------------------------
+     3. EXTENDED TASKS
      ------------------------------------------------------------------------ */
   {
-    category: "Social Conflict",
-    name: "Alter Trait (Social)",
+    category: "Extended Tasks",
+    name: "Additional Progress",
     cost: "2 Momentum",
-    type: "Standard",
-    source: "Core 2E, p. 278",
-    text: "Impose a new social trait, alter an existing attitude/mood trait, or remove a social complication (e.g., Intimidated, Receptive, Hesitant)."
-  },
-  {
-    category: "Social Conflict",
-    name: "Counter-Argument",
-    cost: "2 Momentum",
-    type: "Immediate",
-    source: "Core 2E, p. 279",
-    text: "When you win an opposed social task against an opponent's argument, impose an immediate social complication or counter-leverage trait on them."
-  },
-  {
-    category: "Social Conflict",
-    name: "Read Motive / Leverage",
-    cost: "1 Momentum",
     type: "Repeatable",
-    source: "Core 2E, p. 279",
-    text: "Reveal one of an opponent's Values, Directives, or hidden agendas through a successful Insight roll."
+    source: "Core 2E, p. 271",
+    text: "During an extended task, add 1 to your Impact for 2 Momentum."
   },
-
-  /* ------------------------------------------------------------------------
-     5. STARSHIP CONFLICT
+  
+/* ------------------------------------------------------------------------
+     4. STARSHIP COMBAT
      ------------------------------------------------------------------------ */
   {
-    category: "Starship Conflict",
-    name: "Devastating Attack (Added Severity)",
+    category: "Starship Combat",
+    name: "Added Damage",
     cost: "2 Momentum",
     type: "Repeatable",
-    source: "Core 2E, p. 320",
-    text: "Increase the Severity of a successful starship attack by +1 for every 2 Momentum spent (maximum +2 Severity)."
+    source: "Core 2E, p. 307",
+    text: "Increase the damage of a successful attack by 1 for every 2 Momentum spent."
   },
   {
-    category: "Starship Conflict",
-    name: "Keep the Initiative (Starship)",
-    cost: "2 Momentum",
-    type: "Immediate",
-    source: "Core 2E, p. 318",
-    text: "Pass tactical activation directly to another bridge station or allied vessel instead of handing the turn to hostile forces."
-  },
-  {
-    category: "Starship Conflict",
-    name: "Reroute Power",
-    cost: "1 Momentum per Power",
-    type: "Repeatable",
-    source: "Core 2E, p. 319",
-    text: "Channel auxiliary reserves to gain +1 temporary Power beyond standard reactor limits for the current round."
-  },
-  {
-    category: "Starship Conflict",
-    name: "Salvo",
-    cost: "1+ Momentum",
-    type: "Standard",
-    source: "Core 2E, p. 321",
-    text: "Re-fire auxiliary energy arrays or launch an additional torpedo payload from loaded tubes at secondary targets in the same zone."
-  },
-  {
-    category: "Starship Conflict",
-    name: "Subsystem Targeting",
+    category: "Starship Combat",
+    name: "Devastating Attack",
     cost: "2 Momentum",
     type: "Standard",
-    source: "Core 2E, p. 320",
-    text: "Bypass random hit location rolls to direct damage straight to a chosen ship System (Engines, Weapons, Structure, Sensors, Comms, or Computers)."
+    source: "Core 2E, p. 307",
+    text: "Roll an additional system; that system suffers a hit dealing half the attack's damage, rounding up."
   }
 ];
