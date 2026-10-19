@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="STA 2E">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css?v=3.2">
+<link rel="stylesheet" href="style.css?v=3.3">
 <style>
 .lcars-help-popover, .det-popover, .injury-popover { display: none; }
 </style>
@@ -28,6 +28,7 @@
         <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-mission">Reset Mission</button>
         <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-ship" title="Clear all Shield and Breach boxes on the active ship">Reset Ship</button>
         <span class="row-spacer"></span>
+        <span class="storage-meter" id="storage-meter" title="Estimated browser storage used">Storage: 0%</span>
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
         <button type="button" class="lcars-utility-btn btn-navy" id="utility-btn-print-blank" title="Print all pages empty. Your saved data is not changed.">Print Blank</button>
@@ -43,8 +44,8 @@
         <span class="row-spacer"></span>
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-load" id="btn-undo" title="Nothing to undo" disabled>Undo</button>
-        <button type="button" class="lcars-utility-btn btn-save" id="btn-backup-all" title="Download all character and ship slots as one file">Backup All</button>
-        <button type="button" class="lcars-utility-btn btn-load" id="btn-restore-all" title="Replace all slots from a Backup All file">Restore All</button>
+        <button type="button" class="lcars-utility-btn btn-save" id="btn-backup-all" title="Roster &amp; Fleet master file: download all character and ship slots as one file">Backup All</button>
+        <button type="button" class="lcars-utility-btn btn-load" id="btn-restore-all" title="Restore a Roster &amp; Fleet file: replace everything, or add to your slots">Restore All</button>
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-help" id="btn-manual" title="Open the User Manual (Esc closes)">User Manual</button>
 		<div class="menu-divider-bar"></div>
@@ -1015,9 +1016,9 @@
 <script src="species_abilities.js?v=2.1"></script>
 <script src="talents.js?v=2.1"></script>
 <script src="equipment.js?v=2.1"></script>
-<script src="readme.js?v=1.3"></script>
+<script src="readme.js?v=1.4"></script>
 <script src="spends.js?v=1.1"></script>
-<script src="console.js?v=3.2"></script>
+<script src="console.js?v=3.3"></script>
 </body>
 </html>
 <!-- Block 8 END -->

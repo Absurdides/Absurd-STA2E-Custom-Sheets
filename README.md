@@ -28,18 +28,19 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 - **Delete Selected:** removes the ticked blocks after a confirmation. Undo restores them.
 
 ## Crew and Ship Slots
-- You get **5 Crew Slots and 5 Ship Slots**, kept separate so one ship can serve several characters, or a shuttle can replace the main ship for a mission.
+- You get up to **50 Crew Slots and 8 Ship Slots**, kept separate so one ship can serve several characters, or a shuttle can replace the main ship for a mission.
 - **+ New** adds a blank slot, **Copy** duplicates the current one, **Rename** sets a name (leave it blank to go back to automatic naming), **Delete** removes it.
 - Names follow the character name or ship name unless you rename them.
 - The last slot you used reopens automatically. Each Crew Slot remembers whether it was in Edit or Play Mode.
-- Portraits and ship images are shrunk automatically when you upload them, to save browser memory. Images saved before this update stay large until you upload them again.
-- Browser memory is limited. If it fills up you'll get a warning and images are left out of autosave. Use Export to keep them.
+- Portraits (400 px long side) and ship images (1600 px) are shrunk automatically when you upload them, to save browser memory. Images saved before this update stay large until you upload them again.
+- **Storage:** the `Storage: NN%` readout in the Session row estimates how much browser memory the app uses (browsers do not report the real limit; hover for KB). It turns amber at 80% (with a one-time reminder to use **Backup All**) and red at 95%. At 90% or more, new slots are refused (**+ New**, **Copy**, **New Slot** on import, adding a ship from a crew file, and **Add to My Slots**): use **Backup All**, then **Delete** slots you no longer need.
+- If memory does fill up you'll get a warning and images are left out of autosave. Use Export to keep them.
 
 ## Saving and Moving Data
-- **Export Crew / Import Crew:** one file for the active character, including the active ship. Importing asks whether to use a **New Slot** or **Replace Current**. If the file also holds a ship, you can add it as a new ship slot.
+- **Export Crew / Import Crew:** one file for the active character. Export Crew asks whether to include the active ship (**Include Ship** or **Character Only**). Importing asks whether to use a **New Slot** or **Replace Current**. If the file also holds a ship, you can add it as a new ship slot.
 - **Export Ship / Import Ship:** the ship alone, with the same choices.
-- **Backup All:** every crew and ship slot in one file. Do this regularly, because clearing browser data erases slots.
-- **Restore All:** replaces every slot from a Backup All file. It downloads a backup of your current slots first.
+- **Backup All:** the Roster & Fleet master file: every crew and ship slot in one file. Do this regularly, because clearing browser data erases slots.
+- **Restore All:** reads a Backup All file and asks: **Replace Everything** (replaces every slot; downloads a backup of your current slots first) or **Add to My Slots** (fills free slots only and lists any entries that did not fit; your current slots are kept).
 - **Clear Form:** clears only the active character, after downloading a backup. Ships are untouched.
 - Browser memory stays on that device and browser. Use Export or Backup All to move to another one.
 

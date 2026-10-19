@@ -417,14 +417,32 @@ function initConsole() {
     if (portraitUploader) {
         portraitUploader.addEventListener('change', function(e) {
             if (!e.target.files[0]) return;
-            shrinkImage(e.target.files[0], 640, src => { setPortrait(src); markDirty(); });
+            shrinkImage(e.target.files[0], 400, src => { setPortrait(src); markDirty(); });
             e.target.value = '';
         });
     }
 
     // ===== Slot manager: characters + starships (up to 5 each, browser localStorage) =====
     const KEY = 'sta2e-autosave'; // legacy single-autosave key (migrated once)
-    const MAX_SLOTS = 5;
+    const MAX_CREW = 50, MAX_SHIPS = 8, STORE_LIMIT = 5000000;
+    let storageWarned = false;
+    function storageUsed() {
+        let n = 0;
+        try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.indexOf('sta2e') === 0) n += k.length + (localStorage.getItem(k) || '').length; } } catch (e) {}
+        return n;
+    }
+    function storageFull() { return storageUsed() >= STORE_LIMIT * 0.9; }
+    function updateStorageMeter() {
+        const el = document.getElementById('storage-meter'); if (!el) return;
+        const u = storageUsed(), p = Math.round(u / STORE_LIMIT * 100);
+        el.textContent = 'Storage: ' + p + '%';
+        el.className = 'storage-meter' + (p >= 95 ? ' crit' : (p >= 80 ? ' warn' : ''));
+        el.title = 'Estimated browser storage used by this app: about ' + Math.round(u / 1024) + ' KB of ' + Math.round(STORE_LIMIT / 1024) + ' KB (browsers do not report the real limit). New slots are refused at 90%. Use Backup All, then Delete slots you no longer need.';
+        if (p >= 80 && !storageWarned) {
+            storageWarned = true;
+            setTimeout(() => alert('Browser storage is about ' + p + '% full (estimate). Use Backup All now. New slots are refused at 90%.'), 50);
+        }
+    }
     let quotaState = 0;
     function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
     function lsGet(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -493,6 +511,7 @@ function initConsole() {
             if (d) c.apply(d);
             c.after();
             fill();
+            updateStorageMeter();
         }
         function save() {
             if (!cur) return true;
@@ -511,8 +530,26 @@ function initConsole() {
         }
         const count = () => (idxRead() || []).length;
         function full() {
-            if (count() >= MAX_SLOTS) { alert('Maximum of ' + MAX_SLOTS + ' ' + c.plural + ' reached.'); return true; }
+            if (count() >= c.max) { alert('Maximum of ' + c.max + ' ' + c.plural + ' reached.'); return true; }
+            if (storageFull()) { alert('Browser storage is over 90% full. Use Backup All, then Delete slots you no longer need.'); return true; }
             return false;
+        }
+        const canAdd = () => count() < c.max && !storageFull();
+        function addAll(o) {
+            save();
+            const src = (o && o.data) || {}, a = idxRead() || [], skipped = [];
+            let added = 0;
+            ((o && o.index) || []).forEach(x => {
+                if (!x || !src[x.id]) return;
+                const nm = x.name || x.id;
+                if (a.length >= c.max || storageFull()) { skipped.push(c.noun + ': ' + nm); return; }
+                const id = c.prefix + Date.now() + '_' + added;
+                if (!lsSet(c.dataKey + id, JSON.stringify(src[x.id]))) { skipped.push(c.noun + ': ' + nm); return; }
+                a.push(x.custom ? { id: id, name: nm, custom: true } : { id: id, name: nm });
+                added++;
+            });
+            idxWrite(a); fill();
+            return { added: added, skipped: skipped };
         }
         function create() {
             if (full()) return false;
@@ -562,7 +599,7 @@ function initConsole() {
         function restore(en) {
             const a = idxRead() || [];
             if (!a.some(x => x.id === en.id)) {
-                if (a.length >= MAX_SLOTS) { alert('No free ' + c.noun + ' slot to restore into. Delete one first.'); return false; }
+                if (a.length >= c.max) { alert('No free ' + c.noun + ' slot to restore into. Delete one first.'); return false; }
                 a.push(en.custom ? { id: en.id, name: en.name, custom: true } : { id: en.id, name: en.name });
                 idxWrite(a);
             }
@@ -580,7 +617,7 @@ function initConsole() {
         function importAll(o) {
             (idxRead() || []).forEach(x => { try { localStorage.removeItem(c.dataKey + x.id); } catch (e) {} });
             const src = (o && o.data) || {};
-            const a = ((o && o.index) || []).filter(x => x && src[x.id]).slice(0, MAX_SLOTS);
+            const a = ((o && o.index) || []).filter(x => x && src[x.id]).slice(0, c.max);
             if (!a.length) a.push({ id: c.prefix + Date.now(), name: c.defName + ' 1' });
             a.forEach(x => { if (src[x.id]) lsSet(c.dataKey + x.id, JSON.stringify(src[x.id])); });
             idxWrite(a);
@@ -598,11 +635,11 @@ function initConsole() {
             const on = (id, fn) => { const el = document.getElementById(c.ui + id); if (el) el.addEventListener('click', fn); };
             on('btn-new', create); on('btn-dup', duplicate); on('btn-ren', rename); on('btn-del', remove);
         }
-        return { init: init, save: save, count: count, create: create, snapshot: snapshot, restore: restore, exportAll: exportAll, importAll: importAll, name: () => { const s = find(); return s ? s.name : ''; } };
+        return { init: init, save: save, count: count, max: c.max, canAdd: canAdd, addAll: addAll, create: create, snapshot: snapshot, restore: restore, exportAll: exportAll, importAll: importAll, name: () => { const s = find(); return s ? s.name : ''; } };
     }
     const charSlots = makeSlots({
         ui: 'slot-', idxKey: 'sta2e_storage_slots_index', dataKey: 'sta2e_slot_data_', activeKey: 'sta2e_active_slot',
-        prefix: 'slot_', defName: 'Personnel File', noun: 'character', plural: 'character slots',
+        prefix: 'slot_', max: MAX_CREW, defName: 'Personnel File', noun: 'character', plural: 'character slots',
         build: img => buildData(img, false),
         onRemove: s => setUndo('Delete slot', [Object.assign({ type: 'char' }, s)]),
         apply: d => applyData(d, 'char'),
@@ -617,7 +654,7 @@ function initConsole() {
     });
     const shipSlots = makeSlots({
         ui: 'ship-slot-', idxKey: 'sta2e_ship_slots_index', dataKey: 'sta2e_ship_data_', activeKey: 'sta2e_active_ship',
-        prefix: 'ship_', defName: 'Starship', noun: 'starship', plural: 'ship slots',
+        prefix: 'ship_', max: MAX_SHIPS, defName: 'Starship', noun: 'starship', plural: 'ship slots',
         build: img => buildShipData(img),
         onRemove: s => setUndo('Delete ship slot', [Object.assign({ type: 'ship' }, s)]),
         apply: d => applyData(d, 'ship'),
@@ -631,7 +668,7 @@ function initConsole() {
             // one-time: pull any ship data embedded in older character slots into ship slots
             const out = [], seen = new Set();
             (lsJSON('sta2e_storage_slots_index') || []).forEach(s => {
-                if (out.length >= MAX_SLOTS) return;
+                if (out.length >= MAX_SHIPS) return;
                 const d = lsJSON('sta2e_slot_data_' + s.id);
                 if (!d) return;
                 const sd = { _bundle: 'sta2e-starship-v1' };
@@ -653,7 +690,7 @@ function initConsole() {
         }
     });
     function offerShip(d) {
-        if (shipSlots.count() >= MAX_SLOTS) return;
+        if (!shipSlots.canAdd()) return;
         showChoice('Starship Data Found', 'This file also contains a starship ("' + (d.ship_name || d.ship_registry || 'unnamed') + '"). Add it as a new ship slot?',
             [{ label: 'Add Ship Slot', val: 'add', color: '#d96b27' }, { label: 'Skip', val: 'skip' }], v => {
                 if (v !== 'add' || !shipSlots.create()) return;
@@ -705,13 +742,19 @@ function initConsole() {
                 try { d = JSON.parse(ev.target.result); if (!d || d._bundle !== 'sta2e-backup-v1' || !d.characters || !d.ships) throw 0; }
                 catch (err) { alert('Terminal Error: Not a valid Backup All file.'); return; }
                 const nc = (d.characters.index || []).length, ns = (d.ships.index || []).length;
-                showChoice('Restore All // Replace Everything', 'This replaces ALL character and ship slots in browser memory with the backup (' + nc + ' characters, ' + ns + ' ships). A backup of the current state downloads first.',
-                    [{ label: 'Replace All', val: 'go', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' }], v => {
-                        if (v !== 'go') return;
-                        backupAll('before_restore_');
-                        undoStack = null; updateUndoBtn();
-                        charSlots.importAll(d.characters); shipSlots.importAll(d.ships);
-                        setUnsaved(false);
+                showChoice('Restore All // Select Mode', 'The file holds ' + nc + ' characters and ' + ns + ' ships. Replace Everything: replaces ALL slots in browser memory (a backup of the current state downloads first). Add to My Slots: keeps your slots and fills free ones only; anything that does not fit is listed.',
+                    [{ label: 'Replace Everything', val: 'replace', color: '#bd4b4b' }, { label: 'Add to My Slots', val: 'add', color: '#d96b27' }, { label: 'Cancel', val: 'cancel' }], v => {
+                        if (v === 'replace') {
+                            backupAll('before_restore_');
+                            undoStack = null; updateUndoBtn();
+                            charSlots.importAll(d.characters); shipSlots.importAll(d.ships);
+                            setUnsaved(false);
+                        } else if (v === 'add') {
+                            const rc = charSlots.addAll(d.characters), rs = shipSlots.addAll(d.ships);
+                            setUnsaved(false); updateStorageMeter();
+                            const sk = rc.skipped.concat(rs.skipped);
+                            alert('Added ' + rc.added + ' character(s) and ' + rs.added + ' ship(s).' + (sk.length ? '\n\nNot added (no free slot, or storage over 90%):\n' + sk.join('\n') : ''));
+                        }
                     });
             };
             r.readAsText(f);
@@ -1376,6 +1419,7 @@ function initConsole() {
             dot.className = 'autosave-indicator ' + state + (dot.classList.contains('no-print') ? ' no-print' : '');
             dot.title = state === 'saved' ? 'Autosave: Synchronized (Click to force save)' : 'Autosave: Changes pending...';
         });
+        if (state === 'saved') updateStorageMeter();
     }
     function setUnsaved(v) {
         unsaved = v;
@@ -1424,8 +1468,8 @@ function initConsole() {
             autosave();
         }
     });
-    function saveFile(prefix) {
-        const blob = new Blob([JSON.stringify(buildData(true, true), null, 2)], { type: 'application/json' });
+    function saveFile(prefix, withShip) {
+        const blob = new Blob([JSON.stringify(buildData(true, !!withShip), null, 2)], { type: 'application/json' });
         let name = fileId.value.trim().toLowerCase().replace(/[^a-z0-9\-]/g, '_');
         if (!name) name = 'unnamed_personnel';
         const a = document.createElement('a');
@@ -1434,7 +1478,14 @@ function initConsole() {
         document.body.appendChild(a); a.click(); document.body.removeChild(a);
     }
     const saveBtn = document.getElementById('utility-btn-save');
-    if (saveBtn) saveBtn.addEventListener('click', function() { saveFile(''); setUnsaved(false); });
+    if (saveBtn) saveBtn.addEventListener('click', function() {
+        const sn = (form.elements['ship_name'] && form.elements['ship_name'].value.trim()) || shipSlots.name() || 'active ship';
+        showChoice('Export Crew', 'Include the active ship ("' + sn + '") in the file?',
+            [{ label: 'Include Ship', val: 'yes', color: '#d96b27' }, { label: 'Character Only', val: 'no', color: '#708699' }, { label: 'Cancel', val: 'cancel' }], v => {
+                if (v !== 'yes' && v !== 'no') return;
+                saveFile('', v === 'yes'); setUnsaved(false);
+            });
+    });
     const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, #utility-logsel-loader, .sel-cb, [id$="-search"], #talent-cat')) return; markDirty(); };
     form.addEventListener('input', onEdit);
     form.addEventListener('change', onEdit);
@@ -1487,7 +1538,7 @@ function initConsole() {
                 try { d = JSON.parse(ev.target.result); if (!d || typeof d !== 'object') throw 0; }
                 catch (err) { alert('Terminal Error: Incompatible file format or data string corrupted.'); return; }
                 const btns = [];
-                if (charSlots.count() < MAX_SLOTS) btns.push({ label: 'New Slot', val: 'new', color: '#d96b27' });
+                if (charSlots.canAdd()) btns.push({ label: 'New Slot', val: 'new', color: '#d96b27' });
                 btns.push({ label: 'Replace Current', val: 'replace', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' });
                 showChoice('Load File // Select Target', 'Load this file into a new slot, or replace "' + charSlots.name() + '"?', btns, v => {
                     if (v !== 'new' && v !== 'replace') return;
@@ -1507,7 +1558,7 @@ function initConsole() {
     if (clearBtn) {
         clearBtn.addEventListener('click', function() {
             if (!confirm('Clear character "' + charSlots.name() + '"? A backup file will be downloaded first. (Starships are not affected.)')) return;
-            saveFile('backup_'); setUndo('Clear Form', [snapChar()]);
+            saveFile('backup_', false); setUndo('Clear Form', [snapChar()]);
             blankChar(); sync(); balance(); growAll();
             charSlots.save(); setUnsaved(false);
         });
@@ -1556,7 +1607,7 @@ function initConsole() {
                 try { d = JSON.parse(ev.target.result); if (!d || typeof d !== 'object') throw 0; }
                 catch (err) { alert('Terminal Error: Unable to parse starship registry file.'); return; }
                 const btns = [];
-                if (shipSlots.count() < MAX_SLOTS) btns.push({ label: 'New Ship Slot', val: 'new', color: '#d96b27' });
+                if (shipSlots.canAdd()) btns.push({ label: 'New Ship Slot', val: 'new', color: '#d96b27' });
                 btns.push({ label: 'Replace Current', val: 'replace', color: '#bd4b4b' }, { label: 'Cancel', val: 'cancel' });
                 showChoice('Import Ship // Select Target', 'Import into a new ship slot, or replace "' + shipSlots.name() + '"?', btns, v => {
                     if (v !== 'new' && v !== 'replace') return;

@@ -1,5 +1,5 @@
 // Offline + install support. Network-first for this app's own files; the cache is used when offline.
-const CACHE = 'sta2e-console-v5';
+const CACHE = 'sta2e-console-v6';
 self.addEventListener('install', e => {
     e.waitUntil((async () => {
         const c = await caches.open(CACHE);

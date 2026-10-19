@@ -699,6 +699,9 @@ body.play-mode-active .ship-dept-capsule { padding-left: 6px; padding-right: 6px
 body.play-mode-active .play-only { display: inline-block; }
 .btn-tan { background-color: #eed292; color: #000000; }
 .btn-help { background-color: #f7c600; color: #000000; }
+.storage-meter { font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; color: #708699; white-space: nowrap; padding: 0 4px; cursor: help; }
+.storage-meter.warn { color: #d96b27; }
+.storage-meter.crit { color: #bd4b4b; }
 .lcars-utility-btn:disabled { opacity: 0.4; cursor: default; }
 #manual-overlay { display: none; position: fixed; inset: 0; z-index: 10001; }
 .manual-backdrop { width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; padding: 14px; }
