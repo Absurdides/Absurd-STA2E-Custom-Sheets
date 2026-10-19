@@ -720,13 +720,13 @@ body.play-mode-active .play-only { display: inline-block; }
 .manual-body code { background-color: #2c3a4d; color: #eed292; padding: 1px 4px; border-radius: 3px; font-family: Consolas, 'Courier New', monospace; font-size: 12px; }
 .manual-body hr { border: none; border-top: 1px solid #708699; margin: 12px 0; }
 @media screen {
-    body.play-mode-active.dark-play { background-color: #0b1118; }
-    body.play-mode-active.dark-play .printable-page-area { filter: invert(1) hue-rotate(180deg); }
-    body.play-mode-active.dark-play .printable-page-area img,
-    body.play-mode-active.dark-play .lcars-help-popover,
-    body.play-mode-active.dark-play .det-popover,
-    body.play-mode-active.dark-play #page-2 .injury-popover { filter: invert(1) hue-rotate(180deg); }
-    body.play-mode-active.dark-play .external-utility-bar { background-color: #161e29; border-color: #3a4a5c; }
+    body.dark-play { background-color: #0b1118; }
+    body.dark-play .printable-page-area { filter: invert(1) hue-rotate(180deg); }
+    body.dark-play .printable-page-area img,
+    body.dark-play .lcars-help-popover,
+    body.dark-play .det-popover,
+    body.dark-play #page-2 .injury-popover { filter: invert(1) hue-rotate(180deg); }
+    body.dark-play .external-utility-bar { background-color: #161e29; border-color: #3a4a5c; }
 }
 
 /* ==========================================================================

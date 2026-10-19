@@ -732,14 +732,16 @@ function initConsole() {
         addBlock('p4', activeSec('p4'), 'cap-tan', 'Stardate ' + getStardateVal(), t.trim());
         markDirty();
     });
-    let darkPlay = lsGet('sta2e_dark_play') !== '0';
+    let darkPref = lsGet('sta2e_dark_play'); // '1' dark, '0' light, null = dark in Play Mode only
+    const isDark = () => darkPref === null ? isPlayMode : darkPref === '1';
     function applyTheme() {
-        document.body.classList.toggle('dark-play', darkPlay);
+        const d = isDark();
+        document.body.classList.toggle('dark-play', d);
         const b = document.getElementById('btn-theme');
-        if (b) b.textContent = 'Theme: ' + (darkPlay ? 'Dark' : 'Light');
+        if (b) b.textContent = 'Theme: ' + (d ? 'Dark' : 'Light');
     }
-    onBtn('btn-theme', () => { darkPlay = !darkPlay; lsSet('sta2e_dark_play', darkPlay ? '1' : '0'); applyTheme(); });
-    applyTheme(); updateUndoBtn();
+    onBtn('btn-theme', () => { darkPref = isDark() ? '0' : '1'; lsSet('sta2e_dark_play', darkPref); applyTheme(); });
+    updateUndoBtn();
     let wakeLock = null;
     async function setWake(on) {
         try {
@@ -2148,6 +2150,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
     function setPlayMode(active, restoring) {
         isPlayMode = active;
         document.body.classList.toggle('play-mode-active', isPlayMode);
+        applyTheme();
         document.querySelectorAll('.val-num').forEach(el => {
             el.title = isPlayMode ? 'Click to Challenge/Restore this Value' : '';
         });

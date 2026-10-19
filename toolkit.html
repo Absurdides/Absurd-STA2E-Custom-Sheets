@@ -1,194 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STA 2E Game Toolkit Reference Cards</title>
-  <link rel="stylesheet" href="fonts.css">
-  <style>
-    :root {
-      --lcars-teal: #4b9bb5;
-      --lcars-light-teal: #68b8cf;
-      --lcars-dark-teal: #23586b;
-      --lcars-red: #c63b3b;
-      --lcars-orange: #d97824;
-      --lcars-tan: #e5a460;
-      --lcars-bg: #0a0a0f;
-      --card-bg: #ffffff;
-      --card-tint: #eaf3f6;
-      --text-dark: #111111;
-      --border-teal: #4b9bb5;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STA 2E Game Toolkit Reference Cards</title>
+<link rel="stylesheet" href="fonts.css?v=1.0">
+<link rel="icon" type="image/png" href="icon-ent.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2c3a4d">
+<style>
+:root{--navy:#2c3a4d;--orange:#d96b27;--tan:#eed292;--slate:#708699;--line:#c0c8cf;--tint:#f0f4f8}
+*{box-sizing:border-box}
+@page{size:letter portrait;margin:.4in}
+html,body{margin:0;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+body{background:#e9edf1;font-family:'Roboto',Arial,sans-serif;color:#111;display:flex;flex-direction:column;align-items:center;padding:12px 0 40px;gap:18px}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;width:8in;max-width:100%;background:#fafafa;border:1px dashed var(--slate);border-radius:6px;padding:6px 8px}
+.btn{font:bold 11px 'Antonio','Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;color:#fff;background:var(--navy);border:0;border-radius:4px;padding:5px 12px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{opacity:.85}.btn.slate{background:var(--slate)}.btn.orange,.btn.on{background:var(--orange)}
+.bar select{height:24px;background:var(--navy);color:#fff;border:1px solid var(--slate);border-radius:4px;font:bold 10.5px 'Antonio',sans-serif;letter-spacing:1px;text-transform:uppercase;padding:0 6px;max-width:260px}
+.sheet{width:8in;min-height:10.5in;background:#fff;padding:.25in;display:flex;flex-direction:column;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+.sheet-head{display:flex;align-items:flex-end;margin-bottom:6px}
+.logo{width:45px;height:52px;margin-right:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0}.logo img{max-width:100%;max-height:100%;object-fit:contain}
+.main-title{font:900 23px/1 'Antonio','Oswald',sans-serif;letter-spacing:.5px;text-transform:uppercase}
+.subtitle{font:bold 11px 'Antonio',sans-serif;color:#444;letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.tan-banner{display:inline-block;background:var(--tan);padding:2px 10px;border-radius:2px;margin-top:4px;font:bold 11px 'Antonio',sans-serif;letter-spacing:1.5px;color:#222;text-transform:uppercase}
+.frame{display:grid;grid-template-columns:45px 1fr;gap:6px;flex:1}
+.pillar{display:flex;flex-direction:column}
+.hockey{width:45px;height:50px;border-top-left-radius:18px;border-bottom-right-radius:14px;margin-bottom:4px;background:linear-gradient(to bottom,#eed292 0,#eed292 26px,#fff 26px,#fff 30px,#eed292 30px,#eed292 50px)}
+.pdata{flex:1;background:var(--navy);border-bottom-left-radius:14px;position:relative;padding:20px 0 15px;display:flex;justify-content:center}
+.pdata::before{content:'';position:absolute;left:6px;top:15px;bottom:15px;width:3px;background:var(--slate);border-radius:2px}
+.pdata span{writing-mode:vertical-rl;transform:rotate(180deg);color:var(--slate);font:bold 10px 'Antonio',sans-serif;letter-spacing:1.5px;white-space:nowrap;padding-left:10px;text-transform:uppercase;align-self:flex-start}
+.right{min-width:0}
+.orange-banner{height:26px;background:var(--orange);border-radius:0 4px 4px 0;display:flex;align-items:center;padding:0 12px;color:#fff;font:bold 11px 'Antonio',sans-serif;letter-spacing:1.2px;margin-bottom:8px}.dv{margin:0 6px;opacity:.6}
+.panel,.step-box{border:1px solid var(--line);border-radius:4px;background:#fafbfc;padding:8px 10px;margin-bottom:8px;font-size:12px;line-height:1.35;break-inside:avoid}
+.panel.has-table{break-inside:auto}
+.panel p{margin:0 0 5px}.panel p:last-child{margin-bottom:0}
+.panel-header{display:flex;justify-content:space-between;gap:8px;background:var(--navy);color:#fff;font:900 11px 'Antonio',sans-serif;letter-spacing:.8px;text-transform:uppercase;padding:2px 6px;border-radius:2px;margin-bottom:5px;break-after:avoid}
+.panel-header .page-ref{color:var(--tan);font-size:10px;white-space:nowrap}
+.card-grid-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:start}
+.card-grid-2col>.panel,.card-grid-2col>div>.panel{margin-bottom:8px}
+ul.qualities-list{list-style:none;padding:0;margin:0}
+ul.qualities-list li{margin-bottom:4px;padding:3px 6px}ul.qualities-list li:nth-child(even){background:var(--tint);border-radius:3px}
+table.ref-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.ref-table th{background:var(--slate);color:#fff;text-align:left;padding:3px 6px;font:bold 11px 'Antonio',sans-serif;letter-spacing:.8px;text-transform:uppercase}
+.ref-table td{padding:4px 6px;vertical-align:top;border-bottom:1px solid #e1e8ed}
+.ref-table tr:nth-child(even) td{background:var(--tint)}
+.ref-table tr{break-inside:avoid}.ref-table thead{display:table-header-group}
+.step-box{display:flex;gap:10px;align-items:flex-start}
+.step-num{background:var(--orange);color:#fff;font:bold 26px 'Antonio',sans-serif;border-radius:6px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.step-content{flex:1;min-width:0}.step-content p{margin:0 0 5px}
+.sub-bullet{margin-left:14px;margin-top:4px}
+.foot{display:flex;height:22px;gap:6px;margin-top:8px;align-items:flex-end;break-inside:avoid}
+.f1{width:45px;height:22px;background:var(--slate);border-top-left-radius:12px}
+.f2{flex:1;height:22px;background:var(--navy);color:#fff;font:bold 11px 'Antonio',sans-serif;letter-spacing:3px;text-transform:uppercase;display:flex;align-items:center;padding-left:14px;border-top-right-radius:4px;white-space:nowrap;overflow:hidden}
+.f3{width:55px;height:22px;background:var(--tan)}.f4{width:75px;height:22px;background:var(--orange);border-top-right-radius:14px;border-bottom-right-radius:4px}
+.legal{text-align:center;font:8px sans-serif;letter-spacing:.5px;color:#111;margin-top:4px;text-transform:uppercase}
+@media screen{
+body.dark-play{background:#0b1118}
+body.dark-play .sheet{filter:invert(1) hue-rotate(180deg);box-shadow:none}
+body.dark-play .sheet img{filter:invert(1) hue-rotate(180deg)}
+body.dark-play .bar{background:#161e29;border-color:#3a4a5c}
+}
+@media print{
+body{background:#fff!important;display:block;padding:0}
+.no-print{display:none!important}
+.sheet{width:100%;min-height:0;padding:0;box-shadow:none;zoom:1!important;filter:none!important}
+.sheet img{filter:none!important}
+.sheet+.sheet{break-before:page}
+}
 
-    * { box-sizing: border-box; }
-    body {
-      background-color: var(--lcars-bg);
-      font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      margin: 20px;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      color: var(--text-dark);
-      width: 100%;
-      max-width: 900px;
-      border: 3px solid var(--border-teal);
-      border-radius: 20px;
-      padding: 16px;
-      position: relative;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-
-    .card-header {
-      display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .card-title-pill {
-      background: var(--border-teal);
-      color: #fff;
-      font-family: 'Antonio', 'Oswald', sans-serif;
-      font-size: 1.15rem;
-      font-weight: bold;
-      letter-spacing: 1px;
-      padding: 4px 14px;
-      border-radius: 12px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .card-grid-2col {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
-
-    .panel {
-      border: 2px solid var(--border-teal);
-      border-radius: 14px;
-      padding: 10px 14px;
-      font-size: 0.82rem;
-      line-height: 1.35;
-      background: #fff;
-      margin-bottom: 12px;
-    }
-
-    .panel-header {
-      font-family: 'Antonio', 'Oswald', sans-serif;
-      font-size: 1rem;
-      color: var(--lcars-teal);
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 6px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 2px;
-    }
-
-    .panel-header .page-ref {
-      font-size: 0.72rem;
-      color: #777;
-    }
-
-    ul.qualities-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    ul.qualities-list li {
-      margin-bottom: 6px;
-      padding: 3px 6px;
-    }
-
-    ul.qualities-list li:nth-child(even) {
-      background-color: var(--card-tint);
-      border-radius: 4px;
-    }
-
-    table.ref-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.8rem;
-      margin-top: 4px;
-    }
-
-    table.ref-table th {
-      background-color: var(--lcars-teal);
-      color: white;
-      text-align: left;
-      padding: 4px 8px;
-      font-family: 'Antonio', 'Oswald', sans-serif;
-      font-size: 0.85rem;
-    }
-
-    table.ref-table td {
-      padding: 6px 8px;
-      vertical-align: top;
-      border-bottom: 1px solid #e1e8ed;
-    }
-
-    table.ref-table tr:nth-child(even) td {
-      background-color: var(--card-tint);
-    }
-
-    .step-box {
-      border: 2px solid var(--border-teal);
-      border-radius: 14px;
-      padding: 10px 14px;
-      margin-bottom: 12px;
-      display: flex;
-      gap: 12px;
-      align-items: flex-start;
-      background: #fff;
-    }
-
-    .step-num {
-      background: var(--lcars-teal);
-      color: white;
-      font-family: 'Antonio', 'Oswald', sans-serif;
-      font-size: 1.8rem;
-      font-weight: bold;
-      border-radius: 8px;
-      width: 44px;
-      height: 44px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .step-content {
-      font-size: 0.82rem;
-      line-height: 1.35;
-    }
-
-    .sub-bullet {
-      margin-left: 14px;
-      margin-top: 4px;
-    }
-
-    @media (max-width: 768px) {
-      .card-grid-2col { grid-template-columns: 1fr; }
-    }
-  </style>
+[hidden]{display:none!important}
+body{padding-top:0}
+#nav{position:sticky;top:0;z-index:20;width:100%;display:flex;justify-content:center;background:#e9edf1;padding:6px 0}
+.bar{flex-direction:column;align-items:stretch;gap:4px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.lbl{width:56px;flex-shrink:0;text-align:right;font:900 10px 'Antonio',sans-serif;letter-spacing:.8px;color:var(--slate);text-transform:uppercase}
+.tabs{display:contents}
+.btn.tab.on{background:var(--tan);color:#000}
+.cardnav{display:flex;justify-content:space-between;gap:6px;margin-top:10px}
+.cardnav .btn[hidden]{visibility:hidden;display:inline-block!important}
+@media screen{
+.sheet{display:none;scroll-margin-top:var(--navh,0px)}
+.sheet.show{display:flex}
+body.dark-play #nav{background:#0b1118}
+}
+@media (max-width:700px){#nav{position:static}}
+@media print{
+.sheet{display:flex!important}
+body.print-tab .sheet:not(.show){display:none!important}
+}
+@media screen{
+#nav.col,body.dark-play #nav.col{background:transparent;pointer-events:none}
+#nav.col .bar{background:transparent;border-color:transparent;padding:0 8px}
+#nav.col .r1,#nav.col #strow,#nav.col .lbl,#nav.col #tabs{display:none}
+#nav.col #mt{pointer-events:auto}
+}
+</style>
 </head>
 <body>
-
-  <!-- RULES SUMMARY CARD 01 -->
-  <article class="card" id="card-01">
-    <div class="card-header">
-      <div class="card-title-pill">▷ RULES SUMMARY CARD | 01</div>
-    </div>
+<div id="nav" class="no-print"><div class="bar">
+<div class="row r1"><span class="lbl">Tools</span>
+<a class="btn" id="back" href="index.html" title="Back to the character console">&larr; Console</a>
+<button type="button" class="btn slate" id="fs" title="Toggle fullscreen PADD mode">PADD &#9211;</button>
+<button type="button" class="btn slate" id="fit" title="Scale sheets to fit screen width">Fit &harr;</button>
+<button type="button" class="btn" id="theme" title="Dark / Light theme (never affects printing)">Theme: Light</button>
+<span style="flex:1"></span>
+<button type="button" class="btn slate" id="printtab" title="Print only the card(s) showing">Print This Tab</button>
+<button type="button" class="btn orange" id="print" title="Print all 11 cards (Letter, 100%, Background graphics on)">Print Toolkit</button>
+</div>
+<div class="row"><span class="lbl">Section</span><span id="tabs" class="tabs"></span><span style="flex:1"></span><button type="button" class="btn slate" id="mt" title="Collapse or expand the menu">Hide Menu &#9650;</button></div>
+<div class="row" id="strow" hidden><span class="lbl">Station</span><span id="sts" class="tabs"></span></div>
+</div></div>
+<article class="sheet" id="card-01">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ RULES SUMMARY CARD | 01</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 1 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
     
     <div class="card-grid-2col">
       <div style="display:flex; flex-direction:column; gap:16px;">
@@ -248,15 +174,17 @@
         </section>
       </div>
     </div>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-02">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ RULES SUMMARY CARD | 02</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 2 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- RULES SUMMARY CARD 02 -->
-  <article class="card" id="card-02">
-    <div class="card-header">
-      <div class="card-title-pill">▷ RULES SUMMARY CARD | 02</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 289)</span>
@@ -314,7 +242,7 @@
     </section>
 
     <div class="card-grid-2col">
-      <section class="panel">
+      <section class="panel has-table">
         <div class="panel-header">
           <span>.: MINOR ACTIONS</span>
           <span class="page-ref">(PAGE 288)</span>
@@ -355,7 +283,7 @@
         </table>
       </section>
 
-      <section class="panel">
+      <section class="panel has-table">
         <div class="panel-header">
           <span>.: DETERMINATION SPENDS</span>
           <span class="page-ref">(PAGE 262)</span>
@@ -384,13 +312,15 @@
         </table>
       </section>
     </div>
-  </article>
-
-  <!-- STARSHIP CONFLICT CARD 01 -->
-  <article class="card" id="card-starship-conflict-01">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP CONFLICT CARD | 01</div>
-    </div>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-conflict-01">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP CONFLICT CARD | 01</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 3 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
     <div class="panel-header" style="border:none; margin-bottom:12px; font-size:1.2rem;">
       <span>ATTEMPTING A STARSHIP ATTACK</span>
@@ -464,13 +394,15 @@
         <p>A ship's collision damage rating is equal to the ship's <strong>Scale</strong>, plus half the number of zones moved before the collision. This has the Devastating and Piercing qualities. In addition, if a ship is ramming, then the ramming vessel gains the Intense quality as well.</p>
       </section>
     </div>
-  </article>
-
-  <!-- STARSHIP CONFLICT CARD 02 -->
-  <article class="card" id="card-starship-conflict-02">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP CONFLICT CARD | 02</div>
-    </div>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-conflict-02">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP CONFLICT CARD | 02</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 4 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
     <div class="panel-header" style="border:none; margin-bottom:12px; font-size:1.2rem;">
       <span>STARSHIP DAMAGE</span>
@@ -496,7 +428,7 @@
       </div>
     </div>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: STARSHIP COMBAT MOMENTUM SPENDS</span>
         <span class="page-ref">(PAGE 307)</span>
@@ -521,7 +453,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: SHAKEN: MINOR DAMAGE RESULTS</span>
         <span class="page-ref">(PAGE 308)</span>
@@ -558,15 +490,17 @@
         </tbody>
       </table>
     </section>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-standard-actions">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP STANDARD ACTIONS</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 5 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- STARSHIP STANDARD ACTIONS -->
-  <article class="card" id="card-starship-standard-actions">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP STANDARD ACTIONS</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: STARSHIP STANDARD MINOR ACTIONS</span>
         <span class="page-ref">(PAGE 300)</span>
@@ -621,7 +555,7 @@
       </section>
     </div>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: STARSHIP STANDARD MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 300)</span>
@@ -661,15 +595,17 @@
         </tbody>
       </table>
     </section>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-command-comms">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP COMMAND & COMMUNICATIONS ACTIONS</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 6 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- STARSHIP COMMAND & COMMUNICATIONS ACTIONS -->
-  <article class="card" id="card-starship-command-comms">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP COMMAND & COMMUNICATIONS ACTIONS</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: COMMAND MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 301)</span>
@@ -702,7 +638,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: COMMUNICATIONS MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 301)</span>
@@ -754,13 +690,15 @@
         <p>Deflector shields block transporter use—you cannot beam a target up or down when your own shields are active, and you cannot beam a target to or from a target whose shields are active.</p>
       </section>
     </div>
-  </article>
-
-  <!-- STARSHIP HELM & NAVIGATOR ACTIONS -->
-  <article class="card" id="card-starship-helm-navigator">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP HELM & NAVIGATOR ACTIONS</div>
-    </div>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-helm-navigator">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP HELM & NAVIGATOR ACTIONS</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 7 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
     <section class="panel">
       <div class="panel-header">
@@ -770,7 +708,7 @@
       <p>Characters at the helm can pilot the ship, directing where the ship goes and maneuvering it around hazards and dangers. These actions are usually assisted by the ship's <strong>Engines + Conn</strong>. If the helm also includes navigation, it allows a character to operate sensors and access star charts to plan a course to a specific destination.</p>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: HELM MINOR ACTIONS</span>
         <span class="page-ref">(PAGE 302)</span>
@@ -795,7 +733,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: HELM MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 302)</span>
@@ -836,7 +774,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: NAVIGATOR MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 303)</span>
@@ -860,15 +798,17 @@
         </tbody>
       </table>
     </section>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-tactical">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP TACTICAL ACTIONS</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 8 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- STARSHIP TACTICAL ACTIONS -->
-  <article class="card" id="card-starship-tactical">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP TACTICAL ACTIONS</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: TACTICAL MINOR ACTIONS</span>
         <span class="page-ref">(PAGE 305)</span>
@@ -901,7 +841,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: TACTICAL MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 305)</span>
@@ -951,15 +891,17 @@
       <p>A character at tactical operates the ship's weapons and defensive systems. A ship may have a second tactical position as a separate station if it has a Security rating of 4+.</p>
       <p>The <strong>tactical console</strong> (page 188) operates the ship's offensive and defensive systems: the weapons and shields, as well as related systems such as tractor beams. Many tactical stations allow the officer to monitor and coordinate the ship's internal security, including operation of communications—information security, handling of encrypted signals, and intercepting enemy transmissions—as well as coordinating security teams, internal doors, and forcefields. These actions are usually assisted by the ship's <strong>Weapons + Security</strong>.</p>
     </section>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-starship-engineering-operations">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ STARSHIP ENGINEERING & OPERATIONS ACTIONS</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 9 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- STARSHIP ENGINEERING & OPERATIONS ACTIONS -->
-  <article class="card" id="card-starship-engineering-operations">
-    <div class="card-header">
-      <div class="card-title-pill">▷ STARSHIP ENGINEERING & OPERATIONS ACTIONS</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: OPERATIONS/ENGINEERING MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 303)</span>
@@ -1003,7 +945,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: SENSOR OPERATIONS MINOR ACTIONS</span>
         <span class="page-ref">(PAGE 304)</span>
@@ -1031,7 +973,7 @@
       </table>
     </section>
 
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: SENSOR OPERATIONS MAJOR ACTIONS</span>
         <span class="page-ref">(PAGE 304)</span>
@@ -1063,13 +1005,15 @@
         </tbody>
       </table>
     </section>
-  </article>
-
-  <!-- BREACHES CARD 01 -->
-  <article class="card" id="card-breaches-01">
-    <div class="card-header">
-      <div class="card-title-pill">▷ BREACHES CARD | 01</div>
-    </div>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-breaches-01">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ BREACHES CARD | 01</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 10 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
     <p style="font-size:0.85rem; margin-bottom:12px;">
       As an option, use these <strong>Breaches</strong> tables to generate thematic descriptions and traits for breaches affecting damaged ship systems. Use the <strong>Nature of Breach</strong> table to determine the nature of the breach inflicted, then use the other tables for the different systems to determine which subsystem is affected, and a suggested game effect.
@@ -1077,7 +1021,7 @@
 
     <div class="card-grid-2col">
       <div>
-        <section class="panel">
+        <section class="panel has-table">
           <div class="panel-header">
             <span>.: NATURE OF BREACH</span>
           </div>
@@ -1113,7 +1057,7 @@
           </table>
         </section>
 
-        <section class="panel">
+        <section class="panel has-table">
           <div class="panel-header">
             <span>.: COMMUNICATIONS BREACHES</span>
           </div>
@@ -1143,7 +1087,7 @@
       </div>
 
       <div>
-        <section class="panel">
+        <section class="panel has-table">
           <div class="panel-header">
             <span>.: COMPUTERS BREACHES</span>
           </div>
@@ -1171,7 +1115,7 @@
           </table>
         </section>
 
-        <section class="panel">
+        <section class="panel has-table">
           <div class="panel-header">
             <span>.: ENGINES BREACHES</span>
           </div>
@@ -1208,15 +1152,17 @@
         </section>
       </div>
     </div>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<article class="sheet" id="card-breaches-02">
+<header class="sheet-head"><div class="logo"><img src="trekstar.png" alt="Starfleet Insignia"></div><div class="brand"><div class="main-title">Starfleet Command // Game Toolkit</div><div class="subtitle">Operations Division // Rules Reference Cards</div><div class="tan-banner">▷ BREACHES CARD | 02</div></div></header>
+<div class="frame"><div class="pillar"><div class="hockey"></div><div class="pdata"><span>Game Toolkit // [System: Status: Live]</span></div></div>
+<div class="right"><div class="orange-banner">STA 2E GAME TOOLKIT <span class="dv">//</span> CARD 11 OF 11 <span class="dv">//</span> LEVEL 7 ACCESS</div><div class="body">
 
-  <!-- BREACHES CARD 02 -->
-  <article class="card" id="card-breaches-02">
-    <div class="card-header">
-      <div class="card-title-pill">▷ BREACHES CARD | 02</div>
-    </div>
-
-    <section class="panel">
+    <section class="panel has-table">
       <div class="panel-header">
         <span>.: STRUCTURE BREACHES</span>
       </div>
@@ -1257,7 +1203,7 @@
     </section>
 
     <div class="card-grid-2col">
-      <section class="panel">
+      <section class="panel has-table">
         <div class="panel-header">
           <span>.: SENSORS BREACHES</span>
         </div>
@@ -1293,7 +1239,7 @@
         </table>
       </section>
 
-      <section class="panel">
+      <section class="panel has-table">
         <div class="panel-header">
           <span>.: WEAPONS BREACHES</span>
         </div>
@@ -1351,7 +1297,72 @@
         <p>If your ship suffers a number of breaches greater than the ship's Scale, the ship suffers critical damage and can no longer function. No further actions can be taken if the ship has taken critical damage. If the ship takes any additional breaches, it is destroyed.</p>
       </section>
     </div>
-  </article>
+  </div></div></div>
+<div class="foot"><div class="f1"></div><div class="f2">United Federation Of Planets // Game Toolkit Reference</div><div class="f3"></div><div class="f4"></div></div>
+<div class="legal">Under Penalty of Federation Law, Unauthorized Access is Prohibited.</div>
+<div class="cardnav no-print"><button type="button" class="btn slate cn-prev">&larr; Previous Card</button><button type="button" class="btn cn-top">&uarr; Menu</button><button type="button" class="btn slate cn-next">Next Card &rarr;</button></div>
+</article>
+<script>(function(){
+var K='sta2e_dark_play',CK='sta2e_toolkit_card',$=function(i){return document.getElementById(i)};
+function g(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function s(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+var dark=g(K)==='1';
+function theme(){document.body.classList.toggle('dark-play',dark);$('theme').textContent='Theme: '+(dark?'Dark':'Light')}
+$('theme').onclick=function(){dark=!dark;s(K,dark?'1':'0');theme()};theme();
+var fit=false;
+function zoom(){var z=fit?Math.max(.5,(innerWidth-16)/768):'';document.querySelectorAll('.sheet,.bar').forEach(function(e){e.style.zoom=z});navh()}
+$('fit').onclick=function(){fit=!fit;$('fit').classList.toggle('on',fit);zoom()};
+addEventListener('resize',function(){if(fit)zoom();else navh()});
+var wl=null;
+async function wake(on){try{if(on&&'wakeLock' in navigator)wl=await navigator.wakeLock.request('screen');else if(wl){await wl.release();wl=null}}catch(e){}}
+$('fs').onclick=function(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(function(){})};
+document.addEventListener('fullscreenchange',function(){var f=!!document.fullscreenElement;$('fs').textContent=f?'Exit PADD \u2715':'PADD \u26F6';$('fs').classList.toggle('on',f);wake(f)});
+document.addEventListener('visibilitychange',function(){if(document.fullscreenElement&&document.visibilityState==='visible')wake(true)});
+$('back').onclick=function(e){e.preventDefault();window.close();setTimeout(function(){location.href='index.html'},150)};
 
+var P='card-starship-';
+var G=[{n:'Rules Summary',ids:['card-01','card-02']},
+{n:'Starship Conflict',ids:[P+'conflict-01',P+'conflict-02']},
+{n:'Starship Actions',st:1,ids:[P+'standard-actions',P+'command-comms',P+'helm-navigator',P+'tactical',P+'engineering-operations']},
+{n:'Breaches',ids:['card-breaches-01','card-breaches-02']}];
+var SN=['Standard','Command & Comms','Helm & Navigator','Tactical','Engineering & Ops'];
+var ALL=[];G.forEach(function(x){x.ids.forEach(function(i){ALL.push(i)})});
+var sheets=document.querySelectorAll('.sheet'),cur=null,lastSt=G[2].ids[0];
+function mk(box,label,fn){var b=document.createElement('button');b.type='button';b.className='btn tab';b.textContent=label;b.onclick=fn;box.appendChild(b);return b}
+var tabB=G.map(function(x,i){return mk($('tabs'),x.n,function(){go(x.st?lastSt:x.ids[0],1)})});
+var stB=G[2].ids.map(function(id,i){return mk($('sts'),SN[i],function(){go(id,1)})});
+function navh(){var n=$('nav');$('nav').style.removeProperty('zoom');document.documentElement.style.setProperty('--navh',(getComputedStyle(n).position==='sticky'?n.offsetHeight+8:0)+'px')}
+function go(id,top){
+ var gi=-1;G.forEach(function(x,i){if(x.ids.indexOf(id)>=0)gi=i});
+ if(gi<0){id=ALL[0];gi=0}
+ var gr=G[gi],vis=gr.st?[id]:gr.ids;
+ sheets.forEach(function(sh){sh.classList.toggle('show',vis.indexOf(sh.id)>=0)});
+ tabB.forEach(function(b,i){b.classList.toggle('on',i===gi)});
+ $('strow').hidden=!gr.st;
+ if(gr.st){lastSt=id;stB.forEach(function(b,i){b.classList.toggle('on',gr.ids[i]===id)})}
+ cur=id;s(CK,id);try{history.replaceState(null,'','#'+id)}catch(e){}
+ navh();
+ if(top)window.scrollTo(0,0);else document.getElementById(id).scrollIntoView();
+}
+sheets.forEach(function(sh){
+ var i=ALL.indexOf(sh.id),pv=sh.querySelector('.cn-prev'),nx=sh.querySelector('.cn-next');
+ if(i<=0)pv.hidden=true;else pv.onclick=function(){go(ALL[i-1],G.some(function(x){return x.ids.indexOf(ALL[i-1])>=0&&x.ids.indexOf(sh.id)<0&&!x.st})?1:0)};
+ if(i>=ALL.length-1)nx.hidden=true;else nx.onclick=function(){go(ALL[i+1],0)};
+ sh.querySelector('.cn-top').onclick=function(){window.scrollTo(0,0)};
+});
+function pr(all){document.body.classList.toggle('print-tab',!all);print()}
+$('printtab').onclick=function(){pr(false)};
+$('print').onclick=function(){pr(true)};
+addEventListener('beforeprint',function(){if(!document.body.classList.contains('print-tab')&&!pa)document.body.classList.add('print-tab')});
+var pa=false;
+$('print').onclick=function(){pa=true;document.body.classList.remove('print-tab');print()};
+addEventListener('afterprint',function(){pa=false;document.body.classList.remove('print-tab')});
+var mt=$('mt');
+function menu(c){$('nav').classList.toggle('col',c);mt.textContent=c?'Show Menu \u25BC':'Hide Menu \u25B2';s('sta2e_toolkit_menu',c?'1':'0');navh()}
+mt.onclick=function(){menu(!$('nav').classList.contains('col'))};
+menu(g('sta2e_toolkit_menu')==='1');
+var h=location.hash.slice(1);
+go(ALL.indexOf(h)>=0?h:(ALL.indexOf(g(CK))>=0?g(CK):ALL[0]),1);
+})();</script>
 </body>
 </html>

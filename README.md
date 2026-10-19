@@ -4,7 +4,7 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 
 ## Quick Start
 - Fill in the sheet in **Edit Mode** (the default).
-- Press **Mode** to switch to **Play Mode**. Play Mode locks the Bio, Attributes, Departments, Talents and Attacks so a stray tap can't change them. It also turns on the `±` modifier boxes, Challenged Values, the ⓘ rules popovers, Quick Note and the dark theme.
+- Press **Mode** to switch to **Play Mode**. Play Mode locks the Bio, Attributes, Departments, Talents and Attacks so a stray tap can't change them. It also turns on the `±` modifier boxes, Challenged Values, the ⓘ rules popovers, Quick Note, and the dark theme the first time (change it with **Theme**).
 - The LCARS fonts are bundled in the `fonts` folder, so the sheet looks the same with no internet.
 - The dot beside **Session** is the autosave light: green = saved to browser memory, amber = saving.
 
@@ -59,7 +59,8 @@ A Star Trek Adventures 2E character sheet that prints blank, prints filled, and 
 ## Tablets and Phones
 - **PADD** goes fullscreen and asks the screen to stay awake (needs https, so GitHub Pages works but a local file may not).
 - **Fit** scales the sheet to your screen width.
-- **Theme** switches Play Mode between dark and light. It never affects printing.
+- **Theme** switches the screen between dark and light, in Edit or Play Mode. It never affects printing.
+- **Toolkit** opens the Game Toolkit rules reference cards in a new tab. It has its own Theme, Fit, PADD and Print buttons, works offline after one online visit, and is not part of Print (PDF).
 - **Install:** online (for example GitHub Pages) your browser can install the sheet as an app: Chrome or Edge via the install option in the menu, Safari via Share, then Add to Home Screen. After one online visit it also opens offline, fonts included. A local file can't be installed.
 - In Play Mode, checkboxes (Stress, Shields, Breaches, Breakthroughs) expand their invisible touch area on touchscreens for easier tapping.
 
