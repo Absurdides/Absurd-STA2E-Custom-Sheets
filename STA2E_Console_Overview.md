@@ -29,10 +29,11 @@ A Star Trek Adventures 2E character sheet that **prints blank**, **prints filled
 - **Copy for Discord:** copy selected blocks as text, or download a `.md` file to drop straight into Discord.
 
 ## Crew and Ship Slots
-- Up to **5 crew** and **5 ship** slots, kept separate so one ship can serve several characters.
+- Up to **50 crew** and **8 ship** slots, kept separate so one ship can serve several characters.
 - **New, Copy, Rename, Delete** for each. The last slot you used reopens automatically.
-- **Export Crew / Import Crew** and **Export Ship / Import Ship** move a single character or ship.
-- **Backup All / Restore All** save or load every slot in one file.
+- **Export Crew / Import Crew** and **Export Ship / Import Ship** move a single character or ship. Export Crew asks whether to include the active ship.
+- **Backup All / Restore All** save or load every slot in one file (the Roster & Fleet file). Restore can **Replace Everything** or **Add to My Slots**.
+- **Storage meter** in the Session row estimates how much browser memory is used. It warns at 80% and refuses new slots at 90%, so back up and delete old slots when it fills.
 - **Undo** reverses the last big action, such as a reset, delete or import.
 
 ## Tablets and Phones

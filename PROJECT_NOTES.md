@@ -86,7 +86,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Running totals for Attributes/Departments in Edit Mode (target values user-defined).
 
 ## Layout, Print & Mobile
-- Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, 4 Header bars, 4 Detail rows, Text, Format, Selection and Sections tools.
+- Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, Blocks (one `Header Bar` button drawn as a mini 1x3 bar, one `Detail Row` button drawn as a mini 1x2 row, both create Blue / Tan; recolour with the block panel colour cycle; plus Paragraph, Ruled Lines, Ruled Line), Format, Selection and Sections tools.
 - Print: `.printable-page-area` is 8.0 x 10.5 in, centered horizontally on 8.5 x 11 in Letter via `margin: 0 auto !important;` with 0.25 in top padding. Standard `Ctrl+P` prints only the active page. "Print (PDF)" compiles Page 1, Page 2, all tabs of Pages 3 & 4, Page 5, and Page 6 with repeated LCARS headers/footers into a single multi-page print stream with automatic `afterprint` cleanup.
 - Mobile / Tablet: Self-hosted fonts (`fonts.css` + `fonts/`, Antonio / Oswald / Roboto) and viewport meta in `<head>` guarantee correct condensed typography on mobile. Natural document scrolling prevents Android Firefox scroll cutoff.
 

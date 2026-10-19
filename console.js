@@ -253,13 +253,7 @@ function initConsole() {
         if (el) el.addEventListener('click', () => { const id = currentDoc(); if (id) fn(id); });
     };
 	tool('p3-add-blue', id => addBlock(id, activeSec(id), 'blue'));
-    tool('p3-add-tan', id => addBlock(id, activeSec(id), 'tan'));
-    tool('p3-add-orange', id => addBlock(id, activeSec(id), 'orange'));
-    tool('p3-add-slate', id => addBlock(id, activeSec(id), 'slate'));
     tool('p3-cap-tan', id => addBlock(id, activeSec(id), 'cap-tan'));
-    tool('p3-cap-orange', id => addBlock(id, activeSec(id), 'cap-orange'));
-    tool('p3-cap-slate', id => addBlock(id, activeSec(id), 'cap-slate'));
-    tool('p3-cap-navy', id => addBlock(id, activeSec(id), 'cap-navy'));
     tool('p3-add-para', id => addBlock(id, activeSec(id), 'para'));
     tool('p3-add-lines', id => addBlock(id, activeSec(id), 'ruled', '', '', 5));
     tool('p3-add-line', id => addBlock(id, activeSec(id), 'ruled', '', '', 1));

@@ -702,6 +702,16 @@ body.play-mode-active .play-only { display: inline-block; }
 .storage-meter { font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; color: #708699; white-space: nowrap; padding: 0 4px; cursor: help; }
 .storage-meter.warn { color: #d96b27; }
 .storage-meter.crit { color: #bd4b4b; }
+.lcars-utility-btn.mini-btn { display: inline-flex; align-items: center; gap: 6px; background-color: #f4f6f8; color: #2c3a4d; border: 1px solid #708699; }
+.mini-hb { display: flex; gap: 2px; width: 50px; height: 12px; }
+.mini-hb i { display: block; height: 100%; }
+.mini-hb .a { flex: 1; background-color: #2c3a4d; border-radius: 6px 0 0 6px; }
+.mini-hb .b { width: 8px; background-color: #eed292; }
+.mini-hb .c { width: 10px; background-color: #d96b27; border-radius: 0 2px 2px 0; }
+.mini-dr { display: flex; width: 44px; height: 14px; border: 1px solid #2c3a4d; border-radius: 2px; overflow: hidden; background-color: #ffffff; }
+.mini-dr i { display: block; height: 100%; }
+.mini-dr .l { width: 14px; background-color: #eed292; }
+.mini-dr .r { flex: 1; }
 .lcars-utility-btn:disabled { opacity: 0.4; cursor: default; }
 #manual-overlay { display: none; position: fixed; inset: 0; z-index: 10001; }
 .manual-backdrop { width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; padding: 14px; }
