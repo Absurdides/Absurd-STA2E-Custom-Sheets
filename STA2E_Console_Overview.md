@@ -10,7 +10,7 @@ A Star Trek Adventures 2E character sheet that **prints blank**, **prints filled
 ## The Six Pages
 - **Page 1 Dossier:** bio, attributes, departments, Determination, species ability, values, focuses, talents, mission, Momentum pool.
 - **Page 2 Tactical:** Stress track, injuries, away team roster, attacks, requisitions, equipment, scene traits, extended task tracker.
-- **Pages 3 and 4 Narrative and Logs:** free-form logs built from coloured header bars, detail rows, paragraphs and ruled lines.
+- **Page 3 Biography and Page 4 Logs:** free-form logs built from coloured header bars, detail rows, paragraphs and ruled lines. Page 4 ends with a permanent **TECH** section for roll records.
 - **Page 5 Ship:** systems, breaches, departments, shields, attacks, talents and a ship graphic.
 - **Page 6 Reference:** a one-page 2E quick-reference sheet.
 
@@ -18,6 +18,8 @@ A Star Trek Adventures 2E character sheet that **prints blank**, **prints filled
 - **±** modifier boxes on stats, departments and ship systems
 - **Challenged Values:** tap a Value's number to strike it through
 - **ⓘ rules popovers** on the main sections
+- **Task Roller:** tap an Attribute and Department (or ship System and Department) for Success Range, buy extra dice with Momentum, spend Determination (**Perfect Opportunity** for an auto-critical before rolling, or **Moment of Inspiration** to tap and re-roll chosen dice after), and roll vs Difficulty.
+- **Dice tray and Technical Log:** a free 1-5d20 tray, and an optional **Log** button after any roll to record the task, Focus, optional Directive, and Determination spent directly into Page 4's **TECH** section.
 - **Quick Note:** a stardate-stamped note straight into the Logs
 - **Reset Mission** and **Reset Ship** to clear a session in one tap
 - **Pickers with search** for species abilities, talents, weapons, equipment and ship gear
@@ -33,7 +35,7 @@ A Star Trek Adventures 2E character sheet that **prints blank**, **prints filled
 - **New, Copy, Rename, Delete** for each. The last slot you used reopens automatically.
 - **Export Crew / Import Crew** and **Export Ship / Import Ship** move a single character or ship. Export Crew asks whether to include the active ship.
 - **Backup All / Restore All** save or load every slot in one file (the Roster & Fleet file). Restore can **Replace Everything** or **Add to My Slots**.
-- **Storage meter** in the Session row estimates how much browser memory is used. It warns at 80% and refuses new slots at 90%, so back up and delete old slots when it fills.
+- **Storage meter:** in the Session row estimates memory used. Click it for a full breakdown by character and ship slot or to safely back up and purge unlinked data. Warns at 80% and refuses new slots at 90%.
 - **Undo** reverses the last big action, such as a reset, delete or import.
 
 ## Tablets and Phones

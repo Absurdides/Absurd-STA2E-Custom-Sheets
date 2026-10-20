@@ -957,44 +957,7 @@ function initConsole() {
     }
     document.addEventListener('visibilitychange', () => { if (document.fullscreenElement && document.visibilityState === 'visible') setWake(true); });
 
-    // ===== User Manual overlay (text from readme.js: window.STA_README) =====
-    function mdInline(s) {
-        return s.replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>').replace(/(^|[^*])\*([^*\s][^*]*)\*/g, '$1<em>$2</em>');
-    }
-    function mdToHtml(md) {
-        const esc = s => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const out = [];
-        let list = null;
-        const close = () => { if (list) { out.push('</' + list + '>'); list = null; } };
-        String(md).split(/\r?\n/).forEach(raw => {
-            const line = esc(raw);
-            let m;
-            if (!line.trim()) { close(); return; }
-            if ((m = line.match(/^(#{1,3})\s+(.*)$/))) { close(); out.push('<h' + m[1].length + '>' + mdInline(m[2]) + '</h' + m[1].length + '>'); return; }
-            if (/^---+$/.test(line.trim())) { close(); out.push('<hr>'); return; }
-            if ((m = line.match(/^\s*[-*]\s+(.*)$/))) { if (list !== 'ul') { close(); out.push('<ul>'); list = 'ul'; } out.push('<li>' + mdInline(m[1]) + '</li>'); return; }
-            if ((m = line.match(/^\s*\d+\.\s+(.*)$/))) { if (list !== 'ol') { close(); out.push('<ol>'); list = 'ol'; } out.push('<li>' + mdInline(m[1]) + '</li>'); return; }
-            close();
-            out.push('<p>' + mdInline(line) + '</p>');
-        });
-        close();
-        return out.join('');
-    }
-    function closeManual() { const o = document.getElementById('manual-overlay'); if (o) o.style.display = 'none'; }
-    function openManual() {
-        let o = document.getElementById('manual-overlay');
-        if (!o) {
-            o = document.createElement('div');
-            o.id = 'manual-overlay'; o.className = 'no-print';
-            o.innerHTML = '<div class="manual-backdrop"><div class="manual-box"><div class="manual-head"><div class="manual-head-cap"></div><div class="manual-head-title">User Manual // Console Guide</div><div class="manual-head-yellow"></div><button type="button" class="manual-close" title="Close (Esc)">Close &times;</button></div><div class="manual-body"></div></div></div>';
-            o.querySelector('.manual-body').innerHTML = mdToHtml(window.STA_README || '# Manual not loaded\n\nreadme.js was not found next to index.html.');
-            o.addEventListener('click', e => { if (e.target.classList.contains('manual-backdrop') || e.target.closest('.manual-close')) closeManual(); });
-            document.body.appendChild(o);
-        }
-        o.style.display = 'block';
-    }
-    onBtn('btn-manual', openManual);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); ['discord-modal', 'md-modal', 'storage-modal'].forEach(mid => { const dm = document.getElementById(mid); if (dm) dm.remove(); }); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); ['discord-modal', 'md-modal', 'storage-modal'].forEach(mid => { const dm = document.getElementById(mid); if (dm) dm.remove(); }); } });
 
     // ===== Log block selection: Export / Import / Discord / Delete (Pages 3 and 4) =====
     function selBlocks(id) {
@@ -2535,15 +2498,20 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         markDirty();
     }
     // Momentum pool works as a scale: tap a pip to fill up to it; tap the top filled pip to remove one; tap a lower filled pip to drop down to it
-    function momScale(el) {
-        const N = Number(el.name.replace('combat_momentum_', ''));
+    const TRACK_RE = /^(combat_momentum_|stress_|ship_shield_|determination_|ext_task_work_|ext_task_bt_|ship_sys_[a-z]+_b)(\d+)$/;
+    function trackScale(el) {
+        const m = TRACK_RE.exec(el.name || '');
+        if (!m) return false;
+        const pre = m[1], N = Number(m[2]), els = [];
+        for (let i = 1; form.elements[pre + i]; i++) els.push(form.elements[pre + i]);
         let pool = N;
         if (!el.checked) {
             let top = N;
-            for (let i = 1; i <= 6; i++) { const e = form.elements['combat_momentum_' + i]; if (i !== N && e && e.checked && i > top) top = i; }
+            els.forEach((e, k) => { if (k + 1 !== N && e.checked && k + 1 > top) top = k + 1; });
             pool = top === N ? N - 1 : N;
         }
-        for (let i = 1; i <= 6; i++) { const e = form.elements['combat_momentum_' + i]; if (e) e.checked = i <= pool; }
+        els.forEach((e, k) => { e.checked = k + 1 <= pool; });
+        return true;
     }
     const rLabel = n => { const s = n.replace(/^(attr|dept|ship_sys|ship_dept)_/, ''); return s.charAt(0).toUpperCase() + s.slice(1); };
     const rSigned = v => (v > 0 ? '+' : '') + v;
@@ -2872,7 +2840,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         const kind = /^(attr_|ship_sys_)/.test(nm) ? 'attr' : (/^(dept_|ship_dept_)/.test(nm) ? 'dept' : '');
         if (kind) pickStat(kind, nm, ship ? 'ship' : 'char');
     });
-    form.addEventListener('change', e => { if (e.target.name && e.target.name.indexOf('combat_momentum_') === 0) { momScale(e.target); if (rOpen()) renderRoll(); } });
+    form.addEventListener('change', e => { if (e.target.type === 'checkbox' && trackScale(e.target) && rOpen()) renderRoll(); });
     form.addEventListener('input', e => { if (rOpen() && e.target.name && /^(attr_|dept_|ship_sys_|ship_dept_|ledger_focus_)/.test(e.target.name)) renderRoll(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && rOpen()) clearRoll(); });
     window.addEventListener('scroll', placeRoll, true);

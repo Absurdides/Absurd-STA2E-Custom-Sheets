@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STA 2E Console User Manual</title>
+<link rel="stylesheet" href="fonts.css?v=1.0">
+<link rel="icon" type="image/png" href="icon-ent.png">
+<meta name="theme-color" content="#2c3a4d">
+<style>
+:root{--navy:#2c3a4d;--orange:#d96b27;--tan:#eed292;--slate:#708699;--bg:#e9edf1;--page:#fff;--fg:#111;--hd:#2c3a4d;--code:#e8edf2}
+body.dark{--bg:#0b1118;--page:#18222f;--fg:#e8ecf0;--hd:#eed292;--code:#2c3a4d}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 'Roboto',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:820px;margin:0 auto;padding:10px 12px}
+.btn{font:bold 11px 'Antonio','Oswald',sans-serif;letter-spacing:1px;text-transform:uppercase;color:#fff;background:var(--navy);border:0;border-radius:4px;padding:5px 12px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{opacity:.85}.btn.slate{background:var(--slate)}
+.sp{flex:1}
+.sheet{max-width:820px;margin:0 auto 40px;background:var(--page);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:0 22px 24px;overflow:hidden}
+.cap{display:flex;height:30px;gap:4px;margin:0 -22px 14px}
+.cap i{display:block}.c1{width:40px;background:var(--orange);border-bottom-right-radius:12px}.c2{flex:1;background:var(--navy)}.c3{width:36px;background:var(--tan)}
+h1,h2,h3{font-family:'Antonio','Oswald',sans-serif;text-transform:uppercase}
+h1{color:var(--hd);font-size:26px;letter-spacing:1.5px;margin:6px 0 10px}
+h2{margin:22px -22px 8px;padding:3px 12px 3px 22px;background:var(--orange);color:#fff;border-radius:0 4px 4px 0;font-size:15px;letter-spacing:1.5px}
+h3{color:var(--hd);font-size:14px;letter-spacing:1px}
+p{margin:0 0 8px}ul{margin:4px 0 8px;padding-left:22px}li{margin-bottom:4px}li::marker{color:var(--orange)}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font:12px Consolas,'Courier New',monospace}
+@media print{body{background:#fff;color:#111}.bar{display:none}.sheet{box-shadow:none;max-width:none;margin:0}}
+</style>
+</head>
+<body>
+<div class="bar"><a class="btn" id="back" href="index.html" title="Back to the console">&larr; Console</a><span class="sp"></span><button type="button" class="btn slate" id="theme">Theme</button><button type="button" class="btn slate" onclick="print()">Print</button></div>
+<main class="sheet">
+<div class="cap"><i class="c1"></i><i class="c2"></i><i class="c3"></i></div>
+<h1>STA 2E Unified Character Console</h1>
+<p>A Star Trek Adventures 2E character sheet that prints blank, prints filled, and works as a live tracker during play. It runs from a folder on your computer (open <code>index.html</code>) or online from GitHub Pages. Everything is saved in your browser; nothing is sent anywhere.</p>
+<h2>Quick Start</h2>
+<ul>
+<li>Fill in the sheet in <strong>Edit Mode</strong> (the default).</li>
+<li>Press <strong>Mode</strong> to switch to <strong>Play Mode</strong>. Play Mode locks the Bio, Attributes, Departments, Talents, Attacks and the ship's Systems and Departments so a stray tap can't change them. It also turns on the <code>±</code> modifier boxes, Challenged Values, the ⓘ rules popovers, Quick Note, and the dark theme the first time (change it with <strong>Theme</strong>).</li>
+<li>The LCARS fonts are bundled in the <code>fonts</code> folder, so the sheet looks the same with no internet.</li>
+<li>The dot beside <strong>Session</strong> is the autosave light: green = saved to browser memory, amber = saving.</li>
+</ul>
+<h2>The Six Pages</h2>
+<ul>
+<li><strong>Page 1 Dossier:</strong> Bio, Attributes, Departments, Determination, Species Ability, Values, Focuses, Talents, Mission Profile &amp; Active Directives, Pastimes, and Momentum Pool (bottom-right corner).</li>
+<li><strong>Page 2 Tactical:</strong> Stress Track, Injuries, Away Team Roster, Attacks, Requisitions &amp; Logistics, Equipment, and Tactical Operations (left 2/3: Scene Traits &amp; Advantages, Tactical Notes; right 1/3: Extended Task Objective, 15 Work Track pips, Ratings, Breakthroughs, and 2E Momentum Spends rules popover).</li>
+<li><strong>Page 3 Biography and Page 4 Logs:</strong> free-form logs. The bar under the sheet adds Header Bars, Detail Rows, Paragraphs, Ruled Lines and Stardates. Each page holds up to 8 Sections. Page 4 also always ends with a <strong>TECH</strong> section (the right-hand end of the Log Sections menu, even when empty): new sections are added before it, Remove Last Section never removes it, more Tech sections follow if it fills, and Print (PDF) skips it while it holds only its header bar.</li>
+<li><strong>Page 5 Ship:</strong> Systems, Breaches, Departments, Shields, Attacks, Talents and a schematic image. In Play Mode, Systems and Departments get <code>±</code> modifier boxes like the character stats.</li>
+<li><strong>Page 6 Reference:</strong> Printable 2E quick-reference sheet covering Task Resolution, Action Economy, Momentum Spends, Determination, and Stress, Injury and Recovery. Rules text here and in the ⓘ popovers is limited to the Quickstart Guide v1.1 and the official Momentum spends list.</li>
+<li>Pickers (Species Ability, Talents, Weapons, Equipment, Ship Weapons and Ship Talents) have a search box and add the entry for you.</li>
+<li>Ruled lines hide under typed text so they don't cut through your words, while remaining visible on empty lines below and on blank sheets.</li>
+</ul>
+<h2>Log Selection (Pages 3 and 4)</h2>
+<ul>
+<li>Tap, click or type in any block to make it the active block. A panel of large buttons appears over the left border beside it, with an arrow pointing at the block: ▲ ▼ move it, ✓ ticks it for selection and × deletes it (Undo restores it). On Header Bars and Detail Rows a colour swatch button also appears; each tap switches to the colour the swatch shows. On a narrow screen the panel docks along the bottom and names the block. Ticked blocks get an orange outline. Ticks are never saved and never print.</li>
+<li>To pick a block without opening the keyboard, tap a Header Bar's coloured end caps or the dotted strip between a Detail Row's label and text. Both sides of a Detail Row can still be typed in. To hide the panel again, tap the same end cap or divider strip once more, press Esc, or press <strong>Select None</strong>.</li>
+<li><strong>Select Section</strong> ticks every block in the open section. <strong>Select None</strong> clears the ticks. The count shows beside the buttons.</li>
+<li><strong>Export Selected:</strong> saves the ticked blocks as a <code>.json</code> file. With nothing ticked, nothing happens.</li>
+<li><strong>Import Sections:</strong> reads that file (or a whole Crew export, then you pick Page 3 or Page 4). With blocks ticked you can <strong>Replace Selected</strong>: the imported blocks take the place of the ticked ones. Otherwise they go to the end of the open section or to a new section (8 sections maximum). Anything that does not fit on a page flows into the next section. Undo reverses it. This also moves blocks between Page 3 and Page 4.</li>
+<li><strong>Import Markdown:</strong> paste markdown (for example a backstory written by an AI chat) or choose a <code>.md</code> or <code>.txt</code> file. <code>#</code> headings become header bars, paragraphs become Paragraph blocks with bold and italic kept, and a one-line <code><strong>Label:</strong> text</code> becomes a Detail Row. Lists stay as text lines with their markers. Tables, code, links and images become plain text, and <code>---</code> lines are dropped. It uses the same Replace Selected / End of section / New section choice as Import Sections, and Undo reverses it.</li>
+<li><strong>Copy for Discord:</strong> opens a window with the ticked blocks as text to paste. Choose <strong>Code block</strong> (keeps the sheet layout, no bold or italic) or <strong>Markdown</strong> (headings, bold and italic show in Discord). Text over 2000 characters splits into numbered parts, each with its own Copy button. <strong>Download .md</strong> saves the ticked blocks as a markdown file: drag it into Discord and it appears as one compact card with a collapsed preview you can expand.</li>
+<li><strong>Delete Selected:</strong> removes the ticked blocks after a confirmation. Undo restores them.</li>
+</ul>
+<h2>Crew and Ship Slots</h2>
+<ul>
+<li>You get up to <strong>50 Crew Slots and 8 Ship Slots</strong>, kept separate so one ship can serve several characters, or a shuttle can replace the main ship for a mission.</li>
+<li><strong>+ New</strong> adds a blank slot, <strong>Copy</strong> duplicates the current one, <strong>Rename</strong> sets a name (leave it blank to go back to automatic naming), <strong>Delete</strong> removes it.</li>
+<li>Names follow the character name or ship name unless you rename them.</li>
+<li>The last slot you used reopens automatically. Each Crew Slot remembers whether it was in Edit or Play Mode.</li>
+<li>Portraits and ship images are shrunk automatically when you upload them, to save browser memory: they are fitted inside 320 x 220 px (portrait) and 1434 x 192 px (ship), roughly twice their size on the sheet, and saved as WebP where the browser supports it. Older, larger images are shrunk automatically the first time their slot is opened or imported. Wide ship schematics (about 5:1 to 7:1) fill the ship image box best.</li>
+<li><strong>Storage:</strong> the <code>Storage: NN%</code> readout in the Session row estimates how much browser memory the app uses (browsers do not report the real limit; hover for KB, click to open the <strong>Storage Details</strong> breakdown). It turns amber at 80% (with a one-time reminder to use <strong>Backup All</strong>) and red at 95%. At 90% or more, new slots are refused (<strong>+ New</strong>, <strong>Copy</strong>, <strong>New Slot</strong> on import, adding a ship from a crew file, and <strong>Add to My Slots</strong>): use <strong>Backup All</strong>, then <strong>Delete</strong> slots you no longer need. Clicking the meter lets you review storage per slot and safely download and remove any unlinked or legacy data.</li>
+<li>If memory does fill up you'll get a warning and images are left out of autosave. Use Export to keep them.</li>
+</ul>
+<h2>Saving and Moving Data</h2>
+<ul>
+<li><strong>Export Crew / Import Crew:</strong> one file for the active character. Export Crew asks whether to include the active ship (<strong>Include Ship</strong> or <strong>Character Only</strong>). Importing asks whether to use a <strong>New Slot</strong> or <strong>Replace Current</strong>. If the file also holds a ship, you can add it as a new ship slot.</li>
+<li><strong>Export Ship / Import Ship:</strong> the ship alone, with the same choices.</li>
+<li><strong>Backup All:</strong> the Roster &amp; Fleet master file: every crew and ship slot in one file. Do this regularly, because clearing browser data erases slots.</li>
+<li><strong>Restore All:</strong> reads a Backup All file and asks: <strong>Replace Everything</strong> (replaces every slot; downloads a backup of your current slots first) or <strong>Add to My Slots</strong> (fills free slots only and lists any entries that did not fit; your current slots are kept).</li>
+<li><strong>Clear Form:</strong> clears only the active character, after downloading a backup. Ships are untouched.</li>
+<li>Browser memory stays on that device and browser. Use Export or Backup All to move to another one.</li>
+</ul>
+<h2>Undo</h2>
+<ul>
+<li><strong>Undo</strong> reverses the last destructive action: Reset Mission, Reset Ship, Clear Form, Import with Replace Current, Import Sections, Delete Selected, deleting a log block, or deleting a slot (the slot is recreated).</li>
+<li>It is one step only and is lost when you reload the page. Edits made after the action are lost when you undo.</li>
+<li>The button is grey when there is nothing to undo; hover it to see what it would reverse.</li>
+</ul>
+<h2>Play Tools</h2>
+<ul>
+<li><strong>Reset Mission:</strong> moves Mission Profile &amp; Active Directives to Page 4 as a "Mission Debrief" header, clears the Stress Track, Tactical Momentum pips, Extended Task pips, and the <code>±</code> modifiers, clears Mission Req and restores your starting Equipment. It never changes the ship.</li>
+<li><strong>Reset Ship:</strong> clears all Shield and Breach boxes on the active ship. It also clears the ship's <code>±</code> modifiers. Stats, Attacks and Talents stay.</li>
+<li><strong>Tracks:</strong> Momentum Pool, Stress, Determination, Shields, Breaches (one track per ship System), Work Track and Breakthroughs all work as scales, in Edit and Play Mode. Tap a box to fill every box up to it; tap the top filled box to remove one; tap a lower filled box to drop the track down to it. Undo does not cover track taps.</li>
+<li><strong>Task Roller:</strong> in Play Mode, tap an Attribute and a Department (tap again to deselect) to open the roller over the Species Ability and Values area. It shows the Success Range (Attribute + Department, plus the <code>±</code> boxes) and the Critical range: with <strong>+Focus</strong> on, a roll of 1 up to the Department rating; off, a roll of 1 only. A dice stepper (1 to 5, default 2) and a Difficulty stepper (0 to 5, default 1) sit beside it. <strong>+1 / +2 / +3 Dice</strong> buy extra dice with Momentum from the Page 1 pool (1, 3 or 6 Momentum in total, 5 dice maximum); the pips are unchecked when you press <strong>Roll</strong> and you can tick them again to refund. Each die shows as a success, a critical (★, counts 2), a miss, or a complication (! on a 20), with PASS or FAIL against the Difficulty, any leftover Momentum and an optional <strong>Add to pool</strong> button. On Page 5 the same roller works for the ship: tap a System and a Department for the ship's Success Range (System + Department plus the <code>±</code> boxes). It starts at 1d20, has no Focus, and buys extra dice from the same Page 1 Momentum pool. The <strong>Dice</strong> button (Tools row, Play Mode, green) opens a free dice tray for rolls the gamemaster calls: 1 to 5d20 against a target number (default 10) with a Difficulty (default 1, or none), scored like any other roll. You can also spend Determination in the roller: <strong>★ Perfect Opp</strong> before rolling sets one d20 to a 1 (Critical Success) and deducts 1 Determination upon Roll; after rolling, tap any rolled dice chips to select them (blue outline) and press <strong>Moment of Insp</strong> to re-roll them for 1 Determination. After any roll, an optional <strong>Log</strong> button asks for the task (required), a Focus (default None, not logged), and an optional Directive / Value justification, and adds the roll to the <strong>TECH</strong> section of Page 4 as a Tan detail row: line one is the task, with <code>(Focus: ..., Directive: ...)</code> when entered; line two is, for example, <code>[TN 14, Diff 3] 4D20, 3 Successes (Pass) · Spent 1 Determination</code>. It is never logged automatically. The row is labelled with the Stardate bar's value, or <code>Stardate ?</code> if you tick <strong>No stardate</strong> or the bar is still at its default of Jan 1, 2376; you can retype the label later. The roller itself is never saved or printed. <strong>Clear</strong>, ×, or Esc closes it.</li>
+<li><strong>Quick Note:</strong> adds a stardate-stamped line to Page 4 Logs.</li>
+<li><strong>Values:</strong> in Play Mode, tap a Value's number to mark it Challenged (struck through); tap again to restore it.</li>
+<li><strong>Equipment Costs:</strong> adding non-standard gear raises Base Cost in Edit Mode and Mission Req in Play Mode. Total adds them up.</li>
+<li>Max Stress follows Fitness until you type your own value.</li>
+</ul>
+<h2>Tablets and Phones</h2>
+<ul>
+<li><strong>PADD</strong> goes fullscreen and asks the screen to stay awake (needs https, so GitHub Pages works but a local file may not).</li>
+<li><strong>Fit</strong> scales the sheet to your screen width.</li>
+<li><strong>Theme</strong> switches the screen between dark and light, in Edit or Play Mode. It never affects printing.</li>
+<li><strong>Toolkit</strong> opens the Game Toolkit rules reference cards in a new tab. It has its own Theme, Fit, PADD and Print buttons, works offline after one online visit, and is not part of Print (PDF).</li>
+<li><strong>Install:</strong> online (for example GitHub Pages) your browser can install the sheet as an app: Chrome or Edge via the install option in the menu, Safari via Share, then Add to Home Screen. After one online visit it also opens offline, fonts included. A local file can't be installed.</li>
+<li>In Play Mode, checkboxes (Stress, Shields, Breaches, Breakthroughs) expand their invisible touch area on touchscreens for easier tapping.</li>
+</ul>
+<h2>Printing</h2>
+<ul>
+<li><code>Ctrl+P</code> prints the page you are looking at.</li>
+<li><strong>Print Blank</strong> prints every page empty without changing your saved data. Pages 3 and 4 print as one ruled page each.</li>
+<li><strong>Print (PDF)</strong> prints Page 1, Page 2, every section of Pages 3 and 4, Page 5, and Page 6 as one document.</li>
+<li>Use Letter paper at 100% scale, and turn on <strong>Background graphics</strong> if the colours are missing.</li>
+<li>Menus, popovers and editing controls never print, so a blank sheet prints clean.</li>
+</ul>
+</main>
+<script>
+var K='sta2e_dark_play',d=true;
+try{d=localStorage.getItem(K)!=='0'}catch(e){}
+function t(){document.body.classList.toggle('dark',d);document.getElementById('theme').textContent='Theme: '+(d?'Dark':'Light')}
+document.getElementById('theme').onclick=function(){d=!d;try{localStorage.setItem(K,d?'1':'0')}catch(e){}t()};t();
+document.getElementById('back').onclick=function(e){e.preventDefault();window.close();setTimeout(function(){location.href='index.html'},150)};
+</script>
+</body>
+</html>

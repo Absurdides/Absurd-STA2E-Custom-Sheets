@@ -19,7 +19,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - Runs locally from a folder on Windows (file://) or online via GitHub Pages. Browsers block fetch of .json, so data lists are `.js` files loaded with <script src>.
 
 - RULES-TEXT POLICY: every rule stated in the sheet (Page 6, all ⓘ popovers) must be verifiable in the Core Rulebook (primary source, highest priority; it wins if sources differ), the Quickstart Guide v1.1 (`.md`) or `spends.js`. Do not add rules from memory or fan sources. Surge of Activity and Make It So are 1st edition and must not be reintroduced. Unverifiable rules were removed (Revival, Knockdown/Stun/Vicious qualities, Opportunity Cost rules, extended task formulas). EXEMPT: `toolkit.html` (separate reference, core-book text kept as the owner supplied it).
-- Docs rule: when a feature's behaviour changes, update `README.md` AND `readme.js` (identical text) in the same change.
+- Docs rule: when a feature's behaviour changes, update `manual.html` (the only copy of the user manual). `README.md` is a short static pointer and is not edited.
 
 ## Files (all in one folder)
 - `index.html` - markup only (6 pages, split top/bottom menus). Structured strictly into Blocks 1–8 (`<!-- Block 1 START -->` through `<!-- Block 8 END -->`). Loads scripts at bottom: `species_abilities.js`, `talents.js`, `equipment.js`, `spends.js`, `readme.js`, `console.js`.
@@ -29,7 +29,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - `talents.js` - `window.STA_TALENTS = [{talent, source, category, text}]` (245 entries; 170 personal talents + 75 starship talents, alphabetized by section).
 - `equipment.js` - `window.STA_EQUIPMENT = [{name, source, type, severity, standard_issue, opportunity_cost, qualities}]` (156 entries; 131 personal gear/weapons + 25 starship weapons, alphabetized by section).
 - `spends.js` - `window.STA_SPENDS = [{category, name, cost, type, source, text}]` (15 official 2E Momentum spends in 4 categories: Common 7, Personal Combat 5, Extended Tasks 1, Starship Combat 2; text must not be reworded except for formatting needed by search/page functions, e.g. removing `()` from `name`).
-- `README.md` - user manual (GitHub display). `readme.js` - identical text as `window.STA_README = "..."` (JSON string) for the in-app User Manual overlay (fetch of .md is blocked on file://).
+- `manual.html` - the user manual (single source; standalone LCARS-styled page, own inline CSS/JS, Theme shares `sta2e_dark_play`, Print and `<- Console` buttons, works on file:// and offline). Opened by the `User Manual` link in a new tab. Plain HTML: edit the text directly. `README.md` - short static pointer for GitHub (links to the GitHub Pages site and `manual.html`); not edited per feature. `readme.js` and the old overlay were removed.
 - `fonts.css` + `fonts/` - self-hosted Antonio, Oswald, Roboto, Roboto-Italic (Latin + Latin Extended subsets, WOFF, variable weight axis limited to 400-700, so weight 900 renders as 700). Made from the Google variable TTFs with fontTools; WOFF2 was not possible (no brotli). Keep each family's licence file in `fonts/`.
 - `manifest.webmanifest`, `sw.js`, `icon-192.png`, `icon-512.png` - install-as-app + offline support (https only). `sw.js` is network-first for the app's own files (updates arrive when online, cache used offline) It lists nothing by hand: on install it reads `index.html` (and the `url()`s inside local CSS) and caches every local file. Bump `CACHE` in `sw.js` only if a stale cache ever needs forcing out.
 - `toolkit.html` - standalone Game Toolkit (11 reference cards, core-book text kept intact, owner decision). Opened by the navy `Toolkit` link (`target=_blank`) in the Tools row. Own inline CSS/JS, LCARS sheets (frame, pillar, header/footer capsules), each card starts on a new printed page and may flow onto more (tables split by row, `thead` repeats; header/pillar do not repeat). Toolbar: `<- Console` (closes the tab, else navigates to index.html), PADD, Fit, Theme, card jump list, Print Toolkit. Theme shares localStorage `sta2e_dark_play` with the console ('1' = dark; unset = light here). Precached by `sw.js` (CACHE v3). Not part of Print (PDF), readme.js or the rules-text policy.
@@ -41,7 +41,7 @@ Paste or attach this at the start of a new chat, together with the current `inde
 - One form: `#unified-master-console-form`. Pages are `.sheet-page`; Pages 3 and 4 also `.doc-page` with `data-doc="p3"|"p4"`.
 - Top Utility Bar (`.external-top-bar.no-print`): Sits above the sheet. Five rows (Session, Tools, Crew, Ship, Pages), labels right-aligned in a 56px column + grey divider.
   - Session (+ autosave dot): `Mode: Edit 🔓 / Play 🔒`, `Reset Mission`, `Reset Ship`; right-aligned `Clear Form` (red), `Print Blank` and `Print (PDF)` (navy).
-  - Tools: `PADD ⛶`, `Fit ↔`, `Theme: Dark/Light` (Edit and Play Mode), `Quick Note` (Play Mode only); right-aligned fixed group `Undo` (slate), `Backup All` (orange), `Restore All` (slate), divider, `User Manual` (bright yellow `.btn-help`, black text; opens the manual overlay), divider, `Toolkit` (navy `<a id="btn-toolkit">`, opens `toolkit.html` in a new tab). Right group never shifts when Quick Note appears.
+  - Tools: `PADD ⛶`, `Fit ↔`, `Theme: Dark/Light` (Edit and Play Mode), `Quick Note` (Play Mode only); right-aligned fixed group `Undo` (slate), `Backup All` (orange), `Restore All` (slate), divider, `User Manual` (bright yellow `.btn-help`, black text; `<a href="manual.html" target="_blank">`), divider, `Toolkit` (navy `<a id="btn-toolkit">`, opens `toolkit.html` in a new tab). Right group never shifts when Quick Note appears.
   - Crew / Ship (identical structure): `.lcars-select` dropdown + `+ New`, `Copy`, `Rename`, `Delete` (`.slot-btn`, 66px). Right-aligned `Export Crew` / `Import Crew` (Crew row; bundles active ship) and `Export Ship` / `Import Ship` (Ship row).
   - Pages: Page 1-6 tabs (`data-page`; Page 5 = `Page 5: Ship`, id `btn-ship-view`; Page 6 = `Page 6: Reference`, id `btn-ref-view`).
   - Colour rule: orange = save/export, slate = load/import/secondary, red = destructive, navy = neutral/tabs, tan = active tab / Quick Note, bright yellow = explanatory resources (User Manual, Toolkit), green = Dice.
@@ -78,7 +78,7 @@ Storage, slot caps and Roster & Fleet files (built). Measured 2026-10-18: ship w
   4. Export Crew asks Include Ship / Character Only / Cancel: `saveFile(prefix, withShip)`; Clear Form backup is character-only. Importing a file with a ship still offers `offerShip()`. Format name stays `sta2e-unified-v3`.
   5. Restore All (`sta2e-backup-v1`, described as the Roster & Fleet master file in README, manual and tooltips; buttons not renamed): choice Replace Everything (old behaviour) or Add to My Slots (`addAll()` in `makeSlots()`: new ids `prefix + Date.now() + '_' + n`, fills free slots only, alert lists entries that did not fit).
   6. Image limits: see Save / load > Images (box fit, WebP, open-time migration).
-  7. Housekeeping done: README.md + readme.js, `?v=` strings (style/console 3.3, readme 1.4), `CACHE` = `sta2e-console-v6`.
+  7. Housekeeping done: manual docs, `?v=` strings (style/console 3.3), `CACHE` = `sta2e-console-v6`.
 
 ## Layout, Print & Mobile
 - Bottom Utility Bar (`#p3-tools.no-print`): Sits below the sheet; automatically visible only on Pages 3 & 4. Contains Stardate generator, Blocks (one `Header Bar` button drawn as a mini 1x3 bar, one `Detail Row` button drawn as a mini 1x2 row, both create Blue / Tan; recolour with the block panel colour cycle; plus Paragraph, Ruled Lines, Ruled Line), Format, Selection and Sections tools.
@@ -147,7 +147,7 @@ Storage, slot caps and Roster & Fleet files (built). Measured 2026-10-18: ship w
 - Placement: `placeRoll()` floats the panel over the right column of `.tactical-stats-container` (Species Ability + Values), scaled by page width / 768 so Fit zoom works; under 700px it docks to the bottom (`.rp-dock`).
 - TN = Attribute + Department + both `±` mods (blank = 0). Critical: Focus on = roll <= Department (incl. its mod), Focus off = roll 1. Roll of 20 = complication. Dice 1-5 (default 2), Difficulty 0-5 (default 1), PASS = successes >= Difficulty, Momentum = surplus.
 - Momentum buying: `BUY_COST` = [0,1,3,6] for +0/+1/+2/+3 dice (total max 5), limited by checked `combat_momentum_1..6`; deducted on Roll (highest pips unchecked, `markDirty()`), refund by re-ticking. Optional Add to pool button (cap 6). Not part of Undo.
-- Momentum Pool pips (`combat_momentum_1..6`) behave as a scale via `momScale()` (change handler): tap N fills 1..N; tapping the top filled pip removes one; tapping a lower filled pip sets the pool to it. The Focus picker is a full-width row below the dice controls (`.rp-frow`) so long Focus text cannot push the layout; grid columns use `minmax(0,1fr)`.
+- All pip tracks (`combat_momentum_`, `stress_`, `ship_shield_`, `determination_`, `ext_task_work_`, `ext_task_bt_`, `ship_sys_<sys>_b`) behave as scales via `trackScale()` / `TRACK_RE` (change handler, Edit and Play Mode): tap N fills 1..N; tapping the top filled pip removes one; tapping a lower filled pip sets the track to it. The Focus picker is a full-width row below the dice controls (`.rp-frow`) so long Focus text cannot push the layout; grid columns use `minmax(0,1fr)`.
 - Rolls use `crypto.getRandomValues` (rejection sampled); 800 ms `??` shuffle, skipped with prefers-reduced-motion. Focus picker lists the non-empty `ledger_focus_1..6`. Determination spends deliberately not included (see ROADMAP.md).
 
 ## Unified 2E Rules Popovers (Play Mode Only)
@@ -173,7 +173,7 @@ All LCARS reference popovers are hidden in print and hidden in Edit Mode to avoi
 - Live Autosave Indicator: Pulsing dot beside the Session label and File ID reflects storage sync status (Green = Saved, Amber = Pending). Clicking dot forces instant save.
 
 ## User Manual Overlay
-- `User Manual` button (Tools row) opens `#manual-overlay` (screen-only, `.no-print`, z-index 10001) over the current page; closes via Close ×, backdrop click, or Esc. Built lazily by `openManual()`; `mdToHtml()` is a tiny renderer (headings `#`-`###`, `-` and `1.` lists, `**bold**`, `*italic*`, `` `code` ``, `---`; no tables or links). Styled in style.css Section 10b (`.manual-*`).
+- `User Manual` link (Tools row) opens `manual.html` in a new tab (see Files). No overlay, no `readme.js`, no markdown renderer in console.js.
 
 ## Save / load
 - Export Crew (`#utility-btn-save`) -> one JSON named from FILE ID (`_bundle: sta2e-unified-v3`): all named fields + `docs: {p3:{sections,blocks[]}, p4:{...}}` + `base_equipment` + `challenged_values` + portrait.

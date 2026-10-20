@@ -35,7 +35,6 @@ One shared LCARS popup panel, screen-only, no-print, Play Mode only, not saved. 
 
 ### High Priority
 - (High 2) 1-Click Discord Stat-Card: A button in Tools to copy a clean, condensed Discord markdown bio (Rank, Name, Species, Stats, Focuses, Directives).
-- (High 3) Single-Die Re-Roll in Task Roller (Non-Determination): Free single-die re-rolls for Aim minor action or Accurate weapon quality.
 
 ### Mid Priority
 - (Mid 1) Shield Restore Button (Page 5, Play Mode): Single click to recharge Shields to MAX SHIELDS after combat or when regenerating shields.
@@ -93,6 +92,7 @@ One shared LCARS popup panel, screen-only, no-print, Play Mode only, not saved. 
        - Strip `@media print`, `printFullDossier()`, `scopedWrap()`, and fixed-inch Letter boundaries.
        - Convert canvas to fluid, device-responsive layouts (`width: 100%`) for seamless phone, tablet, and PC browser scaling without scroll clipping or zoom hacks.
     3. Interoperability: Both forks share the identical `sta2e-unified-v3` JSON schema for cross-compatibility.
+- (Ultra-Low 3) NOT DOING: Single-Die Re-Roll in Task Roller (Non-Determination): Free single-die re-rolls for Aim minor action or Accurate weapon quality.
 
 ## Done
 - 2026-10: Determination spends in Task Roller: Perfect Opportunity locks 1 die to a critical (★) pre-roll; Moment of Inspiration allows selecting specific dice chips (blue highlight) to re-roll post-roll; unchecks Determination pips; logs Determination spent and optional Directive to Page 4 TECH section.
