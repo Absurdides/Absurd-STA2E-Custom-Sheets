@@ -13,10 +13,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="STA 2E">
 <link rel="apple-touch-icon" href="icon-192.png">
-<link rel="stylesheet" href="style.css?v=3.4">
-<style>
-.lcars-help-popover, .det-popover, .injury-popover { display: none; }
-</style>
+<link rel="stylesheet" href="style.css?v=4.3">
 </head>
 <body>
 <form id="unified-master-console-form" autocomplete="off" style="margin:0; padding:0; display:flex; flex-direction:column; align-items:center; width:100%;">
@@ -28,7 +25,7 @@
         <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-mission">Reset Mission</button>
         <button type="button" class="lcars-utility-btn btn-clear" id="btn-reset-ship" title="Clear all Shield and Breach boxes on the active ship">Reset Ship</button>
         <span class="row-spacer"></span>
-        <span class="storage-meter" id="storage-meter" title="Estimated browser storage used">Storage: 0%</span>
+        <span class="storage-meter" id="storage-meter" title="Estimated browser storage used (click for breakdown)">Storage: 0%</span>
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-clear" id="utility-btn-clear">Clear Form</button>
         <button type="button" class="lcars-utility-btn btn-navy" id="utility-btn-print-blank" title="Print all pages empty. Your saved data is not changed.">Print Blank</button>
@@ -41,6 +38,7 @@
         <button type="button" class="lcars-utility-btn btn-load" id="btn-fit-width" title="Scale sheet to fit screen width">Fit ↔</button>
         <button type="button" class="lcars-utility-btn btn-navy" id="btn-theme" title="Dark / Light theme (Edit or Play Mode; never affects printing)">Theme: Dark</button>
         <button type="button" class="lcars-utility-btn btn-tan play-only" id="btn-quick-note" title="Add a stardate-stamped note to Page 4 Logs">Quick Note</button>
+        <button type="button" class="lcars-utility-btn btn-dice play-only" id="btn-dice" title="Free dice tray (1-5d20, optional target number and Difficulty)">Dice</button>
         <span class="row-spacer"></span>
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-load" id="btn-undo" title="Nothing to undo" disabled>Undo</button>
@@ -49,7 +47,7 @@
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-help" id="btn-manual" title="Open the User Manual (Esc closes)">User Manual</button>
 		<div class="menu-divider-bar"></div>
-        <a href="toolkit.html" target="_blank" class="lcars-utility-btn btn-navy" id="btn-toolkit" style="text-decoration:none;display:inline-block;" title="Open the STA 2E Toolkit reference cards in a new tab">Toolkit</a>
+        <a href="toolkit.html" target="_blank" class="lcars-utility-btn btn-help" id="btn-toolkit" style="text-decoration:none;display:inline-block;" title="Open the STA 2E Toolkit reference cards in a new tab">Toolkit</a>
         <input type="file" id="utility-backup-loader" accept=".json" style="display: none;">
     </div>
     <div class="bar-group">
@@ -84,7 +82,7 @@
         <div class="menu-divider-bar"></div>
         <button type="button" class="lcars-utility-btn btn-tab active" data-page="1">Page 1: Dossier</button>
         <button type="button" class="lcars-utility-btn btn-tab" data-page="2">Page 2: Tactical</button>
-        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Narrative</button>
+        <button type="button" class="lcars-utility-btn btn-tab" data-page="3">Page 3: Biography</button>
         <button type="button" class="lcars-utility-btn btn-tab" data-page="4">Page 4: Logs</button>
         <button type="button" class="lcars-utility-btn btn-tab" data-page="5" id="btn-ship-view">Page 5: Ship</button>
         <button type="button" class="lcars-utility-btn btn-tab" data-page="6" id="btn-ref-view">Page 6: Reference</button>
@@ -1006,9 +1004,9 @@
 <script src="species_abilities.js?v=2.1"></script>
 <script src="talents.js?v=2.1"></script>
 <script src="equipment.js?v=2.1"></script>
-<script src="readme.js?v=1.4"></script>
+<script src="readme.js?v=2.3"></script>
 <script src="spends.js?v=1.1"></script>
-<script src="console.js?v=3.4"></script>
+<script src="console.js?v=4.5"></script>
 </body>
 </html>
 <!-- Block 8 END -->

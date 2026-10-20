@@ -4,7 +4,7 @@
  * Keep this file in the same folder as index.html.
  */
 window.STA_EQUIPMENT = [
-    /* =================== PERSONAL EQUIPMENT =================== */
+/* =================== PERSONAL EQUIPMENT =================== */
     {"name": "Ablative Armor Vest", "source": "Security Division", "type": "Armor", "severity": "1", "standard_issue": false, "opportunity_cost": "2", "qualities": "High-Impact Ceramic Plating, Kinetic & Blast Absorption"},
     {"name": "Ahn-woon (Vulcan Combat Sash)", "source": "Beta Quadrant", "type": "Weapon (Melee)", "severity": "2", "standard_issue": false, "opportunity_cost": "1", "qualities": "Traditional Braided Leather Sash, Entangling, Hidden 1, Stun/Deadly"},
     {"name": "Analeptic Drug Synthesizer", "source": "Sciences Division", "type": "Medical", "severity": "0", "standard_issue": false, "opportunity_cost": "2", "qualities": "Synthesizes Combat Stims, Removes Fatigued Trait Temporarily"},
@@ -169,8 +169,7 @@ window.STA_EQUIPMENT = [
     {"name": "Vidiian Organ Harvester", "source": "Delta Quadrant", "type": "Medical", "severity": "3", "standard_issue": false, "opportunity_cost": "3", "qualities": "Surgical Tissue Extractor, Piercing 2, Brutal Extraction, Deadly"},
     {"name": "Volumetric Imaging Projector", "source": "Sciences Division", "type": "Scientific", "severity": "0", "standard_issue": false, "opportunity_cost": "2", "qualities": "Displays 3D Structural Architecture Layout Blueprints and Spatial Mapping Sensors"},
     {"name": "Vulcan Ahhn-sheng", "source": "Beta Quadrant", "type": "Weapon (Melee)", "severity": "2", "standard_issue": false, "opportunity_cost": "1", "qualities": "Traditional Segmented Flail/Staff, Entangling, Parrying"},
-
-    /* =================== STARSHIP EQUIPMENT =================== */
+/* =================== STARSHIP EQUIPMENT =================== */
     {"name": "Antimatter Mine Layer", "source": "Core 2e", "type": "Ship Weapon (Mine)", "severity": "5", "standard_issue": false, "opportunity_cost": "2", "qualities": "Close Range, Area, High Yield"},
     {"name": "Antiproton Beam", "source": "Delta Quadrant", "type": "Ship Weapon (Energy)", "severity": "4", "standard_issue": false, "opportunity_cost": "3", "qualities": "Medium Range, Piercing 1"},
     {"name": "Blade Mine", "source": "Technical Manual", "type": "Ship Weapon (Mine)", "severity": "3", "standard_issue": false, "opportunity_cost": "2", "qualities": "Close Range, Piercing"},
@@ -202,7 +201,7 @@ window.STA_EQUIPMENT = [
     {"name": "Pulse Phasers", "source": "Core 2e", "type": "Ship Weapon (Energy)", "severity": "5", "standard_issue": false, "opportunity_cost": "1", "qualities": "Close Range, Versatile 2, Rapid Fire"},
     {"name": "Quantum Torpedoes", "source": "Core 2e", "type": "Ship Weapon (Torpedo)", "severity": "5", "standard_issue": false, "opportunity_cost": "2", "qualities": "Long Range, High Yield"},
     {"name": "Spatial Torpedoes (22c)", "source": "Utopia Planitia", "type": "Ship Weapon (Torpedo)", "severity": "3", "standard_issue": false, "opportunity_cost": "0", "qualities": "Medium Range"},
-    {"name": "Spiral-Wave Disruptor", "source": "Alpha Quadrant", "type": "Ship Weapon (Energy)", "severity": "4", "standard_issue": false, "opportunity_cost": "2", "qualities": "Medium Range, Piercing 1, Intense"},1"},
+    {"name": "Spiral-Wave Disruptor", "source": "Alpha Quadrant", "type": "Ship Weapon (Energy)", "severity": "4", "standard_issue": false, "opportunity_cost": "2", "qualities": "Medium Range, Piercing 1, Intense"},
     {"name": "Tetryon Pulse Beam", "source": "Delta Quadrant", "type": "Ship Weapon (Energy)", "severity": "4", "standard_issue": false, "opportunity_cost": "2", "qualities": "Medium Range, Draining, Piercing 1"},
     {"name": "Tetryonic Mine", "source": "Technical Manual", "type": "Ship Weapon (Mine)", "severity": "3", "standard_issue": false, "opportunity_cost": "2", "qualities": "Close Range, Depleting, High Yield"},
     {"name": "Transphasic Mine", "source": "Technical Manual", "type": "Ship Weapon (Mine)", "severity": "5", "standard_issue": false, "opportunity_cost": "2", "qualities": "Close Range, Devastating"},

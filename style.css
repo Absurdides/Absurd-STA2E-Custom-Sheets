@@ -263,7 +263,7 @@ body.play-mode-active .vital-box-panel-fullwidth.popover-open .det-popover { dis
 #page-2 .injury-info-trigger span { display: none; }
 body.play-mode-active #page-2 .injury-info-trigger { cursor: pointer; }
 body.play-mode-active #page-2 .injury-info-trigger span { display: inline; }
-#page-2 .injury-popover {
+.injury-popover, #page-2 .injury-popover {
     display: none; position: absolute; top: calc(100% + 4px); left: 0; width: 340px;
     background-color: #2c3a4d; border: 1px solid #eed292; border-radius: 5px; padding: 8px 10px;
     z-index: 100; color: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.35); text-transform: none;
@@ -441,8 +441,9 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 #page-6 .tactical-pill-bar.navy-pill { background-color: #2c3a4d; color: #ffffff; }
 
 /* Single-Prompt Row Delete Modal */
+/* Single-Prompt Row Delete Modal */
 #row-action-modal { display: none; position: fixed; inset: 0; z-index: 10000; }
-#choice-modal { position: fixed; inset: 0; z-index: 10000; }
+#choice-modal, #storage-modal { position: fixed; inset: 0; z-index: 10000; }
 .row-modal-backdrop { width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.65); display: flex; align-items: center; justify-content: center; padding: 16px; }
 .row-modal-box { background-color: #2c3a4d; border: 2px solid #eed292; border-radius: 6px; padding: 12px 14px; width: 370px; max-width: 95vw; box-shadow: 0 6px 20px rgba(0,0,0,0.5); display: flex; flex-direction: column; gap: 8px; }
 .row-modal-header { font-family: 'Antonio', 'Oswald', sans-serif; font-size: 13px; font-weight: 900; color: #eed292; letter-spacing: 1px; text-transform: uppercase; border-bottom: 1px solid #708699; padding-bottom: 4px; }
@@ -506,6 +507,7 @@ body.play-mode-active #page-2 .stress-panel-header-row.popover-open .injury-popo
 .doc-page .bio-page-link { font-family: inherit; font-size: 11px; background-color: #708699; color: #000000; border: none; padding: 1px 8px; border-radius: 2px; font-weight: bold; cursor: pointer; }
 .doc-page .bio-page-link:hover { background-color: #eed292; }
 .doc-page .bio-page-link.active { background-color: #d96b27; color: #ffffff; }
+.doc-page .bio-page-link.tech:not(.active) { background-color: #eed292; }
 .doc-page .p3-pag-links { display: flex; gap: 4px; align-items: center; }
 .doc-page .p3-pagination.single { border-top: none; }
 .doc-page .p3-pagination.single .p3-pag-h, .doc-page .p3-pagination.single .p3-pag-bar { display: none; }
@@ -699,6 +701,7 @@ body.play-mode-active .ship-dept-capsule { padding-left: 6px; padding-right: 6px
 body.play-mode-active .play-only { display: inline-block; }
 .btn-tan { background-color: #eed292; color: #000000; }
 .btn-help { background-color: #f7c600; color: #000000; }
+.btn-dice { background-color: #2e7d32; }
 .storage-meter { font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; font-size: 10px; font-weight: bold; letter-spacing: 0.5px; color: #708699; white-space: nowrap; padding: 0 4px; cursor: help; }
 .storage-meter.warn { color: #d96b27; }
 .storage-meter.crit { color: #bd4b4b; }
@@ -806,3 +809,65 @@ body.printing-all #print-all-container { display: block !important; width: 100%;
     .screen-only-view-padding { padding: 0.25in 0 0 0 !important; width: 100% !important; height: auto !important; }
     .printable-page-area { margin: 0 auto !important; zoom: 1 !important; transform: none !important; width: 8.0in !important; height: 10.5in !important; }
 }
+
+/* Task Roller panel (screen only) */
+#page-1 .single-stat-capsule.roll-sel { outline: 2px solid #d96b27; outline-offset: -1px; background-color: rgba(217, 107, 39, 0.14); }
+body.play-mode-active #page-1 .single-stat-capsule, body.play-mode-active #page-5 .ship-system-card, body.play-mode-active #page-5 .ship-dept-capsule { cursor: pointer; }
+#page-5 .ship-system-card.roll-sel, #page-5 .ship-dept-capsule.roll-sel { outline: 2px solid #d96b27; outline-offset: -1px; background-color: rgba(217, 107, 39, 0.14); }
+#roll-panel { display: none; position: fixed; z-index: 9000; box-sizing: border-box; transform-origin: 0 0; padding: 6px 8px; background-color: #18222f; border: 1px solid #eed292; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35); color: #ffffff; font-family: 'Antonio', 'Oswald', 'Arial Narrow', sans-serif; text-transform: uppercase; }
+#roll-panel button, #roll-panel select { touch-action: manipulation; }
+#roll-panel .rp-head { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #708699; padding-bottom: 3px; margin-bottom: 5px; font-size: 11px; font-weight: bold; letter-spacing: 1.2px; color: #eed292; }
+#roll-panel .rp-x { background: none; border: none; color: #ffffff; font-size: 18px; line-height: 1; cursor: pointer; padding: 0 4px; }
+#roll-panel .rp-body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+#roll-panel .rp-lbl { font-size: 10px; font-weight: bold; letter-spacing: 1px; color: #708699; }
+#roll-panel .rp-tn { font-size: 26px; font-weight: bold; line-height: 1.05; }
+#roll-panel .rp-tn.rp-prompt { font-size: 15px; color: #eed292; }
+#roll-panel .rp-brk { font-family: 'Roboto', Arial, sans-serif; font-size: 10px; text-transform: none; color: #c0c8cf; margin: 1px 0 3px 0; }
+#roll-panel .rp-crit { font-size: 12px; letter-spacing: 0.8px; color: #eed292; min-height: 14px; }
+#roll-panel .rp-row { display: flex; gap: 4px; align-items: center; margin-top: 4px; }
+#roll-panel .rp-det { background-color: #2c3a4d; border: 1px solid #eed292; font-size: 11px; padding: 0 6px; }
+#roll-panel .rp-det.on { background-color: #eed292; color: #000000; border-color: #d96b27; }
+#roll-panel .rp-chip.reroll-sel { outline: 2px solid #4b8bbd; outline-offset: 1px; box-shadow: 0 0 6px #4b8bbd; }
+#roll-panel .rp-reroll { background-color: #2c3a4d; border: 1px solid #4b8bbd; color: #ffffff; }
+#roll-panel .rp-dir { width: 100%; box-sizing: border-box; height: 26px; padding: 0 6px; background-color: #2c3a4d; color: #ffffff; border: 1px solid #708699; border-radius: 4px; font-family: 'Roboto', Arial, sans-serif; font-size: 11px; text-transform: none; }
+#roll-panel .rp-frow { margin-top: 6px; }
+#roll-panel .rp-fsel { display: block; width: 100%; min-width: 0; height: 26px; font-size: 11px; background-color: #2c3a4d; color: #ffffff; border: 1px solid #708699; border-radius: 4px; text-transform: none; text-overflow: ellipsis; }
+#roll-panel .rp-btn { border: 0; border-radius: 4px; color: #ffffff; min-width: 28px; height: 26px; padding: 0 8px; font-family: inherit; font-size: 13px; font-weight: bold; letter-spacing: 0.6px; text-transform: uppercase; cursor: pointer; }
+#roll-panel .rp-red, #roll-panel .rp-focus.off { background-color: #bd4b4b; }
+#roll-panel .rp-grn, #roll-panel .rp-focus.on { background-color: #2e7d32; }
+#roll-panel .rp-btn:disabled { opacity: 0.4; cursor: default; }
+#roll-panel .rp-step { display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+#roll-panel .rp-step .rp-lbl { width: 68px; }
+#roll-panel .rp-val { min-width: 44px; text-align: center; font-size: 16px; font-weight: bold; }
+#roll-panel .rp-sub { font-size: 10px; letter-spacing: 0.6px; color: #c0c8cf; min-height: 12px; }
+#roll-panel .rp-mom { display: flex; gap: 3px; margin: 2px 0 5px 0; }
+#roll-panel .rp-mbtn { flex: 1; height: 26px; padding: 0 2px; border: 0; border-radius: 4px; background-color: #2c3a4d; color: #ffffff; font-family: inherit; font-size: 10.5px; font-weight: bold; letter-spacing: 0.4px; text-transform: uppercase; cursor: pointer; }
+#roll-panel .rp-mbtn.on { background-color: #d96b27; }
+#roll-panel .rp-mbtn:disabled { opacity: 0.35; cursor: default; }
+#roll-panel .rp-act { display: flex; gap: 6px; }
+#roll-panel .rp-roll { flex: 1; height: 30px; background-color: #d96b27; font-size: 16px; letter-spacing: 1.5px; }
+#roll-panel .rp-clear { background-color: #708699; height: 30px; }
+#roll-panel .rp-result { margin-top: 6px; border-top: 1px solid #708699; padding-top: 5px; }
+#roll-panel .rp-result:empty { display: none; }
+#roll-panel .rp-chips { display: flex; gap: 5px; flex-wrap: wrap; }
+#roll-panel .rp-chip { min-width: 34px; height: 28px; line-height: 26px; padding: 0 4px; text-align: center; border-radius: 4px; border: 1px solid #708699; background-color: #2c3a4d; color: #ffffff; font-size: 15px; font-weight: bold; }
+#roll-panel .rp-chip.ok { background-color: #2e7d32; border-color: #2e7d32; }
+#roll-panel .rp-chip.crit { background-color: #eed292; border-color: #eed292; color: #000000; }
+#roll-panel .rp-chip.miss { color: #8a95a0; }
+#roll-panel .rp-chip.comp { background-color: #bd4b4b; border-color: #bd4b4b; }
+#roll-panel .rp-sum { margin-top: 4px; font-size: 14px; font-weight: bold; letter-spacing: 0.8px; }
+#roll-panel .rp-sum.pass { color: #6fcf73; }
+#roll-panel .rp-sum.fail { color: #ff8a80; }
+#roll-panel .rp-addm { background-color: #2c3a4d; border: 1px solid #eed292; }
+#roll-panel .rp-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+#roll-panel .rp-logbtn { background-color: #708699; }
+#roll-panel .rp-sum:not(.pass):not(.fail) { color: #ffffff; }
+#roll-panel .rp-tnin { display: block; width: 100%; box-sizing: border-box; height: 40px; padding: 0 8px; background-color: #2c3a4d; color: #ffffff; border: 1px solid #708699; border-radius: 4px; font-family: inherit; font-size: 26px; font-weight: bold; }
+#roll-panel .rp-log { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; border-top: 1px solid #708699; padding-top: 5px; }
+#roll-panel .rp-task { width: 100%; box-sizing: border-box; height: 28px; padding: 0 6px; background-color: #2c3a4d; color: #ffffff; border: 1px solid #708699; border-radius: 4px; font-family: 'Roboto', Arial, sans-serif; font-size: 12px; text-transform: none; }
+#roll-panel .rp-prev { font-family: 'Roboto', Arial, sans-serif; font-size: 10px; text-transform: none; color: #c0c8cf; word-break: break-word; white-space: pre-wrap; }
+#roll-panel .rp-lfocus { display: block; width: 100%; min-width: 0; height: 26px; font-size: 11px; background-color: #2c3a4d; color: #ffffff; border: 1px solid #708699; border-radius: 4px; text-transform: none; text-overflow: ellipsis; }
+#roll-panel .rp-nosd { display: flex; align-items: center; gap: 5px; font-size: 11px; letter-spacing: 0.6px; color: #c0c8cf; cursor: pointer; }
+#roll-panel.rp-dock { left: 0 !important; right: 0; top: auto !important; bottom: 0; width: 100% !important; transform: none !important; max-height: 70vh; overflow-y: auto; border-radius: 8px 8px 0 0; padding-bottom: calc(6px + env(safe-area-inset-bottom, 0px)); }
+@media (max-width: 520px) { #roll-panel.rp-dock .rp-body { grid-template-columns: 1fr; } }
+@media print { #page-1 .single-stat-capsule.roll-sel, #page-5 .ship-system-card.roll-sel, #page-5 .ship-dept-capsule.roll-sel { outline: none !important; background-color: #fafafa !important; } }

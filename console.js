@@ -2,7 +2,7 @@ function initConsole() {
     const form = document.getElementById('unified-master-console-form');
     const fileId = document.getElementById('metadata-file-id');
     const DEFAULT_ID = '2376-[FILE_DEFAULT]';
-    const MAX_SECTIONS = 8;
+    const MAX_SECTIONS = 8, MAX_TECH = 6;
     const DOCS = {
         p3: { page: 'page-3', addLabel: '+ Add Chronicle Section', head: 'Section header', body: 'Enter narrative text' },
         p4: { page: 'page-4', addLabel: '+ Add Log Section', head: 'Stardate / log name', body: 'Enter log entry' }
@@ -16,7 +16,9 @@ function initConsole() {
     const activeSec = id => { const a = views(id).find(v => v.classList.contains('active')); return a ? Number(a.dataset.tab) : 1; };
     const currentDoc = () => { const p = document.querySelector('.sheet-page.active.doc-page'); return p ? p.dataset.doc : null; };
 
+    let portraitTok = 0, shipTok = 0;
     function setPortrait(src) {
+        portraitTok++;
         imgs().forEach(i => { i.src = src || ''; i.style.display = src ? 'block' : 'none'; });
         phs().forEach(p => { p.style.display = src ? 'none' : 'block'; });
     }
@@ -132,11 +134,20 @@ function initConsole() {
     });
 
     // Sections (chronicle tabs / log tabs)
+    const isTech = v => !!(v && v.dataset.tech);
+    const normalCount = id => views(id).filter(v => !isTech(v)).length;
+    const lastNormalSec = id => { const vs = views(id).filter(v => !isTech(v)); return vs.length ? Number(vs[vs.length - 1].dataset.tab) : 1; };
+    const logTab = () => { const v = views('p4').find(x => x.classList.contains('active')); return v && !isTech(v) ? Number(v.dataset.tab) : lastNormalSec('p4'); };
+    function renumber(id) { views(id).forEach((v, i) => { v.dataset.tab = i + 1; const h = v.querySelector('.p3-blocks'); if (h) h.dataset.tab = i + 1; }); }
     function renderPag(id) {
-        const n = views(id).length, cur = activeSec(id), pg = page(id);
+        const vs = views(id), n = vs.length, cur = activeSec(id), pg = page(id);
         pg.querySelector('.p3-pagination').classList.toggle('single', n < 2);
-        let h = '';
-        for (let i = 1; i <= n; i++) h += '[<button type="button" class="bio-page-link' + (i === cur ? ' active' : '') + '" data-sub="' + i + '">' + i + '</button>]';
+        let h = '', t = 0;
+        vs.forEach((v, k) => {
+            const i = k + 1, tech = isTech(v);
+            if (tech) t++;
+            h += '[<button type="button" class="bio-page-link' + (tech ? ' tech' : '') + (i === cur ? ' active' : '') + '" data-sub="' + i + '">' + (tech ? (t > 1 ? 'TECH ' + t : 'TECH') : i) + '</button>]';
+        });
         pg.querySelector('.p3-pag-links').innerHTML = h;
     }
     function showSection(id, n) {
@@ -144,31 +155,51 @@ function initConsole() {
         renderPag(id);
         growAll();
     }
-    function addSection(id) {
-        const n = views(id).length + 1;
-        if (n > MAX_SECTIONS) return 0;
+    function addSection(id, tech, force) {
+        const vs = views(id);
+        if (!force && (tech ? vs.filter(isTech).length >= MAX_TECH : normalCount(id) >= MAX_SECTIONS)) return 0;
         const v = document.createElement('div');
         v.className = 'dossier-tab-view';
-        v.dataset.tab = n;
-        v.innerHTML = '<div class="p3-blocks" data-tab="' + n + '"></div>';
-        view(id).appendChild(v);
+        if (tech) v.dataset.tech = '1';
+        v.innerHTML = '<div class="p3-blocks"></div>';
+        const ft = tech ? null : vs.find(isTech);
+        if (ft) view(id).insertBefore(v, ft); else view(id).appendChild(v);
+        renumber(id);
+        const n = Number(v.dataset.tab);
         showSection(id, n);
         return n;
     }
     function removeLastSection(id) {
-        const vs = views(id);
+        const vs = views(id).filter(v => !isTech(v));
         if (vs.length < 2) return;
         const last = vs[vs.length - 1];
         if (last.querySelector('.p3-block') && !confirm('Remove the last section and everything in it?')) return;
         const wasActive = last.classList.contains('active');
         last.remove();
+        renumber(id);
         showSection(id, wasActive ? vs.length - 1 : activeSec(id));
     }
-
+    // Page 4 always ends with a Tech section (more Tech sections follow it if it fills). Older saves get one; a legacy "Technical Log" section is moved to the end.
+    function ensureTech(id) {
+        if (id !== 'p4') return;
+        const HEADS = ['blue', 'tan', 'orange', 'slate'];
+        if (!views(id).some(isTech)) {
+            views(id).forEach(v => {
+                const b = Array.from(v.querySelectorAll('.p3-block')).find(x => HEADS.indexOf(x.dataset.type) >= 0);
+                if (b && /^technical log/i.test((b.querySelector('.p3-b-title') || {}).value || '')) v.dataset.tech = '1';
+            });
+            if (views(id).length && views(id).every(isTech)) delete views(id)[0].dataset.tech;
+        }
+        const host = view(id);
+        views(id).filter(isTech).forEach(v => host.appendChild(v));
+        renumber(id);
+        if (!views(id).some(isTech)) { const n = addSection(id, true, true); addBlock(id, n, 'blue', 'Technical Log'); }
+        showSection(id, activeSec(id));
+    }
     // Header bars
     function addBlock(id, tab, type, title, text, rows) {
         type = type || 'blue';
-        while (views(id).length < tab && views(id).length < MAX_SECTIONS) addSection(id);
+        while (views(id).length < tab && views(id).length < MAX_SECTIONS + MAX_TECH) addSection(id, false, true);
         const host = view(id).querySelector('.p3-blocks[data-tab="' + tab + '"]');
         if (!host) return;
         const UP = '<button type="button" class="p3-mv" data-dir="-1" title="Move up">&#9650;</button>';
@@ -206,12 +237,14 @@ function initConsole() {
     function resetDoc(id) {
         views(id).forEach(v => { if (Number(v.dataset.tab) > 1) v.remove(); });
         page(id).querySelectorAll('.p3-block').forEach(b => b.remove());
+        if (views(id)[0]) delete views(id)[0].dataset.tech;
         showSection(id, 1);
     }
-    function defaultDoc(id) { resetDoc(id); addBlock(id, 1, 'blue'); addBlock(id, 1, 'para'); }
+    function defaultDoc(id) { resetDoc(id); addBlock(id, 1, 'blue'); addBlock(id, 1, 'para'); ensureTech(id); showSection(id, 1); }
     function collect(id) {
         return {
             sections: views(id).length,
+            techTabs: views(id).filter(isTech).map(v => Number(v.dataset.tab)),
             blocks: Array.from(page(id).querySelectorAll('.p3-block')).map(b => {
                 const x = b.querySelector('.p3-b-text');
                 return {
@@ -228,12 +261,14 @@ function initConsole() {
         resetDoc(id);
         const blocks = d.blocks || [];
         const n = Math.max(1, d.sections || 1, ...blocks.map(b => Number(b.tab) || 1));
-        for (let i = 2; i <= n; i++) addSection(id);
+        for (let i = 2; i <= n; i++) addSection(id, false, true);
 		blocks.forEach(b => {
             const tb = Number(b.tab) || 1;
             if (['blue', 'tan', 'orange', 'slate'].includes(b.type) && b.text) { addBlock(id, tb, b.type, b.title, ''); addBlock(id, tb, 'para', '', escHtml(b.text)); }
             else addBlock(id, tb, b.type, b.title, b.text, b.rows);
         });
+        if (Array.isArray(d.techTabs)) views(id).forEach(v => { if (d.techTabs.indexOf(Number(v.dataset.tab)) >= 0) v.dataset.tech = '1'; });
+        ensureTech(id);
         showSection(id, 1);
     }
     function moveBlock(b, dir) {
@@ -243,6 +278,7 @@ function initConsole() {
         else {
             const t = view(id).querySelector('.p3-blocks[data-tab="' + (tab + dir) + '"]');
             if (!t) return;
+            if (isTech(t.closest('.dossier-tab-view')) !== isTech(b.closest('.dossier-tab-view'))) return;
             if (dir < 0) t.appendChild(b); else t.insertBefore(b, t.firstChild);
             showSection(id, tab + dir);
         }
@@ -297,13 +333,10 @@ function initConsole() {
         if (el) el.addEventListener('input', updateStardateDisplay);
     });
     (function initStardateDefaults() {
-        const now = new Date();
-        const m = document.getElementById('sd-month'), d = document.getElementById('sd-day');
-        if (m) m.value = now.getMonth() + 1;
-        if (d) d.value = now.getDate();
-        const mId = fileId ? fileId.value.match(/^(\d{4})/) : null;
-        const y = document.getElementById('sd-year');
-        if (y && mId) y.value = mId[1];
+        const m = document.getElementById('sd-month'), d = document.getElementById('sd-day'), y = document.getElementById('sd-year');
+        if (m) m.value = 1;
+        if (d) d.value = 1;
+        if (y) y.value = 2376;
         updateStardateDisplay();
     })();
     const sdHeaderBtn = document.getElementById('sd-btn-header');
@@ -384,40 +417,57 @@ function initConsole() {
 
     // Portrait upload (Page 1) mirrors to all other pages
     // Shrink uploaded images (long side max, JPEG on white) so they don't fill browser storage
-    function shrinkImage(file, maxSide, cb) {
-        const r = new FileReader();
-        r.onload = ev => {
-            const src = ev.target.result, img = new Image();
-            img.onload = () => {
-                const w = img.naturalWidth, h = img.naturalHeight;
-                if (!w || !h) { cb(src); return; }
-                const s = Math.min(1, maxSide / Math.max(w, h));
-                if (s === 1 && file.size < 200000) { cb(src); return; }
-                const c = document.createElement('canvas');
-                c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
-                const x = c.getContext('2d');
-                x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
-                x.drawImage(img, 0, 0, c.width, c.height);
-                let out = src;
-                try { out = c.toDataURL('image/jpeg', 0.88); } catch (e) {}
-                cb(out.length < src.length ? out : src);
-            };
-            img.onerror = () => cb(src);
-            img.src = src;
+    // Fit uploads inside a box about 2-2.5x their on-screen size (never upscaled), white background, WebP where the browser can encode it, else JPEG.
+    // Quality is tuned for the small display boxes; raise q if schematics look soft.
+    const IMG_PORTRAIT = { w: 320, h: 220, q: 0.6 }, IMG_SHIP = { w: 1434, h: 192, q: 0.7 };
+    function encodeImage(c, q) {
+        let out = '';
+        try { out = c.toDataURL('image/webp', q); } catch (e) {}
+        if (out.indexOf('data:image/webp') !== 0) { try { out = c.toDataURL('image/jpeg', q); } catch (e) { out = ''; } }
+        return out;
+    }
+    // cb(newSrc). Never returns something bigger than src. onlyIfLarger: leave images that fit the box (or are within about 15% of it) untouched, so images shrunk under an earlier setting are not re-encoded.
+    function shrinkSrc(src, box, cb, onlyIfLarger) {
+        const img = new Image();
+        img.onload = () => {
+            const w = img.naturalWidth, h = img.naturalHeight;
+            if (!w || !h) { cb(src); return; }
+            const s = Math.min(1, box.w / w, box.h / h);
+            if (onlyIfLarger && s > 0.85) { cb(src); return; }
+            const c = document.createElement('canvas');
+            c.width = Math.max(1, Math.round(w * s)); c.height = Math.max(1, Math.round(h * s));
+            const x = c.getContext('2d');
+            x.fillStyle = '#ffffff'; x.fillRect(0, 0, c.width, c.height);
+            x.drawImage(img, 0, 0, c.width, c.height);
+            const out = encodeImage(c, box.q);
+            cb(out && out.length < src.length ? out : src);
         };
+        img.onerror = () => cb(src);
+        img.src = src;
+    }
+    function shrinkImage(file, box, cb) {
+        const r = new FileReader();
+        r.onload = ev => shrinkSrc(ev.target.result, box, cb, false);
         r.readAsDataURL(file);
     }
     const portraitUploader = document.getElementById('portrait-uploader');
     if (portraitUploader) {
         portraitUploader.addEventListener('change', function(e) {
             if (!e.target.files[0]) return;
-            shrinkImage(e.target.files[0], 400, src => { setPortrait(src); markDirty(); });
+            shrinkImage(e.target.files[0], IMG_PORTRAIT, src => { setPortrait(src); markDirty(); });
             e.target.value = '';
         });
     }
 
     // ===== Slot manager: characters + starships (up to 5 each, browser localStorage) =====
     const KEY = 'sta2e-autosave'; // legacy single-autosave key (migrated once)
+    try {
+        const legacy = localStorage.getItem(KEY);
+        if (legacy) {
+            if (!localStorage.getItem('sta2e_slot_data_slot_1')) localStorage.setItem('sta2e_slot_data_slot_1', legacy);
+            localStorage.removeItem(KEY);
+        }
+    } catch (e) {}
     const MAX_CREW = 50, MAX_SHIPS = 8, STORE_LIMIT = 5000000;
     let storageWarned = false;
     function storageUsed() {
@@ -431,11 +481,133 @@ function initConsole() {
         const u = storageUsed(), p = Math.round(u / STORE_LIMIT * 100);
         el.textContent = 'Storage: ' + p + '%';
         el.className = 'storage-meter' + (p >= 95 ? ' crit' : (p >= 80 ? ' warn' : ''));
-        el.title = 'Estimated browser storage used by this app: about ' + Math.round(u / 1024) + ' KB of ' + Math.round(STORE_LIMIT / 1024) + ' KB (browsers do not report the real limit). New slots are refused at 90%. Use Backup All, then Delete slots you no longer need.';
+        el.title = 'Estimated browser storage used: about ' + Math.round(u / 1024) + ' KB of ' + Math.round(STORE_LIMIT / 1024) + ' KB (' + p + '%). Click for breakdown.';
         if (p >= 80 && !storageWarned) {
             storageWarned = true;
             setTimeout(() => alert('Browser storage is about ' + p + '% full (estimate). Use Backup All now. New slots are refused at 90%.'), 50);
         }
+    }
+    function openStorageDetails() {
+        const old = document.getElementById('storage-modal'); if (old) old.remove();
+        const dlg = document.createElement('div');
+        dlg.id = 'storage-modal'; dlg.className = 'no-print';
+        dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box storage-box">' +
+            '<div class="row-modal-header">Storage Details // Memory Breakdown</div>' +
+            '<div class="row-modal-body" id="storage-modal-content"></div>' +
+            '<div class="row-modal-btn-row" id="storage-modal-btns"></div>' +
+            '</div></div>';
+
+        function render() {
+            const cIdx = lsJSON('sta2e_storage_slots_index') || [];
+            const sIdx = lsJSON('sta2e_ship_slots_index') || [];
+            const linked = new Set([
+                'sta2e_storage_slots_index', 'sta2e_ship_slots_index',
+                'sta2e_active_slot', 'sta2e_active_ship',
+                'sta2e_dark_play', 'sta2e_discord_fmt', 'sta2e-unsaved'
+            ]);
+            cIdx.forEach(x => linked.add('sta2e_slot_data_' + x.id));
+            sIdx.forEach(x => linked.add('sta2e_ship_data_' + x.id));
+
+            const allKeys = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const k = localStorage.key(i);
+                if (k && k.startsWith('sta2e')) allKeys.push(k);
+            }
+
+            const unlinkedKeys = allKeys.filter(k => !linked.has(k));
+            const sz = k => Math.round((k.length + (localStorage.getItem(k) || '').length) / 1024);
+
+            let html = '<table class="storage-table"><thead><tr><th>Entry</th><th style="text-align:right;">Size</th></tr></thead><tbody>';
+
+            let cTotal = 0;
+            cIdx.forEach(x => { cTotal += sz('sta2e_slot_data_' + x.id); });
+            html += '<tr class="storage-sec-row"><td colspan="2">Crew Slots (' + cIdx.length + ' slots \u2014 ' + cTotal + ' KB)</td></tr>';
+            cIdx.forEach(x => {
+                const k = 'sta2e_slot_data_' + x.id;
+                html += '<tr><td>' + escHtml(x.name || x.id) + '</td><td style="text-align:right;">' + sz(k) + ' KB</td></tr>';
+            });
+
+            let sTotal = 0;
+            sIdx.forEach(x => { sTotal += sz('sta2e_ship_data_' + x.id); });
+            html += '<tr class="storage-sec-row"><td colspan="2">Ship Slots (' + sIdx.length + ' slots \u2014 ' + sTotal + ' KB)</td></tr>';
+            sIdx.forEach(x => {
+                const k = 'sta2e_ship_data_' + x.id;
+                html += '<tr><td>' + escHtml(x.name || x.id) + '</td><td style="text-align:right;">' + sz(k) + ' KB</td></tr>';
+            });
+
+            if (unlinkedKeys.length) {
+                let uTotal = 0;
+                unlinkedKeys.forEach(k => { uTotal += sz(k); });
+                html += '<tr class="storage-sec-row" style="color:#ff8a80;"><td colspan="2">Unlinked / Legacy Data (' + unlinkedKeys.length + ' keys \u2014 ' + uTotal + ' KB)</td></tr>';
+                unlinkedKeys.forEach(k => {
+                    html += '<tr style="color:#ff8a80;"><td>' + escHtml(k) + '</td><td style="text-align:right;">' + sz(k) + ' KB</td></tr>';
+                });
+            }
+
+            let cfgTotal = 0;
+            const cfgKeys = allKeys.filter(k => linked.has(k) && !k.startsWith('sta2e_slot_data_') && !k.startsWith('sta2e_ship_data_'));
+            cfgKeys.forEach(k => { cfgTotal += sz(k); });
+            html += '<tr class="storage-sec-row"><td colspan="2">Indexes &amp; Settings (' + cfgTotal + ' KB)</td></tr>';
+            cfgKeys.forEach(k => {
+                html += '<tr><td>' + escHtml(k) + '</td><td style="text-align:right;">' + sz(k) + ' KB</td></tr>';
+            });
+
+            const total = Math.round(storageUsed() / 1024);
+            const pct = Math.round(storageUsed() / STORE_LIMIT * 100);
+            html += '<tr class="storage-sec-row" style="border-top:2px solid #eed292;"><td style="color:#eed292;">Total Estimated: ' + pct + '%</td><td style="text-align:right;color:#eed292;">' + total + ' KB</td></tr>';
+            html += '</tbody></table>';
+
+            dlg.querySelector('#storage-modal-content').innerHTML = html;
+            const btnRow = dlg.querySelector('#storage-modal-btns');
+            btnRow.innerHTML = '';
+
+            if (unlinkedKeys.length) {
+                const rmBtn = document.createElement('button');
+                rmBtn.type = 'button'; rmBtn.className = 'lcars-utility-btn btn-save';
+                rmBtn.textContent = 'Remove Unlinked Data';
+                rmBtn.title = 'Downloads backup and deletes unlinked keys';
+                rmBtn.onclick = () => {
+                    const chars = { index: [], active: null, data: {} };
+                    const ships = { index: [], active: null, data: {} };
+                    const raw = {};
+                    unlinkedKeys.forEach(k => {
+                        const val = lsJSON(k);
+                        if (k.startsWith('sta2e_slot_data_') || k === 'sta2e-autosave') {
+                            const id = k === 'sta2e-autosave' ? 'legacy_autosave' : k.replace('sta2e_slot_data_', '');
+                            chars.index.push({ id: id, name: (val && (val.bio_name || val.meta_file_id)) || id });
+                            chars.data[id] = val;
+                        } else if (k.startsWith('sta2e_ship_data_')) {
+                            const id = k.replace('sta2e_ship_data_', '');
+                            ships.index.push({ id: id, name: (val && (val.ship_name || val.ship_registry)) || id });
+                            ships.data[id] = val;
+                        } else {
+                            raw[k] = lsGet(k);
+                        }
+                    });
+                    downloadJSON('sta2e_unlinked_backup_' + new Date().toLocaleDateString('en-CA') + '.json', {
+                        _bundle: 'sta2e-backup-v1',
+                        created: new Date().toISOString(),
+                        characters: chars,
+                        ships: ships,
+                        unlinked_raw: raw
+                    });
+                    unlinkedKeys.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+                    updateStorageMeter();
+                    render();
+                };
+                btnRow.appendChild(rmBtn);
+            }
+
+            const closeBtn = document.createElement('button');
+            closeBtn.type = 'button'; closeBtn.className = 'lcars-utility-btn btn-navy';
+            closeBtn.textContent = 'Close';
+            closeBtn.onclick = () => dlg.remove();
+            btnRow.appendChild(closeBtn);
+        }
+
+        render();
+        dlg.querySelector('.row-modal-backdrop').addEventListener('click', e => { if (e.target === e.currentTarget) dlg.remove(); });
+        document.body.appendChild(dlg);
     }
     let quotaState = 0;
     function lsSet(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
@@ -444,7 +616,7 @@ function initConsole() {
     function warnQuota(level) {
         if (level <= quotaState) return;
         quotaState = level;
-        alert(level === 1 ? 'Browser storage is full. Images were left out of the autosave. Use Save As File to keep them.' : 'Browser storage is full. Autosave FAILED. Use Save As File now.');
+        alert(level === 1 ? 'Browser storage is full. Images were left out of the autosave. Use Export Crew or Backup All to keep them.' : 'Browser storage is full. Autosave FAILED. Use Backup All now.');
     }
     function showChoice(head, body, btns, cb) {
         const old = document.getElementById('choice-modal'); if (old) old.remove();
@@ -640,11 +812,7 @@ function initConsole() {
         blank: blankChar,
         after: () => { sync(); updateModColors(); balance(); growAll(); },
         autoName: () => { const f = form.elements['bio_name']; return f ? f.value.trim() : ''; },
-        seed: () => {
-            const old = lsGet(KEY);
-            if (old && !lsGet('sta2e_slot_data_slot_1')) lsSet('sta2e_slot_data_slot_1', old);
-            return null;
-        }
+        seed: () => null
     });
     const shipSlots = makeSlots({
         ui: 'ship-slot-', idxKey: 'sta2e_ship_slots_index', dataKey: 'sta2e_ship_data_', activeKey: 'sta2e_active_ship',
@@ -722,6 +890,7 @@ function initConsole() {
             { _bundle: 'sta2e-backup-v1', created: new Date().toISOString(), characters: charSlots.exportAll(), ships: shipSlots.exportAll() });
     }
     const onBtn = (id, fn) => { const el = document.getElementById(id); if (el) el.addEventListener('click', fn); };
+    onBtn('storage-meter', openStorageDetails);
     onBtn('btn-undo', doUndo);
     onBtn('btn-backup-all', () => backupAll(''));
     const bkLoader = document.getElementById('utility-backup-loader');
@@ -766,7 +935,7 @@ function initConsole() {
     onBtn('btn-quick-note', () => {
         const t = prompt('Quick note (added to Page 4 Logs with the current stardate):');
         if (!t || !t.trim()) return;
-        addBlock('p4', activeSec('p4'), 'cap-tan', 'Stardate ' + getStardateVal(), t.trim());
+        addBlock('p4', logTab(), 'cap-tan', 'Stardate ' + getStardateVal(), t.trim());
         markDirty();
     });
     let darkPref = lsGet('sta2e_dark_play'); // '1' dark, '0' light, null = dark in Play Mode only
@@ -825,7 +994,7 @@ function initConsole() {
         o.style.display = 'block';
     }
     onBtn('btn-manual', openManual);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); ['discord-modal', 'md-modal'].forEach(mid => { const dm = document.getElementById(mid); if (dm) dm.remove(); }); } });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') { setActive(null); closeManual(); ['discord-modal', 'md-modal', 'storage-modal'].forEach(mid => { const dm = document.getElementById(mid); if (dm) dm.remove(); }); } });
 
     // ===== Log block selection: Export / Import / Discord / Delete (Pages 3 and 4) =====
     function selBlocks(id) {
@@ -980,13 +1149,13 @@ function initConsole() {
             } else list.push({ type: b.type, title: title, text: text, rows: '' });
         });
         if (!list.length) { alert('No importable blocks found in that file.'); return; }
-        const cur = activeSec(id), full = views(id).length >= MAX_SECTIONS, sel = selBlocks(id);
+        const cur = activeSec(id), full = normalCount(id) >= MAX_SECTIONS, sel = selBlocks(id);
         const btns = [];
         if (sel.length) btns.push({ label: 'Replace ' + sel.length + ' Selected', val: 'replace', color: '#bd4b4b' });
         btns.push({ label: 'Add to Section ' + cur, val: 'end', color: '#d96b27' });
         if (!full) btns.push({ label: 'New Section', val: 'new', color: '#708699' });
         btns.push({ label: 'Cancel', val: 'cancel' });
-        const msg = list.length + ' block' + (list.length === 1 ? '' : 's') + ' ready for ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs') + '. '
+        const msg = list.length + ' block' + (list.length === 1 ? '' : 's') + ' ready for ' + (id === 'p3' ? 'Page 3 Biography' : 'Page 4 Logs') + '. '
             + (sel.length ? 'Replace the ' + sel.length + ' selected block' + (sel.length === 1 ? '' : 's') + ' with them, or add' : 'Add')
             + ' to the end of section ' + cur + (full ? '' : ', or to a new section') + '?'
             + (full ? ' This page already has the maximum of ' + MAX_SECTIONS + ' sections, so a new one is not available.' : '')
@@ -1019,12 +1188,14 @@ function initConsole() {
     function spillOverflow(id, from) {
         let stuck = false;
         for (let t = from; t <= views(id).length; t++) {
+            if (isTech(views(id)[t - 1])) break;
             showSection(id, t);
             let guard = 0;
             while (overflows(id) && guard++ < 1000) {
                 const host = view(id).querySelector('.p3-blocks[data-tab="' + t + '"]');
                 if (host.children.length < 2) break;
                 let next = view(id).querySelector('.p3-blocks[data-tab="' + (t + 1) + '"]');
+                if (next && isTech(next.closest('.dossier-tab-view'))) next = null;
                 if (!next) {
                     if (!addSection(id)) { stuck = true; break; }
                     showSection(id, t);
@@ -1079,7 +1250,7 @@ function initConsole() {
                 if (d._bundle === 'sta2e-logsel-v1' && Array.isArray(d.blocks)) { importBlocks(id, d.blocks); return; }
                 if (d.docs && (d.docs.p3 || d.docs.p4)) {
                     const btns = [];
-                    if (d.docs.p3) btns.push({ label: 'Page 3 Narrative', val: 'p3', color: '#d96b27' });
+                    if (d.docs.p3) btns.push({ label: 'Page 3 Biography', val: 'p3', color: '#d96b27' });
                     if (d.docs.p4) btns.push({ label: 'Page 4 Logs', val: 'p4', color: '#d96b27' });
                     btns.push({ label: 'Cancel', val: 'cancel' });
                     showChoice('Import Sections // Character File', 'This is a full character file. Which log page do you want to import blocks from?', btns, v => {
@@ -1295,7 +1466,7 @@ function initConsole() {
         const dlg = document.createElement('div');
         dlg.id = 'md-modal'; dlg.className = 'no-print';
         dlg.innerHTML = '<div class="row-modal-backdrop"><div class="row-modal-box md-box"><div class="row-modal-header"></div><div class="row-modal-body">Paste markdown (for example from an AI chat) or choose a .md / .txt file. Headings become header bars. Paragraphs keep bold and italic.</div><textarea class="md-text" placeholder="# Backstory&#10;&#10;**Ensign Vael** grew up on a *mining colony*..."></textarea><div class="row-modal-btn-row"></div></div></div>';
-        dlg.querySelector('.row-modal-header').textContent = 'Import Markdown // ' + (id === 'p3' ? 'Page 3 Narrative' : 'Page 4 Logs');
+        dlg.querySelector('.row-modal-header').textContent = 'Import Markdown // ' + (id === 'p3' ? 'Page 3 Biography' : 'Page 4 Logs');
         const ta = dlg.querySelector('textarea'), row = dlg.querySelector('.row-modal-btn-row');
         const fi = document.createElement('input');
         fi.type = 'file'; fi.accept = '.md,.markdown,.txt,text/markdown,text/plain'; fi.style.display = 'none';
@@ -1511,12 +1682,16 @@ function initConsole() {
             if (d.docs) Object.keys(DOCS).forEach(id => { if (d.docs[id]) restore(id, d.docs[id]); });
             else if (Array.isArray(d.p3_blocks)) restore('p3', { blocks: d.p3_blocks });
             setPortrait(d['cached_portrait_data'] || '');
+            if (d['cached_portrait_data']) { const t = portraitTok, s0 = d['cached_portrait_data']; shrinkSrc(s0, IMG_PORTRAIT, out => { if (t === portraitTok && out !== s0) { setPortrait(out); markDirty(); } }, true); }
             baseEquipment = (d._play_mode && d.base_equipment !== undefined) ? d.base_equipment : null;
             if (d._play_mode !== undefined) setPlayMode(!!d._play_mode, true);
             const ch = Array.isArray(d.challenged_values) ? d.challenged_values : [];
             form.querySelectorAll('.val-row').forEach((r, i) => { r.classList.toggle('challenged', ch.includes(i + 1)); });
         }
-        if (wantShip) setShipGraphic(d['cached_ship_ortho_data'] || '');
+        if (wantShip) {
+            setShipGraphic(d['cached_ship_ortho_data'] || '');
+            if (d['cached_ship_ortho_data']) { const t = shipTok, s0 = d['cached_ship_ortho_data']; shrinkSrc(s0, IMG_SHIP, out => { if (t === shipTok && out !== s0) { setShipGraphic(out); markDirty(); } }, true); }
+        }
         sync(); updateModColors(); growAll();
     }
     const loader = document.getElementById('utility-file-loader');
@@ -1559,6 +1734,7 @@ function initConsole() {
     }
 
     function setShipGraphic(src) {
+        shipTok++;
         const img = document.getElementById('ship-ortho-img');
         const ph = document.getElementById('ship-ortho-ph');
         if (img) { img.src = src || ''; img.style.display = src ? 'block' : 'none'; }
@@ -1568,7 +1744,7 @@ function initConsole() {
     if (shipUploader) {
         shipUploader.addEventListener('change', function(e) {
             if (!e.target.files[0]) return;
-            shrinkImage(e.target.files[0], 1600, src => { setShipGraphic(src); markDirty(); });
+            shrinkImage(e.target.files[0], IMG_SHIP, src => { setShipGraphic(src); markDirty(); });
             e.target.value = '';
         });
     }
@@ -1681,6 +1857,7 @@ function initConsole() {
             const vs = views(docId);
             const count = blank ? 1 : vs.length;
             for (let t = 1; t <= count; t++) {
+                if (!blank && isTech(vs[t - 1]) && vs[t - 1].querySelectorAll('.p3-block').length < 2) continue;
                 const clonedArea = cloneWithValues(area);
                 clonedArea.querySelectorAll('.dossier-tab-view').forEach(v => {
                     v.classList.toggle('active', Number(v.dataset.tab) === t);
@@ -2194,6 +2371,7 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
 
     function setPlayMode(active, restoring) {
         isPlayMode = active;
+        if (!active) clearRoll();
         document.body.classList.toggle('play-mode-active', isPlayMode);
         applyTheme();
         document.querySelectorAll('.val-num').forEach(el => {
@@ -2220,6 +2398,8 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         for (let i = 1; i <= 7; i++) {
             lockNames.push('attack_' + i + '_type', 'attack_' + i + '_qual', 'attack_' + i + '_score');
         }
+        ['comms', 'engines', 'structure', 'sensors', 'computers', 'weapons'].forEach(s => lockNames.push('ship_sys_' + s));
+        ['command', 'conn', 'engineering', 'security', 'medicine', 'science'].forEach(s => lockNames.push('ship_dept_' + s));
         lockNames.push('logistics_base_cost');
         lockNames.forEach(name => {
             const el = form.elements[name];
@@ -2241,8 +2421,8 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
             const dirText = dirBox ? dirBox.value.trim() : '';
             if (dirText) {
                 const sd = typeof getStardateVal === 'function' ? getStardateVal() : 'ARCHIVE';
-                addBlock('p4', activeSec('p4'), 'orange', 'Mission Debrief: Stardate ' + sd);
-                addBlock('p4', activeSec('p4'), 'para', '', escHtml(dirText));
+                addBlock('p4', logTab(), 'orange', 'Mission Debrief: Stardate ' + sd);
+                addBlock('p4', logTab(), 'para', '', escHtml(dirText));
                 dirBox.value = '';
             }
 
@@ -2327,6 +2507,379 @@ makeAppender('equipment-picker', 'ledger_equipment', gearList, 'Add equipment...
         });
         window.addEventListener('resize', () => { if (isFitWidth) updateSheetZoom(); });
     }
+
+
+    // ===== Task Roller (Page 1: Attribute + Department; Page 5: ship System + Department; free Dice tray): target number, dice, Difficulty, Momentum, Technical Log =====
+    const R = { mode: null, attr: null, dept: null, tn: null, focus: false, fname: '', dice: 2, diff: 1, buy: 0, res: null, anim: 0, busy: false, added: false, logOpen: false, logged: false, lfocus: '', detPre: false, rerollSel: new Set(), iv: 0, to: 0 };
+    const BUY_COST = [0, 1, 3, 6];
+    const rp = document.createElement('div');
+    rp.id = 'roll-panel'; rp.className = 'no-print';
+    rp.innerHTML = '<div class="rp-head"><span>Task Roller // Target Number</span><button type="button" class="rp-x" data-act="x" title="Close and clear (Esc)">&times;</button></div>'
+        + '<div class="rp-body"><div class="rp-left"><div class="rp-lbl rp-l1">Success Range</div><div class="rp-tn"></div><div class="rp-trn"><input type="number" class="rp-tnin" min="0" max="40" inputmode="numeric" placeholder="10"></div><div class="rp-brk"></div><div class="rp-crit"></div>'
+        + '<div class="rp-row"><button type="button" class="rp-btn rp-focus off" data-act="focus"></button><button type="button" class="rp-btn rp-det" data-act="detpre" title="Spend 1 Determination before rolling: sets one d20 to a 1 (Critical Success)"></button></div></div>'
+        + '<div class="rp-right"><div class="rp-step"><span class="rp-lbl">Dice</span><button type="button" class="rp-btn rp-red" data-act="dm">&minus;</button><span class="rp-val rp-dval"></span><button type="button" class="rp-btn rp-grn" data-act="dp">+</button></div><div class="rp-sub rp-dsub"></div>'
+        + '<div class="rp-step"><span class="rp-lbl">Difficulty</span><button type="button" class="rp-btn rp-red" data-act="fm">&minus;</button><span class="rp-val rp-fval"></span><button type="button" class="rp-btn rp-grn" data-act="fp">+</button></div>'
+        + '<div class="rp-lbl rp-mlbl"></div><div class="rp-mom"><button type="button" class="rp-mbtn" data-act="buy" data-n="1">+1 Die (1)</button><button type="button" class="rp-mbtn" data-act="buy" data-n="2">+2 Dice (3)</button><button type="button" class="rp-mbtn" data-act="buy" data-n="3">+3 Dice (6)</button></div>'
+        + '<div class="rp-act"><button type="button" class="rp-btn rp-roll" data-act="roll">Roll</button><button type="button" class="rp-btn rp-clear" data-act="clear">Clear</button></div></div></div>'
+        + '<div class="rp-frow"><select class="rp-fsel"></select></div>'
+        + '<div class="rp-result"></div>'
+        + '<div class="rp-log" style="display:none"><input type="text" class="rp-task" maxlength="200" placeholder="Task: what was attempted (required)"><select class="rp-lfocus"></select><input type="text" class="rp-dir" maxlength="200" placeholder="Directive / Value justification (optional)"><div class="rp-prev"></div><label class="rp-nosd"><input type="checkbox" class="rp-nosdc"> No stardate (always used while the Stardate bar is still Jan 1, 2376)</label><button type="button" class="rp-btn rp-grn" data-act="logok">Add to Technical Log</button></div>';
+    document.body.appendChild(rp);
+    const rq = s => rp.querySelector(s);
+    const rOpen = () => R.mode === 'tray' || !!(R.attr || R.dept);
+    const rNum = n => { const el = form.elements[n]; return el ? (parseInt(String(el.value).replace(/\s/g, ''), 10) || 0) : 0; };
+    const rPool = () => { let c = 0; for (let i = 1; i <= 6; i++) { const e = form.elements['combat_momentum_' + i]; if (e && e.checked) c++; } return c; };
+    const rDetPool = () => { let c = 0; for (let i = 1; i <= 3; i++) { const e = form.elements['determination_' + i]; if (e && e.checked) c++; } return c; };
+    function rSpendDet(n) {
+        for (let i = 3; i >= 1 && n > 0; i--) { const e = form.elements['determination_' + i]; if (e && e.checked) { e.checked = false; n--; } }
+        markDirty();
+    }
+    // Momentum pool works as a scale: tap a pip to fill up to it; tap the top filled pip to remove one; tap a lower filled pip to drop down to it
+    function momScale(el) {
+        const N = Number(el.name.replace('combat_momentum_', ''));
+        let pool = N;
+        if (!el.checked) {
+            let top = N;
+            for (let i = 1; i <= 6; i++) { const e = form.elements['combat_momentum_' + i]; if (i !== N && e && e.checked && i > top) top = i; }
+            pool = top === N ? N - 1 : N;
+        }
+        for (let i = 1; i <= 6; i++) { const e = form.elements['combat_momentum_' + i]; if (e) e.checked = i <= pool; }
+    }
+    const rLabel = n => { const s = n.replace(/^(attr|dept|ship_sys|ship_dept)_/, ''); return s.charAt(0).toUpperCase() + s.slice(1); };
+    const rSigned = v => (v > 0 ? '+' : '') + v;
+    function rD20() { const a = new Uint32Array(1); do { crypto.getRandomValues(a); } while (a[0] >= 4294967280); return (a[0] % 20) + 1; }
+    function rCalc() {
+        const a = R.attr ? rNum(R.attr) : 0, d = R.dept ? rNum(R.dept) : 0, am = R.attr ? rNum(R.attr + '_mod') : 0, dm = R.dept ? rNum(R.dept + '_mod') : 0;
+        return { a: a, d: d, mods: am + dm, tn: a + am + d + dm, dEff: Math.max(0, d + dm) };
+    }
+    function rClamp() {
+        R.dice = Math.max(1, Math.min(5, R.dice));
+        if (R.mode === 'tray') { R.buy = 0; if (R.diff !== null) R.diff = Math.max(0, Math.min(5, R.diff)); return; }
+        if (R.diff === null) R.diff = 1;
+        R.diff = Math.max(0, Math.min(5, R.diff));
+        while (R.buy > 0 && (R.dice + R.buy > 5 || BUY_COST[R.buy] > rPool())) R.buy--;
+    }
+    function rSync() {
+        document.querySelectorAll('#page-1 .single-stat-capsule, #page-5 .ship-system-card, #page-5 .ship-dept-capsule').forEach(cap => {
+            const i = cap.querySelector('input.score-input');
+            cap.classList.toggle('roll-sel', !!i && (i.name === R.attr || i.name === R.dept));
+        });
+    }
+    function clearRoll() {
+        clearInterval(R.iv); clearTimeout(R.to);
+        R.mode = null; R.attr = R.dept = null; R.tn = null; R.focus = false; R.fname = ''; R.dice = 2; R.diff = 1; R.buy = 0; R.res = null; R.anim = 0; R.busy = false; R.added = false; R.logOpen = false; R.logged = false; R.lfocus = ''; R.detPre = false; R.rerollSel.clear();
+        rq('.rp-tnin').value = ''; rq('.rp-task').value = ''; rq('.rp-dir').value = '';
+        rSync(); rp.style.display = 'none';
+    }
+    function placeRoll() {
+        if (rp.style.display === 'none') return;
+        const dock = window.innerWidth < 700;
+        rp.classList.toggle('rp-dock', dock);
+        if (dock) { rp.style.left = rp.style.top = rp.style.width = rp.style.transform = ''; rp.style.visibility = ''; return; }
+        if (R.mode === 'tray') {
+            rp.style.visibility = ''; rp.style.transform = 'none'; rp.style.width = '480px';
+            rp.style.left = Math.max(8, window.innerWidth - 480 - 16) + 'px';
+            const tb = document.querySelector('.external-top-bar');
+            const topMin = tb ? Math.max(8, tb.getBoundingClientRect().bottom + 8) : 8;
+            const topMax = Math.max(8, window.innerHeight - rp.offsetHeight - 8);
+            rp.style.top = Math.min(topMin, topMax) + 'px';
+            return;
+        }
+        const ship = R.mode === 'ship', p1 = document.getElementById(ship ? 'page-5' : 'page-1');
+        const col = p1 && p1.querySelector(ship ? '.ship-middle-tactical-row' : '.tactical-stats-container > .lcars-column-strip:nth-child(2)');
+        const area = p1 && p1.querySelector('.printable-page-area');
+        if (!col || !area || col.offsetParent === null) { rp.style.display = 'none'; return; }
+        const r = col.getBoundingClientRect(), s = (area.getBoundingClientRect().width / 768) || 1;
+        if (r.bottom < 60 || r.top > window.innerHeight - 40) { rp.style.visibility = 'hidden'; return; }
+        rp.style.visibility = '';
+        rp.style.width = (r.width / s) + 'px'; rp.style.transform = 'scale(' + s + ')'; rp.style.left = r.left + 'px';
+        const h = rp.offsetHeight * s;
+        rp.style.top = Math.max(4, Math.min(Math.max(r.top, 8), window.innerHeight - h - 8)) + 'px';
+    }
+    function rLogTask() { return rq('.rp-task').value.trim().replace(/\s+/g, ' '); }
+    function rLogFocusText() { const e = R.lfocus ? form.elements[R.lfocus] : null; return e ? e.value.trim() : ''; }
+    function rLogDirText() { return rq('.rp-dir').value.trim().replace(/\s+/g, ' '); }
+    const sdIsDefault = () => { const g = i => parseInt((document.getElementById(i) || {}).value, 10); return g('sd-year') === 2376 && g('sd-month') === 1 && g('sd-day') === 1; };
+    // Two lines: the task (with Focus and Directive), then [TN, Diff] dice, result, and Determination spent
+    function rLogText(task, focusText, dirText) {
+        const x = R.res, p = [];
+        if (x.tn !== null) p.push('TN ' + x.tn);
+        if (x.diff !== null) p.push('Diff ' + x.diff);
+        let d = x.n + 'D20';
+        if (x.tn === null) d += ': ' + x.dice.map(q => q.v).join(', ');
+        else d += ', ' + x.succ + (x.succ === 1 ? ' Success' : ' Successes') + (x.diff !== null ? ' (' + (x.pass ? 'Pass' : 'Fail') + ')' : '');
+        if (x.comp) d += ', ' + x.comp + (x.comp === 1 ? ' Complication' : ' Complications');
+        if (x.detSpent) d += ' \u00B7 Spent ' + x.detSpent + (x.detSpent === 1 ? ' Determination' : ' Determinations');
+        const meta = [];
+        if (focusText) meta.push('Focus: ' + focusText);
+        if (dirText) meta.push('Directive: ' + dirText);
+        const metaStr = meta.length ? ' (' + meta.join(', ') + ')' : '';
+        return task + metaStr + '\n' + (p.length ? '[' + p.join(', ') + '] ' : '') + d;
+    }
+    function rRenderLog() {
+        const show = R.logOpen && !!R.res && !R.logged && !R.anim;
+        rq('.rp-log').style.display = show ? '' : 'none';
+        if (!show) return;
+        const fs = rq('.rp-lfocus'), opts = [];
+        for (let i = 1; i <= 6; i++) { const e = form.elements['ledger_focus_' + i]; if (e && e.value.trim()) opts.push([e.name, e.value.trim()]); }
+        if (!opts.some(o => o[0] === R.lfocus)) R.lfocus = '';
+        fs.innerHTML = '';
+        const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; fs.appendChild(o); };
+        add('', 'Focus: None (not logged)');
+        opts.forEach(o => add(o[0], 'Focus: ' + o[1]));
+        fs.value = R.lfocus;
+        rq('.rp-prev').textContent = rLogText(rLogTask() || 'Task', rLogFocusText(), rLogDirText());
+        rq('[data-act="logok"]').disabled = !rLogTask();
+    }
+    function renderRoll() {
+        const tray = R.mode === 'tray', ship = R.mode === 'ship';
+        if (!rOpen() || !isPlayMode || (!tray && document.getElementById(ship ? 'page-5' : 'page-1').offsetParent === null)) { rp.style.display = 'none'; return; }
+        rClamp();
+        rp.style.display = 'block';
+        const both = !!(R.attr && R.dept), c = rCalc();
+        rq('.rp-head span').textContent = tray ? 'Dice Tray // Free Roll' : (ship ? 'Task Roller // Starship Target Number' : 'Task Roller // Target Number');
+        rq('.rp-l1').textContent = tray ? 'Target Number' : 'Success Range';
+        rq('.rp-trn').style.display = tray ? '' : 'none';
+        rq('.rp-tn').style.display = rq('.rp-brk').style.display = tray ? 'none' : '';
+        rq('.rp-row').style.display = (ship || tray) ? 'none' : '';
+        rq('.rp-mlbl').style.display = rq('.rp-mom').style.display = tray ? 'none' : '';
+        const tn = rq('.rp-tn'), brk = rq('.rp-brk'), crit = rq('.rp-crit');
+        tn.classList.toggle('rp-prompt', !both);
+        if (tray) {
+            crit.textContent = 'Critical: 1 only';
+        } else if (!both) {
+            tn.textContent = R.attr ? 'Select a Department' : (ship ? 'Select a System' : 'Select an Attribute');
+            brk.textContent = (R.attr ? rLabel(R.attr) + ' ' + (c.a + rNum(R.attr + '_mod')) : rLabel(R.dept) + ' ' + (c.d + rNum(R.dept + '_mod'))) + ' selected';
+            crit.textContent = '';
+        } else {
+            tn.textContent = c.tn + ' or less';
+            brk.textContent = rLabel(R.attr) + ' ' + c.a + ' + ' + rLabel(R.dept) + ' ' + c.d + ' \u00B7 mods ' + rSigned(c.mods);
+            crit.textContent = (R.focus && !ship) ? (c.dEff >= 1 ? 'Critical: 1\u2013' + c.dEff : 'Critical: none') : 'Critical: 1 only';
+        }
+        const fb = rq('.rp-focus');
+        fb.textContent = '+Focus \u00B7 ' + (R.focus ? 'On' : 'Off'); fb.classList.toggle('on', R.focus); fb.classList.toggle('off', !R.focus);
+        const db = rq('.rp-det');
+        if (R.mode === 'char') {
+            db.style.display = '';
+            db.textContent = '★ Perfect Opp (' + (R.detPre ? 'On' : '1 Det') + ')';
+            db.classList.toggle('on', R.detPre);
+            db.disabled = !R.detPre && rDetPool() === 0;
+        } else {
+            db.style.display = 'none';
+        }
+        const fs = rq('.rp-fsel'), showF = R.focus && !ship && !tray;
+        rq('.rp-frow').style.display = showF ? '' : 'none';
+        if (showF) {
+            const opts = [];
+            for (let i = 1; i <= 6; i++) { const e = form.elements['ledger_focus_' + i]; if (e && e.value.trim()) opts.push([e.name, e.value.trim()]); }
+            if (!opts.some(o => o[0] === R.fname)) R.fname = opts.length === 1 ? opts[0][0] : '';
+            fs.innerHTML = '';
+            const add = (v, t) => { const o = document.createElement('option'); o.value = v; o.textContent = t; fs.appendChild(o); };
+            if (!opts.length) add('', 'No Focus entered');
+            else { if (opts.length > 1) add('', 'Focus used...'); opts.forEach(o => add(o[0], o[1])); }
+            fs.value = R.fname;
+        }
+        const tot = R.dice + R.buy;
+        rq('.rp-dval').textContent = R.dice + 'D20';
+        rq('.rp-dsub').textContent = R.buy ? '+' + R.buy + ' bought = ' + tot + 'D20 (' + BUY_COST[R.buy] + ' Momentum)' : '';
+        rq('.rp-fval').textContent = R.diff === null ? '\u2014' : R.diff;
+        rq('.rp-mlbl').textContent = (ship ? 'Momentum pool (Page 1): ' : 'Momentum pool: ') + rPool() + ' / 6';
+        rp.querySelectorAll('[data-act="buy"]').forEach(b => {
+            const n = Number(b.dataset.n);
+            b.classList.toggle('on', R.buy === n);
+            b.disabled = R.buy !== n && (BUY_COST[n] > rPool() || R.dice + n > 5);
+        });
+        rq('.rp-roll').disabled = !(tray || both) || R.busy;
+        const rr = rq('.rp-result'), x = R.res;
+        if (R.anim) rr.innerHTML = '<div class="rp-chips">' + '<span class="rp-chip">??</span>'.repeat(R.anim) + '</div>';
+        else if (x) {
+            const chips = x.dice.map((d, i) => '<span class="rp-chip ' + d.cls + (R.rerollSel.has(i) ? ' reroll-sel' : '') + '" data-didx="' + i + '" title="' + d.t + (x.mode === 'char' ? ' (click to toggle re-roll)' : '') + '">' + d.v + d.m + '</span>').join('');
+            let sum = '';
+            if (x.tn !== null) sum = x.diff !== null
+                ? '<div class="rp-sum ' + (x.pass ? 'pass' : 'fail') + '">' + (x.pass ? 'PASS' : 'FAIL') + ': ' + x.succ + ' success' + (x.succ === 1 ? '' : 'es') + ' vs Difficulty ' + x.diff + (x.pass ? ', ' + x.mom + ' Momentum' : '') + '</div>'
+                : '<div class="rp-sum">' + x.succ + ' success' + (x.succ === 1 ? '' : 'es') + '</div>';
+            let sub = x.n + 'D20' + (x.tn !== null ? ' vs ' + x.tn : ' \u00B7 no target number') + (x.focus ? ' \u00B7 Focus' : '') + (x.spent ? ' \u00B7 spent ' + x.spent + ' Momentum' : '') + (x.detSpent ? ' \u00B7 spent ' + x.detSpent + ' Det' : '') + (x.comp ? ' \u00B7 ' + x.comp + ' Complication' + (x.comp === 1 ? '' : 's') : '');
+            const room = x.pass ? Math.min(x.mom, 6 - rPool()) : 0;
+            const canReroll = x.mode === 'char' && R.rerollSel.size > 0 && rDetPool() > 0;
+            rr.innerHTML = '<div class="rp-chips">' + chips + '</div>' + sum + '<div class="rp-sub">' + sub + '</div><div class="rp-btns">'
+                + (room > 0 && !R.added ? '<button type="button" class="rp-btn rp-addm" data-act="add">Add ' + room + ' to pool</button>' : '')
+                + (x.mode === 'char' ? '<button type="button" class="rp-btn rp-reroll" data-act="reroll" ' + (canReroll ? '' : 'disabled') + ' title="Spend 1 Determination to re-roll selected dice (Moment of Inspiration)">Moment of Insp (' + R.rerollSel.size + ' dice \u00B7 1 Det)</button>' : '')
+                + (R.logged ? '<button type="button" class="rp-btn rp-logbtn" disabled>Logged \u2713</button>' : '<button type="button" class="rp-btn rp-logbtn" data-act="log" title="Optionally add this roll to the Technical Log on Page 4">Log</button>')
+                + '</div>';
+        } else rr.innerHTML = '';
+        rRenderLog();
+        placeRoll();
+    }
+    function rSpend(n) {
+        for (let i = 6; i >= 1 && n > 0; i--) { const e = form.elements['combat_momentum_' + i]; if (e && e.checked) { e.checked = false; n--; } }
+        markDirty();
+    }
+    function doRoll() {
+        const tray = R.mode === 'tray';
+        if (R.busy || !(tray || (R.attr && R.dept))) return;
+        rClamp();
+        const c = rCalc(), tn = tray ? (R.tn === null ? 10 : R.tn) : c.tn, n = R.dice + R.buy, cost = BUY_COST[R.buy], critMax = R.focus ? c.dEff : 1;
+        if (cost) rSpend(cost);
+        let succ = 0, comp = 0;
+        const dice = [];
+        for (let i = 0; i < n; i++) {
+            const v = rD20();
+            if (tn === null) { dice.push({ v: v, m: '', cls: '', t: 'Rolled' }); continue; }
+            const ok = v <= tn, cr = ok && v <= critMax;
+            if (ok) succ += cr ? 2 : 1;
+            if (v === 20) comp++;
+            dice.push(v === 20 ? { v: v, m: '!', cls: 'comp', t: 'Complication' } : cr ? { v: v, m: '\u2605', cls: 'crit', t: 'Critical success (2 successes)' } : ok ? { v: v, m: '', cls: 'ok', t: 'Success' } : { v: v, m: '', cls: 'miss', t: 'Miss' });
+        }
+        let detSpent = 0;
+        if (R.detPre && R.mode === 'char') {
+            rSpendDet(1);
+            detSpent = 1;
+            dice[0] = { v: 1, m: '\u2605', cls: 'crit', t: 'Critical success (2 successes) [Perfect Opportunity]' };
+            succ = dice.reduce((acc, d) => acc + (d.m === '\u2605' ? 2 : (d.cls === 'ok' ? 1 : 0)), 0);
+            comp = dice.filter(d => d.v === 20).length;
+            R.detPre = false;
+        }
+        const pass = tn !== null && R.diff !== null && succ >= R.diff;
+        const fe = R.focus && R.fname ? form.elements[R.fname] : null;
+        const res = { dice: dice, succ: succ, comp: comp, diff: R.diff, pass: pass, mom: pass ? succ - R.diff : 0, n: n, tn: tn, focus: R.focus, ftext: fe ? fe.value.trim() : '', fname: fe ? R.fname : '', spent: cost, detSpent: detSpent, mode: R.mode, la: R.attr ? rLabel(R.attr) : '', lb: R.dept ? rLabel(R.dept) : '' };
+        R.buy = 0; R.added = false; R.res = null; R.logged = false; R.logOpen = false; R.rerollSel.clear(); rq('.rp-task').value = ''; rq('.rp-dir').value = '';
+        if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { R.res = res; renderRoll(); return; }
+        R.busy = true; R.anim = n; renderRoll();
+        R.iv = setInterval(() => { rp.querySelectorAll('.rp-chip').forEach(ch => { ch.textContent = 1 + Math.floor(Math.random() * 20); }); }, 70);
+        R.to = setTimeout(() => { clearInterval(R.iv); R.anim = 0; R.busy = false; R.res = res; renderRoll(); }, 800);
+    }
+    // Technical Log: optional, adds one Tan detail row to the last Tech section on Page 4 (a new Tech section follows when full)
+    function rLogRow(label, text) {
+        const cur = document.querySelector('.sheet-page.active'), backNum = cur ? cur.id.replace('page-', '') : '1', prevSec = activeSec('p4');
+        let ok = false;
+        showPage('4');
+        try {
+            ensureTech('p4');
+            const techs = views('p4').filter(isTech), tab = Number(techs[techs.length - 1].dataset.tab);
+            addBlock('p4', tab, 'cap-tan', label, text);
+            showSection('p4', tab);
+            if (overflows('p4')) {
+                const host = view('p4').querySelector('.p3-blocks[data-tab="' + tab + '"]');
+                if (host.children.length > 2) {
+                    host.lastElementChild.remove();
+                    const nt = addSection('p4', true);
+                    if (!nt) { alert('The Technical Log is full (' + MAX_TECH + ' Tech sections). Delete older entries, then press Log again.'); return false; }
+                    addBlock('p4', nt, 'blue', 'Technical Log (cont.)');
+                    addBlock('p4', nt, 'cap-tan', label, text);
+                }
+            }
+            ok = true;
+        } finally {
+            showSection('p4', Math.min(prevSec, views('p4').length));
+            showPage(backNum);
+        }
+        if (ok) markDirty();
+        return ok;
+    }
+    function doLog() {
+        if (!R.res || R.logged) return;
+        const task = rLogTask();
+        if (!task) { rq('.rp-task').focus(); return; }
+        const sd = (rq('.rp-nosdc').checked || sdIsDefault()) ? '?' : getStardateVal();
+        if (rLogRow('Stardate ' + sd, rLogText(task, rLogFocusText(), rLogDirText()))) { R.logged = true; R.logOpen = false; rq('.rp-task').value = ''; rq('.rp-dir').value = ''; }
+        renderRoll();
+    }
+    function doReroll() {
+        if (R.busy || !R.res || R.rerollSel.size === 0 || rDetPool() === 0) return;
+        rSpendDet(1);
+        R.res.detSpent = (R.res.detSpent || 0) + 1;
+        const c = rCalc(), tn = R.res.tn, critMax = R.res.focus ? c.dEff : 1;
+        R.rerollSel.forEach(idx => {
+            const v = rD20();
+            const ok = v <= tn, cr = ok && v <= critMax;
+            R.res.dice[idx] = v === 20 ? { v: v, m: '!', cls: 'comp', t: 'Complication' } : cr ? { v: v, m: '\u2605', cls: 'crit', t: 'Critical success (2 successes)' } : ok ? { v: v, m: '', cls: 'ok', t: 'Success' } : { v: v, m: '', cls: 'miss', t: 'Miss' };
+        });
+        R.rerollSel.clear();
+        let succ = 0, comp = 0;
+        R.res.dice.forEach(d => {
+            if (d.m === '\u2605') succ += 2;
+            else if (d.cls === 'ok') succ += 1;
+            if (d.v === 20) comp++;
+        });
+        R.res.succ = succ;
+        R.res.comp = comp;
+        R.res.pass = R.res.diff !== null && succ >= R.res.diff;
+        R.res.mom = R.res.pass ? succ - R.res.diff : 0;
+        renderRoll();
+    }
+    function openTray() {
+        const was = R.mode === 'tray';
+        clearRoll();
+        if (was || !isPlayMode) return;
+        R.mode = 'tray'; R.dice = 2; R.diff = 1; R.tn = 10;
+        rq('.rp-tnin').value = 10;
+        renderRoll();
+    }
+    function pickStat(kind, name, mode) {
+        if (R.busy) return;
+        if (R.mode && R.mode !== mode) clearRoll();
+        if (!R.attr && !R.dept) { R.mode = mode; R.dice = mode === 'ship' ? 1 : 2; R.diff = 1; R.focus = false; R.fname = ''; }
+        R[kind] = R[kind] === name ? null : name;
+        R.res = null; R.added = false; R.logged = false; R.logOpen = false;
+        if (!R.attr && !R.dept) clearRoll(); else { rSync(); renderRoll(); }
+    }
+    rp.addEventListener('click', e => {
+        const b = e.target.closest('[data-act]');
+        if (!b || b.disabled) return;
+        const a = b.dataset.act;
+        if (a === 'x' || a === 'clear') clearRoll();
+        else if (a === 'focus') { R.focus = !R.focus; renderRoll(); }
+        else if (a === 'detpre') { R.detPre = !R.detPre; renderRoll(); }
+        else if (a === 'reroll') doReroll();
+        else if (a === 'dm' || a === 'dp') { R.dice += a === 'dp' ? 1 : -1; renderRoll(); }
+        else if (a === 'fm' || a === 'fp') {
+            const d = a === 'fp' ? 1 : -1;
+            if (R.mode === 'tray') { if (R.diff === null) R.diff = d > 0 ? 0 : null; else if (R.diff === 0 && d < 0) R.diff = null; else R.diff += d; }
+            else R.diff += d;
+            renderRoll();
+        }
+        else if (a === 'buy') { const n = Number(b.dataset.n); R.buy = R.buy === n ? 0 : n; renderRoll(); }
+        else if (a === 'roll') doRoll();
+        else if (a === 'log') { R.logOpen = !R.logOpen; if (R.logOpen && R.res) R.lfocus = (R.res.fname && form.elements[R.res.fname] && form.elements[R.res.fname].value.trim()) ? R.res.fname : ''; renderRoll(); if (R.logOpen) rq('.rp-task').focus(); }
+        else if (a === 'logok') doLog();
+        else if (a === 'add' && R.res) {
+            let k = Math.min(R.res.mom, 6 - rPool());
+            for (let i = 1; i <= 6 && k > 0; i++) { const e2 = form.elements['combat_momentum_' + i]; if (e2 && !e2.checked) { e2.checked = true; k--; } }
+            R.added = true; markDirty(); renderRoll();
+        }
+    });
+    rq('.rp-fsel').addEventListener('change', e => { R.fname = e.target.value; });
+    rq('.rp-tnin').addEventListener('input', e => { const v = e.target.value.trim(); R.tn = v === '' ? null : Math.max(0, Math.min(40, parseInt(v, 10) || 0)); renderRoll(); });
+    rq('.rp-task').addEventListener('input', () => { if (R.res && R.logOpen) { rq('.rp-prev').textContent = rLogText(rLogTask() || 'Task', rLogFocusText(), rLogDirText()); rq('[data-act="logok"]').disabled = !rLogTask(); } });
+    rq('.rp-dir').addEventListener('input', () => { if (R.res && R.logOpen) { rq('.rp-prev').textContent = rLogText(rLogTask() || 'Task', rLogFocusText(), rLogDirText()); } });
+    rq('.rp-lfocus').addEventListener('change', e => { R.lfocus = e.target.value; if (R.res && R.logOpen) rq('.rp-prev').textContent = rLogText(rLogTask() || 'Task', rLogFocusText(), rLogDirText()); });
+    rp.addEventListener('click', e => {
+        const chip = e.target.closest('.rp-chip[data-didx]');
+        if (!chip || !R.res || R.res.mode !== 'char' || R.busy) return;
+        const idx = Number(chip.dataset.didx);
+        if (R.rerollSel.has(idx)) R.rerollSel.delete(idx);
+        else R.rerollSel.add(idx);
+        renderRoll();
+    });
+    rq('.rp-task').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); doLog(); } });
+    form.addEventListener('click', e => {
+        if (!isPlayMode) return;
+        const cap = e.target.closest('#page-1 .single-stat-capsule, #page-5 .ship-system-card, #page-5 .ship-dept-capsule');
+        if (!cap || e.target.closest('.stat-input-mod-line, .ship-sys-mod, .ship-sys-breach-col')) return;
+        const inp = cap.querySelector('input.score-input');
+        if (!inp) return;
+        const nm = inp.name, ship = nm.indexOf('ship_') === 0;
+        const kind = /^(attr_|ship_sys_)/.test(nm) ? 'attr' : (/^(dept_|ship_dept_)/.test(nm) ? 'dept' : '');
+        if (kind) pickStat(kind, nm, ship ? 'ship' : 'char');
+    });
+    form.addEventListener('change', e => { if (e.target.name && e.target.name.indexOf('combat_momentum_') === 0) { momScale(e.target); if (rOpen()) renderRoll(); } });
+    form.addEventListener('input', e => { if (rOpen() && e.target.name && /^(attr_|dept_|ship_sys_|ship_dept_|ledger_focus_)/.test(e.target.name)) renderRoll(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && rOpen()) clearRoll(); });
+    window.addEventListener('scroll', placeRoll, true);
+    window.addEventListener('resize', placeRoll);
+    onBtn('btn-fit-width', () => setTimeout(placeRoll, 60));
+    onBtn('btn-dice', openTray);
+    document.querySelectorAll('.btn-tab[data-page]').forEach(b => b.addEventListener('click', () => setTimeout(renderRoll, 0)));
 
 	// Unified LCARS popover tap/click listener for touchscreens (Play Mode only)
     document.addEventListener('click', e => {
