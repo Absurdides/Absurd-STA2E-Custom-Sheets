@@ -17,25 +17,8 @@ Format: Planned / In Progress / Done, one line each. Done entries carry a date.
 - (Mid 4) Fatigue Auto-Alert (Pages 1 & 2): When Stress track reaches max, automatically trigger the 2E "Fatigued" state and prompt to pick the impaired Attribute (marks it red; flags +1 Difficulty for other tasks).
 - (Mid 5) Momentum Spends Modal / Quick Reference (Tools Row, browsing `spends.js`; loaded but not yet used by console.js): search box, category chips, tag badges from `type` (split on commas), Esc to close; reuse `.row-modal-*` and the `showDiscord` modal pattern. Open question: Play Mode only or always available. Update README.md + readme.js when built.
 - (Mid 6) Discuss possible unnecessary redundancy of having page 6 AND the toolkit. Could toolkit be expanded upon instead? Modals would make more sense for page 6 information to be situated where its needed most.
-- (Mid 6) Standalone Campaign Roster & Bridge Duty Visualizer (`roster.html`):
-  - Concept: A dedicated, standalone LCARS page (like `toolkit.html`) providing a two-page printable party dossier and an interactive bridge station manager, decoupled from the main character sheet.
-  - Tab 1 - Campaign Roster (Print-Optimized 2-Page Dossier):
-    - Capacity: Displays 12–16 characters cleanly across exactly 2 Letter pages (~6–8 characters per page, ~1.1 inches per card).
-    - Compact 3-line card format:
-      - Line 1: `[Rank] [Character Name]` // `[Position/Role]` // `[Species]` // `Player: [Player Name]` // `Rep: [X]`
-      - Line 2: All 12 Stats (`CTL·FIT·DAR·INS·PRE·REA` | color-coded `CMD·CON·ENG·SEC·MED·SCI`).
-      - Line 3: Public Focuses (auto-truncated at first `:` or `-` for clean display; hover/tap reveals full custom description).
-      - Drops long Values and combat health tracks to ensure zero page overflow.
-    - Data Ingestion via URL Hash (`#`):
-      - `[Send to Roster]` button on `index.html` prompts for Player Name and opens `roster.html#add=<base64_data>`.
-      - `roster.html` reads the hash on load, prompts to overwrite or add if character exists, saves to `localStorage` (`sta2e_campaign_roster`), and clears the hash.
-    - Export / Import JSON buttons to share or back up the campaign roster file.
-  - Tab 2 - Interactive Bridge Station Visualizer:
-    - Overhead blueprint view of Deck 1 / Main Bridge (e.g., Luna-class *USS Titan* layout).
-    - Responsive station pins positioned via percentage coordinates (`left: X%`, `top: Y%`) over stations (Command, Helm, Ops, Tactical, Science, Engineering, etc.).
-    - Touch-friendly tap-to-assign / drag-and-drop: Tap a station to seat a crew member from the roster list.
-    - Configurable bridge layouts: Dropdown to swap coordinate/image presets for different ship classes.
-    - Duty assignments persisted in browser `localStorage`.
+- (Mid 3) Roster & Bridge print views: print-friendly blank and filled layouts for `roster.html` (roster cards across 2 Letter pages; bridge map plus station list).
+- (Mid 2) Roster Focus trimming option: toggle to show full Focus text (currently cut at first `:`, ` - ` or `(`).
 
 ### Low Priority
 - (Low 2) Canonical Focuses Suggestion Picker: helper dropdown above Page 1 Focuses box.
@@ -50,6 +33,10 @@ Format: Planned / In Progress / Done, one line each. Done entries carry a date.
 - (Low 5) Scene Notes overlay (Traits, Advantages, Complications).
 - (Low 5) Table Tracker overlay (Play Mode): group Momentum, Threat, round counter; floats over any page.
 
+- (Low 3) Bridge pin drag-to-calibrate mode (nudge pins on screen, copy coordinates). Pin positions are one array at the top of `roster.html`.
+- (Low 4) Ship-class bridge layouts: dropdown swapping the inline SVG and station array per class.
+- (Low 5) Fluid Play Page (phone): a `play.html` live view of the active character (stats, Stress, Determination, Momentum, Task Roller) reading the same slots, no print layout. Candidate only; see Architecture Fork below.
+
 ### Ultra-Low Priority
 - (Ultra-Low 5) Project Architecture Fork (Dedicated Print Viewer vs. Fluid Play PADD Console):
   - Concept: Permanently decouple the print engine from the interactive play engine to eliminate ongoing layout conflicts and delicate font/pagination workarounds.
@@ -62,12 +49,14 @@ Format: Planned / In Progress / Done, one line each. Done entries carry a date.
        - Strip `@media print`, `printFullDossier()`, `scopedWrap()`, and fixed-inch Letter boundaries.
        - Convert canvas to fluid, device-responsive layouts (`width: 100%`) for seamless phone, tablet, and PC browser scaling without scroll clipping or zoom hacks.
     3. Interoperability: Both forks share the identical `sta2e-unified-v3` JSON schema for cross-compatibility.
+- (Ultra-Low 2) NOT DOING: "Send to Roster" button on the sheet: `roster.html` already has From This Browser and Import Character, and a portrait-bearing character is too large for a URL hash.
 - (Ultra-Low 3) NOT DOING: Single-Die Re-Roll in Task Roller (Non-Determination): Free single-die re-rolls for Aim minor action or Accurate weapon quality.
 - (Ultra-Low 1) NOT DOING: Shield Restore Button (Page 5, Play Mode): Single click to recharge Shields to MAX SHIELDS after combat or when regenerating shields.
 - (Ultra-Low 2) NOT DOING: Rest Buttons for Stress Track (Play Mode): Breather (-4) and Break (-8) buttons beside the Stress Track that automatically uncheck 4 or 8 boxes according to 2E rest rules.
 - (Ultra-Low) NOT DOING: d20 table rolls on the sheet (Random System Hit, Shaken, Breaches; toolkit cards stay reference only). Challenge dice (not in 2E, confirmed).
 
 ## Done
+- 2026-10: Campaign Roster & Bridge Duty page (`roster.html`): roster cards with Player filter chips and NPC entries, import from Export Crew / Backup All / this browser, 14 numbered bridge stations over an inline SVG with assign / custom name / clear, roster export-import, Roster button in the Crew row.
 - 2026-10: Header Metadata & Crew Quick-Filter: Moved autosave telemetry indicator to the Tan banner; replaced SVG barcode with a slate metadata block housing auto-formatted FILE ID (`YYYY-[NAME]`) and PLAYER field (`bio_player`, no-print); added 65px instant filter input in Crew menu row filtering by character or player name.
 - 2026-10: Determination spends in Task Roller: Perfect Opportunity locks 1 die to a critical (★) pre-roll; Moment of Inspiration allows selecting specific dice chips (blue highlight) to re-roll post-roll; unchecks Determination pips; logs Determination spent and optional Directive to Page 4 TECH section.
 - 2026-10: Storage Details dialog: clicking storage meter opens memory breakdown modal with safety-backed Remove Unlinked Data button and automatic legacy autosave purge.

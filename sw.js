@@ -1,12 +1,12 @@
 // Offline + install support. Network-first for this app's own files; the cache is used when offline.
-const CACHE = 'sta2e-console-v6';
+const CACHE = 'sta2e-console-v7';
 self.addEventListener('install', e => {
     e.waitUntil((async () => {
         const c = await caches.open(CACHE);
         const res = await fetch('index.html', { cache: 'reload' });
         const html = await res.clone().text();
         await c.put('index.html', res);
-        const urls = new Set(['manifest.webmanifest', 'toolkit.html', 'manual.html']);
+        const urls = new Set(['manifest.webmanifest', 'toolkit.html', 'manual.html', 'roster.html']);
         html.replace(/(?:src|href)="([^"#]+)"/g, (m, u) => { if (!/^[a-z]+:|^\/\/|^data:/i.test(u)) urls.add(u); return m; });
         const list = Array.from(urls);
         await Promise.all(list.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));

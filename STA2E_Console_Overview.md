@@ -38,6 +38,12 @@ A Star Trek Adventures 2E character sheet that **prints blank**, **prints filled
 - **Storage meter:** in the Session row estimates memory used. Click it for a full breakdown by character and ship slot or to safely back up and purge unlinked data. Warns at 80% and refuses new slots at 90%.
 - **Undo** reverses the last big action, such as a reset, delete or import.
 
+## Roster and Bridge
+The **Roster** button (Crew row) opens a separate page for the whole table.
+- **Roster:** import characters from Export Crew files, a Backup All file, or this browser's crew slots. Filter by player, edit the Player name, and add NPCs.
+- **Bridge:** 14 numbered stations over a bridge diagram. Seat roster characters or type in a custom name, and see each person's stats at a glance.
+- Saves in the browser; **Export Roster / Import Roster** back it up.
+
 ## Tablets and Phones
 - **PADD:** fullscreen with the screen kept awake.
 - **Fit:** scales the sheet to your screen width.
