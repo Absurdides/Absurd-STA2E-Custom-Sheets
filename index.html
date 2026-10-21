@@ -53,6 +53,7 @@
     <div class="bar-group">
         <div class="top-menu-label-cell"><span class="top-row-label">Crew</span></div>
         <div class="menu-divider-bar"></div>
+        <input type="text" id="slot-filter" class="lcars-filter-input" placeholder="Filter..." title="Filter crew slots by character or player name">
         <select id="slot-selector" class="lcars-select" title="Switch character slot (browser memory)"></select>
         <button type="button" class="lcars-utility-btn btn-navy slot-btn" id="slot-btn-new">+ New</button>
         <button type="button" class="lcars-utility-btn btn-load slot-btn" id="slot-btn-dup">Copy</button>
@@ -98,18 +99,22 @@
         <div class="brand-text">
             <div class="main-title">Starfleet Command</div>
             <div class="subtitle">Personnel Record Division // Service Record</div>
-            <div class="tan-text-banner-wrapper"><span class="subtitle-highlight">Personnel File // Access Active // Cognizant Status Record</span></div>
-        </div>
-        <div class="shifted-metadata-block">
-            <svg width="105" height="24" viewBox="0 0 100 25" xmlns="http://www.w3.org/2000/svg" style="margin-bottom: 2px;">
-                <rect x="0" width="3" height="25" fill="black"/><rect x="5" width="1" height="25" fill="black"/><rect x="8" width="2" height="25" fill="black"/><rect x="13" width="4" height="25" fill="black"/><rect x="19" width="1" height="25" fill="black"/><rect x="22" width="3" height="25" fill="black"/><rect x="27" width="2" height="25" fill="black"/><rect x="32" width="1" height="25" fill="black"/><rect x="35" width="4" height="25" fill="black"/><rect x="42" width="2" height="25" fill="black"/><rect x="46" width="1" height="25" fill="black"/><rect x="50" width="3" height="25" fill="black"/><rect x="55" width="5" height="25" fill="black"/><rect x="62" width="1" height="25" fill="black"/><rect x="65" width="2" height="25" fill="black"/><rect x="70" width="4" height="25" fill="black"/><rect x="76" width="1" height="25" fill="black"/><rect x="80" width="3" height="25" fill="black"/><rect x="85" width="2" height="25" fill="black"/><rect x="90" width="1" height="25" fill="black"/><rect x="93" width="4" height="25" fill="black"/><rect x="98" width="2" height="25" fill="black"/>
-            </svg>
-            <div style="width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 2px; white-space: nowrap;">
-                <span>FILE ID:</span>
-                <input type="text" id="metadata-file-id" name="meta_file_id" class="file-id-editable-input" value="2376-[FILE_DEFAULT]">
-                <span class="autosave-indicator saved no-print" title="Autosave: Synchronized (Click to force save)"></span>
+            <div class="brand-banner-row">
+                <div class="tan-text-banner-wrapper">
+                    <span class="subtitle-highlight">Personnel File // Access Active // Cognizant Status Record</span>
+                    <span class="autosave-indicator saved no-print" title="Autosave: Synchronized (Click to force save)"></span>
+                </div>
+                <div class="header-metadata-block">
+                    <div class="header-meta-row">
+                        <span class="header-meta-lbl">FILE ID:</span>
+                        <input type="text" id="metadata-file-id" name="meta_file_id" class="file-id-editable-input" value="2376-[FILE_DEFAULT]" title="File ID (auto-formatted or editable)">
+                    </div>
+                    <div class="header-meta-row no-print">
+                        <span class="header-meta-lbl">PLAYER:</span>
+                        <input type="text" id="metadata-player" name="bio_player" class="file-id-editable-input" placeholder="OPTIONAL" title="Player Name (saved in slot index, hidden on print)">
+                    </div>
+                </div>
             </div>
-            <div style="color: #708699;">/ Form STA-2E</div>
         </div>
         <div class="top-right-portrait-void-area" onclick="document.getElementById('portrait-uploader').click();">
             <input type="file" id="portrait-uploader" accept="image/*" style="display: none; position: absolute;">

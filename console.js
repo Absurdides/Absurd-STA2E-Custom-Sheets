@@ -31,6 +31,16 @@ function initConsole() {
         follows.forEach(t => {
             if (!t.dataset.touched) { const s = form.elements[t.dataset.follow]; t.value = s ? s.value : ''; }
         });
+        if (fileId && (!fileId.dataset.touched || fileId.dataset.autogen === '1')) {
+            const bioName = (form.elements['bio_name']?.value || '').trim();
+            if (bioName) {
+                const y = parseInt(document.getElementById('sd-year')?.value, 10) || 2376;
+                const clean = bioName.toUpperCase().replace(/[^A-Z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '');
+                fileId.value = y + '-[' + clean + ']';
+                fileId.dataset.autogen = '1';
+                document.querySelectorAll('.mirror-file-id').forEach(s => { s.textContent = fileId.value; });
+            }
+        }
     }
     function fit(el) {
         if (el.offsetParent === null) return;
@@ -661,13 +671,18 @@ function initConsole() {
         const idxWrite = a => lsSet(c.idxKey, JSON.stringify(a));
         const selEl = () => document.getElementById(c.ui + 'selector');
         const find = () => (idxRead() || []).find(x => x.id === cur);
-        function fill() {
+        function fill(filterText) {
             const s = selEl(); if (!s) return;
             s.innerHTML = '';
+            const q = (filterText || '').trim().toLowerCase();
             (idxRead() || []).forEach(x => {
-                const o = document.createElement('option');
-                o.value = x.id; o.textContent = x.name; o.selected = (x.id === cur);
-                s.appendChild(o);
+                const label = x.player ? x.name + ' [' + x.player + ']' : x.name;
+                const match = !q || (x.name && x.name.toLowerCase().includes(q)) || (x.player && x.player.toLowerCase().includes(q));
+                if (match || x.id === cur) {
+                    const o = document.createElement('option');
+                    o.value = x.id; o.textContent = label; o.selected = (x.id === cur);
+                    s.appendChild(o);
+                }
             });
         }
         function go(id) {
@@ -684,12 +699,20 @@ function initConsole() {
             let ok = lsSet(c.dataKey + cur, JSON.stringify(c.build(true)));
             if (!ok) { ok = lsSet(c.dataKey + cur, JSON.stringify(c.build(false))); warnQuota(ok ? 1 : 2); }
             const a = idxRead(), s = a && a.find(x => x.id === cur);
-            if (s && !s.custom) {
-                const nm = c.autoName();
-                if (nm && nm !== s.name) {
-                    s.name = nm; idxWrite(a);
-                    const se = selEl(), o = se && se.querySelector('option[value="' + cur + '"]');
-                    if (o) o.textContent = nm;
+            if (s) {
+                let changed = false;
+                if (c.player) {
+                    const pl = c.player();
+                    if (pl !== (s.player || '')) { s.player = pl; changed = true; }
+                }
+                if (!s.custom) {
+                    const nm = c.autoName();
+                    if (nm && nm !== s.name) { s.name = nm; changed = true; }
+                }
+                if (changed) {
+                    idxWrite(a);
+                    const filterInput = document.getElementById('slot-filter');
+                    fill(filterInput ? filterInput.value : '');
                 }
             }
             return ok;
@@ -801,7 +824,7 @@ function initConsole() {
             const on = (id, fn) => { const el = document.getElementById(c.ui + id); if (el) el.addEventListener('click', fn); };
             on('btn-new', create); on('btn-dup', duplicate); on('btn-ren', rename); on('btn-del', remove);
         }
-        return { init: init, save: save, count: count, max: c.max, canAdd: canAdd, addAll: addAll, create: create, snapshot: snapshot, restore: restore, exportAll: exportAll, importAll: importAll, name: () => { const s = find(); return s ? s.name : ''; } };
+        return { init: init, fill: fill, save: save, count: count, max: c.max, canAdd: canAdd, addAll: addAll, create: create, snapshot: snapshot, restore: restore, exportAll: exportAll, importAll: importAll, name: () => { const s = find(); return s ? s.name : ''; } };
     }
     const charSlots = makeSlots({
         ui: 'slot-', idxKey: 'sta2e_storage_slots_index', dataKey: 'sta2e_slot_data_', activeKey: 'sta2e_active_slot',
@@ -812,6 +835,7 @@ function initConsole() {
         blank: blankChar,
         after: () => { sync(); updateModColors(); balance(); growAll(); },
         autoName: () => { const f = form.elements['bio_name']; return f ? f.value.trim() : ''; },
+        player: () => { const p = form.elements['bio_player']; return p ? p.value.trim() : ''; },
         seed: () => null
     });
     const shipSlots = makeSlots({
@@ -1614,7 +1638,10 @@ function initConsole() {
                 saveFile('', v === 'yes'); setUnsaved(false);
             });
     });
-    const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, #utility-logsel-loader, .sel-cb, [id$="-search"], #talent-cat')) return; markDirty(); };
+    const onEdit = e => { const t = e.target; if (t.matches && t.matches('#slot-filter, #slot-selector, #ship-slot-selector, #utility-file-loader, #utility-ship-loader, #utility-backup-loader, #utility-logsel-loader, .sel-cb, [id$="-search"], #talent-cat')) return; markDirty(); };
+    const slotFilter = document.getElementById('slot-filter');
+    if (slotFilter) slotFilter.addEventListener('input', e => charSlots.fill(e.target.value));
+    if (fileId) fileId.addEventListener('input', () => { fileId.dataset.touched = '1'; fileId.dataset.autogen = '0'; });
     form.addEventListener('input', onEdit);
     form.addEventListener('change', onEdit);
     form.addEventListener('click', e => { if (e.target.closest('.p3-mv, .p3-x, #p3-tools button')) markDirty(); });
