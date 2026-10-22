@@ -8,8 +8,8 @@
 <link rel="icon" type="image/png" href="icon-ent.png">
 <meta name="theme-color" content="#2c3a4d">
 <style>
-:root{--navy:#2c3a4d;--orange:#d96b27;--tan:#eed292;--slate:#708699;--bg:#e9edf1;--page:#fff;--fg:#111;--line:#111;--card:#f5f7fa;--bd:#c0c8cf;--hd:#2c3a4d}
-body.dark{--bg:#0b1118;--page:#18222f;--fg:#e8ecf0;--line:#cfd6dd;--card:#222e3d;--bd:#3a4a5c;--hd:#eed292}
+:root{--navy:#2c3a4d;--orange:#d96b27;--tan:#eed292;--slate:#708699;--bg:#e9edf1;--page:#fff;--fg:#111;--line:#111;--card:#f5f7fa;--bd:#c0c8cf;--hd:#2c3a4d;--foc:#46586b}
+body.dark{--bg:#0b1118;--page:#18222f;--fg:#e8ecf0;--line:#cfd6dd;--card:#222e3d;--bd:#3a4a5c;--hd:#eed292;--foc:#b4c0cc}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.4 'Roboto',Arial,sans-serif;-webkit-print-color-adjust:exact;print-color-adjust:exact}
 .bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;max-width:1000px;margin:0 auto;padding:10px 12px}
@@ -17,7 +17,7 @@ body{margin:0;background:var(--bg);color:var(--fg);font:13px/1.4 'Roboto',Arial,
 .btn:hover{opacity:.85}.btn.s{background:var(--slate)}.btn.o{background:var(--orange)}.btn.r{background:#bd4b4b}.btn.on{background:var(--tan);color:#000}
 .sp{flex:1}
 .sheet{max-width:1000px;margin:0 auto 40px;background:var(--page);border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);padding:0 18px 20px;overflow:hidden}
-.cap{display:flex;height:30px;gap:4px;margin:0 -18px 12px}.cap i{display:block}.c1{width:40px;background:var(--orange);border-bottom-right-radius:12px}.c2{flex:1;background:var(--navy)}.c3{width:36px;background:var(--tan)}
+.cap{display:flex;height:30px;gap:4px;margin:0 -18px 12px}.cap i{display:block}.c1{width:40px;background:var(--orange);border-bottom-right-radius:12px}.c2{flex:1;background:var(--navy);color:#fff;font:bold 13px/30px 'Antonio','Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;padding-left:14px;white-space:nowrap;overflow:hidden}.c3{width:36px;background:var(--tan)}
 h1{font-family:'Antonio','Oswald',sans-serif;text-transform:uppercase;color:var(--hd);font-size:24px;letter-spacing:1.5px;margin:4px 0 10px}
 .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:10px}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
@@ -29,15 +29,23 @@ h1{font-family:'Antonio','Oswald',sans-serif;text-transform:uppercase;color:var(
 .card input,.modal input{font:12px 'Roboto',Arial,sans-serif;background:var(--page);color:var(--fg);border:1px solid var(--bd);border-radius:3px;padding:2px 5px;width:100%}
 .cb{display:flex;gap:5px;margin-top:3px}.cb .btn{padding:3px 8px}
 .bw{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
-.map{position:relative;width:min(100%,360px);flex:0 0 auto}
+.map{position:sticky;top:8px;width:min(100%,360px);flex:0 0 auto}
 .map svg{display:block;width:100%;height:auto}.map svg g{fill:var(--line)}
-.pin{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;border:2px solid var(--navy);font:bold 12px 'Antonio',sans-serif;padding:0;cursor:pointer;color:#fff;line-height:1}
-.pin.e{background:var(--page);color:var(--fg);border-style:dashed}
-.slist{flex:1 1 300px;display:flex;flex-direction:column;gap:4px}
-.row{display:flex;gap:8px;align-items:center;border:1px solid var(--bd);background:var(--card);border-radius:5px;padding:4px 8px;cursor:pointer}
-.dot{flex:0 0 26px;height:26px;border-radius:50%;color:#fff;font:bold 13px/26px 'Antonio',sans-serif;text-align:center;font-style:normal}
-.row b{font:bold 11px 'Antonio',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--slate)}
-.row .who{font-size:13px;font-weight:bold}
+.pin{position:absolute;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;border:2px solid var(--line);font:bold 12px 'Antonio',sans-serif;padding:0;cursor:pointer;color:#fff;line-height:1;z-index:2}
+.pin.e,.dot.e{background:var(--page);color:var(--fg);border-style:dotted}
+.pin.ed{cursor:grab;touch-action:none;box-shadow:0 0 0 3px rgba(217,107,39,.5)}
+.row{display:flex;gap:8px;align-items:flex-start;border:1px solid var(--bd);background:var(--card);border-radius:5px;padding:4px 8px;cursor:pointer}
+.dot{flex:0 0 28px;height:28px;border-radius:50%;border:2px solid var(--line);color:#fff;font:bold 13px/24px 'Antonio',sans-serif;text-align:center;font-style:normal;margin-top:2px}
+.rb{flex:1;min-width:0}
+.row{min-width:0}
+.l1,.l2{display:flex;flex-wrap:wrap;gap:2px 8px;justify-content:space-between;align-items:flex-end}
+.row b{font:bold 14px 'Antonio',sans-serif;letter-spacing:1px;text-transform:uppercase;color:var(--slate)}
+.row .who{font:bold 14px 'Roboto',Arial,sans-serif}
+.l3{font-size:12px;color:var(--foc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card small.f{color:var(--foc)}
+.g{display:grid;grid-template-columns:repeat(6,24px) 10px repeat(6,24px);text-align:center;font:bold 12px 'Antonio',sans-serif;margin-left:auto}
+.g.lg{font-size:9px;letter-spacing:.3px;opacity:.85}
+.slist{flex:1 1 420px;min-width:0;display:flex;flex-direction:column;gap:4px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:100;display:flex;align-items:center;justify-content:center;padding:12px}
 .modal{background:var(--navy);color:#fff;border:2px solid var(--tan);border-radius:6px;padding:10px 12px;width:420px;max-width:96vw;max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:6px}
 .dh{font:900 14px 'Antonio',sans-serif;letter-spacing:1px;color:var(--tan);border-bottom:1px solid var(--slate);padding-bottom:4px;display:flex;justify-content:space-between}
@@ -47,7 +55,7 @@ h1{font-family:'Antonio','Oswald',sans-serif;text-transform:uppercase;color:var(
 .pick{display:block;width:100%;text-align:left;background:#3a4a5f;color:#fff;border:0;border-radius:3px;padding:5px 8px;margin-bottom:3px;cursor:pointer;font:12px 'Roboto',Arial,sans-serif}
 .pick:hover{background:var(--orange)}
 .modal .btn{margin-top:2px}
-@media print{body,body.dark{--page:#fff;--fg:#111;--line:#000;--card:#fff;--bd:#999;--hd:#2c3a4d;background:#fff}.bar,.ov,.cb,.pin{display:none!important}.pin.p{display:block!important}.sheet{box-shadow:none;max-width:none}}
+@media print{body,body.dark{--page:#fff;--fg:#111;--line:#000;--card:#fff;--bd:#999;--hd:#2c3a4d;--foc:#333;background:#fff}.bar,.ov,.cb,#btools,.pin{display:none!important}.pin.p{display:block!important}.sheet{box-shadow:none;max-width:none}}
 </style>
 </head>
 <body>
@@ -56,10 +64,10 @@ h1{font-family:'Antonio','Oswald',sans-serif;text-transform:uppercase;color:var(
 <button type="button" class="btn o" id="imp">Import Character</button><button type="button" class="btn s" id="loc" title="Read crew slots saved in this browser by the console">From This Browser</button><button type="button" class="btn o" id="exp">Export Roster</button><button type="button" class="btn s" id="expimp">Import Roster</button><button type="button" class="btn s" id="theme">Theme</button><button type="button" class="btn s" onclick="print()">Print</button>
 <input type="file" id="f1" accept=".json" multiple hidden><input type="file" id="f2" accept=".json" hidden></div>
 <main class="sheet">
-<div class="cap"><i class="c1"></i><i class="c2"></i><i class="c3"></i></div>
+<div class="cap"><i class="c1"></i><i class="c2" id="barlbl">Campaign Roster // Personnel &amp; NPC Index</i><i class="c3"></i></div>
 <h1 id="ttl">Campaign Roster</h1>
 <section id="t-roster"><div class="chips" id="chips"></div><div class="cards" id="cards"></div></section>
-<section id="t-bridge" hidden><div class="bw"><div class="map" id="map"><svg aria-hidden="true" version="1.0" xmlns="http://www.w3.org/2000/svg"
+<section id="t-bridge" hidden><div class="chips" id="btools"></div><div class="bw"><div class="map" id="map"><svg aria-hidden="true" version="1.0" xmlns="http://www.w3.org/2000/svg"
  viewBox="0 0 636.000000 1184.000000"
  preserveAspectRatio="xMidYMid meet">
 
@@ -895,18 +903,23 @@ m270 14 c-14 -65 -26 -87 -60 -116 -39 -32 -51 -19 -16 19 14 14 32 53 41 86
 var K='sta2e_campaign_roster',$=function(s){return document.querySelector(s)};
 var R='#bd4b4b',G='#c49a45',B='#4b8bbd';
 // [number, station, colour, x%, y%]  (positions read from the marked image; edit freely)
-var ST=[[1,'Captain',R,49.8,44.2],[2,'First Officer',R,35.2,46.3],[3,'Counselor',B,63.8,46.2],[4,'Operations',G,55.3,54.9],[5,'Conn',R,43.9,55.0],[6,'Tactical',G,49.7,31.6],[7,'Tactical II',G,20.4,50.2],[8,'Science',B,12.1,54.2],[9,'Environment',G,11.3,48.6],[10,'Science II',B,12.9,42.9],[11,'Engineering',G,77.9,50.0],[12,'Engineering 2',G,84.7,53.8],[13,'Mission Ops',G,86.3,47.7],[14,'Science III',B,84.0,42.5]];
+var DEF=[[1,'Captain',R,50.6,45.9],[2,'First Officer',R,35,47.1],[3,'Counselor',B,65.3,46.9],[4,'Operations',G,56.9,54.1],[5,'Conn',R,44.4,54.1],[6,'Tactical',G,50.6,31.1],[7,'Tactical II',G,22.5,49.2],[8,'Science',B,12.1,54.2],[9,'Environment',G,11.3,48.6],[10,'Science II',B,12.9,42.9],[11,'Engineering',G,76.7,49.2],[12,'Engineering 2',G,87.2,53.9],[13,'Mission Ops',G,87.5,48.1],[14,'Science III',B,85.8,42.7]];
 var SL=['CTL','FIT','DAR','INS','PRE','REA','CMD','CON','ENG','SEC','MED','SCI'];
 var SK=['attr_control','attr_fitness','attr_daring','attr_insight','attr_presence','attr_reason','dept_command','dept_conn','dept_engineering','dept_security','dept_medicine','dept_science'];
 var SC=['#708699','#708699','#708699','#708699','#708699','#708699',R,R,G,G,B,B];
-var D={chars:[],seats:{}},F='all';
-try{var d0=JSON.parse(localStorage.getItem(K));if(d0&&Array.isArray(d0.chars))D={chars:d0.chars,seats:d0.seats||{}}}catch(e){}
+var D={chars:[],bridges:[]},F='all',EDIT=false;
+function norm(d){var o={chars:d.chars||[],bridges:d.bridges};if(!Array.isArray(o.bridges)||!o.bridges.length)o.bridges=[{name:'Main Bridge',seats:d.seats||{}}];o.bridges.forEach(function(b){if(!Array.isArray(b.st)||!b.st.length)b.st=DEF.map(function(q){return {n:q[0],name:q[1],c:q[2],x:q[3],y:q[4]}});b.seats=b.seats||{}});return o}
+try{var d0=JSON.parse(localStorage.getItem(K));if(d0&&Array.isArray(d0.chars))D=norm(d0)}catch(e){}
+if(!D.bridges.length)D=norm(D);
+function BR(){return D.bridges[0]}
+function sts(){return BR().st.slice().sort(function(a,b){return a.n-b.n})}
+function stn(n){return BR().st.filter(function(q){return q.n===n})[0]}
 function save(){try{localStorage.setItem(K,JSON.stringify(D))}catch(e){alert('Browser storage is full. Use Export Roster.')}}
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 function byId(id){return D.chars.filter(function(c){return c.id===id})[0]}
 function lab(c){return [c.rank,c.name].filter(Boolean).join(' ')||'Unnamed'}
-function seatOf(id){for(var n in D.seats)if(D.seats[n].id===id)return +n;return 0}
+function seatOf(id){for(var n in BR().seats)if(BR().seats[n].id===id)return +n;return 0}
 function stats(c){if(!c.stats||!c.stats.some(Boolean))return '';return c.stats.map(function(v,i){return '<span style="color:'+SC[i]+'">'+SL[i]+' '+esc(v||'-')+'</span>'}).join(' ')}
 function foc(c){return (c.foc||[]).filter(Boolean).map(function(f){return String(f).split(/\s+-\s+|:|\s*\(/)[0].trim()}).join(' \u00B7 ')}
 function players(){var o={};D.chars.forEach(function(c){if(c.player)o[c.player]=1});return Object.keys(o).sort()}
@@ -927,11 +940,11 @@ $('#loc').onclick=function(){var idx;try{idx=JSON.parse(localStorage.getItem('st
  if(!idx||!idx.length){alert('No console crew slots found in this browser. Use Import Character instead.');return}
  var l=[];idx.forEach(function(s){try{var c=fromSheet(JSON.parse(localStorage.getItem('sta2e_slot_data_'+s.id)));if(c.name)l.push(c)}catch(e){}});
  if(!l.length){alert('The saved slots have no named characters.');return}addChars(l)};
-$('#exp').onclick=function(){var a=document.createElement('a');a.download='sta2e_roster_'+new Date().toLocaleDateString('en-CA')+'.json';a.href=URL.createObjectURL(new Blob([JSON.stringify({_bundle:'sta2e-roster-v1',chars:D.chars,seats:D.seats})],{type:'application/json'}));document.body.appendChild(a);a.click();a.remove()};
+$('#exp').onclick=function(){var a=document.createElement('a');a.download='sta2e_roster_'+new Date().toLocaleDateString('en-CA')+'.json';a.href=URL.createObjectURL(new Blob([JSON.stringify({_bundle:'sta2e-roster-v1',chars:D.chars,bridges:D.bridges})],{type:'application/json'}));document.body.appendChild(a);a.click();a.remove()};
 $('#expimp').onclick=function(){$('#f2').click()};
 $('#f2').onchange=function(){readFiles(this,function(d){
  if(!d||d._bundle!=='sta2e-roster-v1'||!Array.isArray(d.chars)){alert('Not a roster file.');return}
- if(confirm('Replace the whole roster and bridge with this file?\nOK = replace. Cancel = add its characters only.')){D={chars:d.chars,seats:d.seats||{}};save();render()}else addChars(d.chars)})};
+ if(confirm('Replace the whole roster and bridge with this file?\nOK = replace. Cancel = add its characters only.')){D=norm(d);save();render()}else addChars(d.chars)})};
 function render(){chips();cards();bridge()}
 function chips(){var h='',p=players(),npc=D.chars.some(function(c){return !c.player});
  var b=function(v,t){return '<button type="button" class="btn '+(F===v?'on':'s')+'" data-f="'+esc(v)+'">'+esc(t)+'</button>'};
@@ -941,16 +954,37 @@ function cards(){var l=D.chars.filter(function(c){return F==='all'||(F==='__npc'
  $('#cards').innerHTML=l.length?l.map(function(c){var s=seatOf(c.id),f=foc(c);
   return '<div class="card"><div>'+(s?'<span class="badge">STN '+s+'</span>':'')+'<b>'+esc(lab(c))+'</b></div><small>'+esc([c.species,c.role].filter(Boolean).join(' \u00B7 '))+'</small>'
   +'<input data-pl="'+c.id+'" value="'+esc(c.player)+'" placeholder="Player (blank = NPC / GM)">'
-  +(stats(c)?'<div class="st">'+stats(c)+'</div>':'')+(f?'<small>'+esc(f)+'</small>':'')
+  +(stats(c)?'<div class="st">'+stats(c)+'</div>':'')+(f?'<small class="f">'+esc(f)+'</small>':'')
   +'<div class="cb"><button type="button" class="btn s" data-ed="'+c.id+'">Edit</button><button type="button" class="btn r" data-rm="'+c.id+'">Remove</button></div></div>'}).join(''):'<p class="muted">No characters here yet. Use Import Character (a console Export Crew or Backup All file), From This Browser, or + NPC / Character.</p>'}
-function occ(n){var s=D.seats[n];if(!s)return null;if(s.id){var c=byId(s.id);return c?{t:lab(c),c:c}:null}return {t:s.text,c:null}}
-function bridge(){
- $('#pins').innerHTML=ST.map(function(s){var o=occ(s[0]);return '<button type="button" class="pin '+(o?'p':'e')+'" data-stn="'+s[0]+'" title="'+esc(s[1]+(o?': '+o.t:''))+'" style="left:'+s[3]+'%;top:'+s[4]+'%;'+(o?'background:'+s[2]:'border-color:'+s[2])+'">'+s[0]+'</button>'}).join('');
- $('#slist').innerHTML=ST.map(function(s){var o=occ(s[0]);return '<div class="row" data-stn="'+s[0]+'"><i class="dot" style="background:'+s[2]+'">'+s[0]+'</i><div><b>'+esc(s[1])+'</b><div class="who">'+(o?esc(o.t):'<span class="muted">Unassigned</span>')+'</div>'+(o&&o.c&&stats(o.c)?'<div class="st">'+stats(o.c)+'</div>':'')+'</div></div>'}).join('')}
+function occ(n){var s=BR().seats[n];if(!s)return null;if(s.id){var c=byId(s.id);return c?{t:lab(c),c:c}:null}return {t:s.text,c:null}}
+function grid(a,leg){var h='<div class="g'+(leg?' lg':'')+'">';for(var i=0;i<12;i++){if(i===6)h+='<i></i>';h+='<span style="color:'+SC[i]+'">'+(leg?SL[i]:esc((a&&a[i])||'-'))+'</span>'}return h+'</div>'}
+function bridge(){var st=sts();
+ $('#pins').innerHTML=st.map(function(q){var o=occ(q.n);return '<button type="button" class="pin '+(o?'p':'e')+(EDIT?' ed':'')+'" data-stn="'+q.n+'" title="'+esc(q.name+(o?': '+o.t:''))+'" style="left:'+q.x+'%;top:'+q.y+'%;'+(o?'background:'+q.c:'border-color:'+q.c)+'">'+q.n+'</button>'}).join('');
+ $('#slist').innerHTML=st.map(function(q){var o=occ(q.n),c=o&&o.c,hs=c&&c.stats&&c.stats.some(Boolean),f=c?foc(c):'';
+  return '<div class="row" data-stn="'+q.n+'"><i class="dot'+(o?'':' e')+'" style="'+(o?'background:'+q.c:'border-color:'+q.c)+'">'+q.n+'</i><div class="rb"><div class="l1"><b>'+esc(q.name)+'</b>'+(o?'':'<span class="muted">Unassigned</span>')+(hs?grid(0,1):'')+'</div>'+(o?'<div class="l2"><span class="who">'+esc(o.t)+'</span>'+(hs?grid(c.stats):'')+'</div>':'')+(f?'<div class="l3">'+esc(f)+'</div>':'')+'</div></div>'}).join('');
+ $('#btools').innerHTML='<button type="button" class="btn '+(EDIT?'on':'s')+'" data-edit="1">Edit Layout</button>'+(EDIT?'<button type="button" class="btn o" data-addst="1">+ Station</button><button type="button" class="btn r" data-rst="1">Reset Layout</button><span class="muted">Drag pins to move. Tap a pin to rename, renumber or delete.</span>':'');fitF()}
+function fitF(){document.querySelectorAll('.l3').forEach(function(e){if(!e.offsetParent)return;var z=12;e.style.fontSize=z+'px';while(e.scrollWidth>e.clientWidth&&z>7){z-=.5;e.style.fontSize=z+'px'}})}
+window.addEventListener('resize',fitF);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitF);
+function editStn(n){var q=stn(n);if(!q)return;var nn=prompt('Station number:',q.n);if(nn===null)return;nn=parseInt(nn,10);
+ if(!nn||nn<1){alert('Number must be 1 or more.');return}
+ if(nn!==q.n&&stn(nn)){alert('Station '+nn+' already exists.');return}
+ var nm=prompt('Station name (clear it to delete this station):',q.name);if(nm===null)return;
+ if(!nm.trim()){if(confirm('Delete station '+q.n+' '+q.name+'?')){delete BR().seats[q.n];BR().st=BR().st.filter(function(z){return z!==q});save();render()}return}
+ var c=prompt('Department colour: C = Command (red), O = Operations (gold), S = Sciences (blue)',q.c===R?'C':(q.c===B?'S':'O'));if(c===null)return;
+ c=c.trim().toUpperCase();q.c=c==='C'?R:(c==='S'?B:G);q.name=nm.trim();
+ if(nn!==q.n){var z=BR().seats;if(z[q.n]){z[nn]=z[q.n];delete z[q.n]}q.n=nn}
+ save();render()}
+function addStn(){var nm=prompt('New station name:');if(!nm||!nm.trim())return;var c=prompt('Department colour: C = Command, O = Operations, S = Sciences','O');if(c===null)return;c=c.trim().toUpperCase();
+ var n=Math.max.apply(null,BR().st.map(function(q){return q.n}).concat([0]))+1,k=BR().st.filter(function(q){return q.y<8&&q.x<40}).length;
+ BR().st.push({n:n,name:nm.trim(),c:c==='C'?R:(c==='S'?B:G),x:3+k*6,y:3});save();render()}
+var drag=null,moved=false;
+document.addEventListener('pointerdown',function(e){var p=e.target.closest&&e.target.closest('.pin.ed');if(!p)return;drag={n:+p.dataset.stn,x:e.clientX,y:e.clientY,el:p};moved=false;try{p.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+document.addEventListener('pointermove',function(e){if(!drag)return;if(Math.abs(e.clientX-drag.x)+Math.abs(e.clientY-drag.y)>4)moved=true;if(!moved)return;var r=$('#map').getBoundingClientRect(),q=stn(drag.n);q.x=Math.max(0,Math.min(100,+((e.clientX-r.left)/r.width*100).toFixed(1)));q.y=Math.max(0,Math.min(100,+((e.clientY-r.top)/r.height*100).toFixed(1)));drag.el.style.left=q.x+'%';drag.el.style.top=q.y+'%'});
+document.addEventListener('pointerup',function(){if(!drag)return;var d=drag;drag=null;if(moved)save();else editStn(d.n)});
 function modal(h){$('#ovh').innerHTML='<div class="ov" data-ov="1"><div class="modal">'+h+'</div></div>'}
 function closeM(){$('#ovh').innerHTML=''}
-function seat(n){var s=ST.filter(function(x){return x[0]===n})[0],cur=D.seats[n],o=occ(n);
- var h='<div class="dh"><span>'+n+' '+esc(s[1].toUpperCase())+'</span><button type="button" data-x="1">&times;</button></div>';
+function seat(n){var s=stn(n),cur=BR().seats[n],o=occ(n);
+ var h='<div class="dh"><span>'+n+' '+esc(s.name.toUpperCase())+'</span><button type="button" data-x="1">&times;</button></div>';
  if(o){h+='<div class="sum"><b>'+esc(o.t)+'</b>'+(o.c?'<br><small>'+esc([o.c.species,o.c.role,o.c.player&&'Player: '+o.c.player].filter(Boolean).join(' \u00B7 '))+'</small><div class="st">'+stats(o.c)+'</div><small>'+esc(foc(o.c))+'</small>':' <small>(label only)</small>')+'</div><button type="button" class="btn r" data-clr="'+n+'">Clear Station</button>'}
  h+='<div class="sec">Assign from roster</div>';
  var gs=players().concat(['']);gs.forEach(function(p){var l=D.chars.filter(function(c){return c.player===p});if(!l.length)return;
@@ -964,7 +998,7 @@ function edit(id){var c=id?byId(id):{id:uid(),rank:'',name:'',species:'',role:''
  var st=prompt('Stats, 12 numbers separated by spaces (CTL FIT DAR INS PRE REA CMD CON ENG SEC MED SCI), or blank:',(c.stats||[]).join(' '));if(st===null)return;
  c.rank=r.trim();c.name=n.trim();c.species=sp.trim();c.role=ro.trim();c.stats=st.trim()?st.trim().split(/[\s,]+/).slice(0,12):[];
  if(!id)D.chars.push(c);save();render()}
-function drop(id){for(var n in D.seats)if(D.seats[n].id===id)delete D.seats[n]}
+function drop(id){for(var n in BR().seats)if(BR().seats[n].id===id)delete BR().seats[n]}
 document.addEventListener('click',function(e){var t=e.target,x;
  if(t.dataset.ov)return closeM();
  if(t.dataset.x)return closeM();
@@ -972,13 +1006,16 @@ document.addEventListener('click',function(e){var t=e.target,x;
  else if(t.dataset.addnpc)edit(null);
  else if(t.dataset.ed)edit(t.dataset.ed);
  else if(t.dataset.rm){var c=byId(t.dataset.rm);if(c&&confirm('Remove '+lab(c)+' from the roster (and any station)?')){drop(c.id);D.chars=D.chars.filter(function(q){return q!==c});save();render()}}
- else if(t.dataset.clr){delete D.seats[t.dataset.clr];save();render();closeM()}
- else if(t.dataset.pick){var n=+$('.dh span').textContent.split(' ')[0];drop(t.dataset.pick);D.seats[n]={id:t.dataset.pick};save();render();closeM()}
+ else if(t.dataset.clr){delete BR().seats[t.dataset.clr];save();render();closeM()}
+ else if(t.dataset.pick){var n=+$('.dh span').textContent.split(' ')[0];drop(t.dataset.pick);BR().seats[n]={id:t.dataset.pick};save();render();closeM()}
  else if(t.dataset.lab||t.dataset.npc){var rk=$('#cr').value.trim(),nm=$('#cn').value.trim(),n2=+(t.dataset.lab||t.dataset.npc);if(!nm){$('#cn').focus();return}
-  if(t.dataset.lab)D.seats[n2]={text:[rk,nm].join(' ').trim()};else{var c2={id:uid(),rank:rk,name:nm,species:'',role:'',player:'',stats:[],foc:[]};D.chars.push(c2);D.seats[n2]={id:c2.id}}
+  if(t.dataset.lab)BR().seats[n2]={text:[rk,nm].join(' ').trim()};else{var c2={id:uid(),rank:rk,name:nm,species:'',role:'',player:'',stats:[],foc:[]};D.chars.push(c2);BR().seats[n2]={id:c2.id}}
   save();render();closeM()}
- else if((x=t.closest('[data-stn]')))seat(+x.dataset.stn);
- else if((x=t.closest('[data-tab]'))){var b=x.dataset.tab==='bridge';$('#t-roster').hidden=b;$('#t-bridge').hidden=!b;$('#ttl').textContent=b?'Bridge Duty Stations':'Campaign Roster';
+ else if(t.dataset.edit){EDIT=!EDIT;render()}
+ else if(t.dataset.addst)addStn();
+ else if(t.dataset.rst){if(confirm('Reset all stations and pin positions to the original 14?')){BR().st=DEF.map(function(q){return {n:q[0],name:q[1],c:q[2],x:q[3],y:q[4]}});save();render()}}
+ else if((x=t.closest('[data-stn]'))){if(!(EDIT&&x.classList.contains('pin')))seat(+x.dataset.stn)}
+ else if((x=t.closest('[data-tab]'))){var b=x.dataset.tab==='bridge';$('#t-roster').hidden=b;$('#t-bridge').hidden=!b;$('#ttl').textContent=b?'Bridge Duty Stations':'Campaign Roster';$('#barlbl').textContent=b?'Main Bridge // Duty Stations // Crew Assignment':'Campaign Roster // Personnel & NPC Index';fitF();
   document.querySelectorAll('[data-tab]').forEach(function(q){q.className='btn '+(q===x?'on':'s')})}});
 document.addEventListener('change',function(e){var t=e.target;if(t.dataset.pl){var c=byId(t.dataset.pl);if(c){c.player=t.value.trim();save();render()}}});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closeM()});

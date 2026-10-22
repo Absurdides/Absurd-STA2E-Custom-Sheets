@@ -33,8 +33,8 @@ Format: Planned / In Progress / Done, one line each. Done entries carry a date.
 - (Low 5) Scene Notes overlay (Traits, Advantages, Complications).
 - (Low 5) Table Tracker overlay (Play Mode): group Momentum, Threat, round counter; floats over any page.
 
-- (Low 3) Bridge pin drag-to-calibrate mode (nudge pins on screen, copy coordinates). Pin positions are one array at the top of `roster.html`.
-- (Low 4) Ship-class bridge layouts: dropdown swapping the inline SVG and station array per class.
+- (Mid 3) Edit Layout station handling: add an explicit Delete button per station and make Reset Layout optionally keep added stations (currently Reset restores the default 14 and discards extras; single deletion works by clearing the name in the pin prompt).
+- (Low 4) Bridge modules (extends the above): each new layout / shuttle tab starts with no default positions (empty station list, user adds and drags stations), loaded SVG per module, seats kept per module. Data model already `bridges[]`; only `bridges[0]` is used so far. Tabs per bridge / shuttle, with a Load Bridge Image button.
 - (Low 5) Fluid Play Page (phone): a `play.html` live view of the active character (stats, Stress, Determination, Momentum, Task Roller) reading the same slots, no print layout. Candidate only; see Architecture Fork below.
 
 ### Ultra-Low Priority
@@ -56,7 +56,7 @@ Format: Planned / In Progress / Done, one line each. Done entries carry a date.
 - (Ultra-Low) NOT DOING: d20 table rolls on the sheet (Random System Hit, Shaken, Breaches; toolkit cards stay reference only). Challenge dice (not in 2E, confirmed).
 
 ## Done
-- 2026-10: Campaign Roster & Bridge Duty page (`roster.html`): roster cards with Player filter chips and NPC entries, import from Export Crew / Backup All / this browser, 14 numbered bridge stations over an inline SVG with assign / custom name / clear, roster export-import, Roster button in the Crew row.
+- 2026-10: Campaign Roster & Bridge Duty page (`roster.html`): roster cards with Player filter chips and NPC entries, Edit Layout (drag pins, add / rename / delete stations), import from Export Crew / Backup All / this browser, 14 numbered bridge stations over an inline SVG with assign / custom name / clear, roster export-import, Roster button in the Crew row.
 - 2026-10: Header Metadata & Crew Quick-Filter: Moved autosave telemetry indicator to the Tan banner; replaced SVG barcode with a slate metadata block housing auto-formatted FILE ID (`YYYY-[NAME]`) and PLAYER field (`bio_player`, no-print); added 65px instant filter input in Crew menu row filtering by character or player name.
 - 2026-10: Determination spends in Task Roller: Perfect Opportunity locks 1 die to a critical (★) pre-roll; Moment of Inspiration allows selecting specific dice chips (blue highlight) to re-roll post-roll; unchecks Determination pips; logs Determination spent and optional Directive to Page 4 TECH section.
 - 2026-10: Storage Details dialog: clicking storage meter opens memory breakdown modal with safety-backed Remove Unlinked Data button and automatic legacy autosave purge.
