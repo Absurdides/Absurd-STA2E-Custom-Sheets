@@ -513,7 +513,8 @@ function initConsole() {
             const linked = new Set([
                 'sta2e_storage_slots_index', 'sta2e_ship_slots_index',
                 'sta2e_active_slot', 'sta2e_active_ship',
-                'sta2e_dark_play', 'sta2e_discord_fmt', 'sta2e-unsaved'
+                'sta2e_dark_play', 'sta2e_discord_fmt', 'sta2e-unsaved',
+                'sta2e_campaign_roster', 'sta2e_roster_map'
             ]);
             cIdx.forEach(x => linked.add('sta2e_slot_data_' + x.id));
             sIdx.forEach(x => linked.add('sta2e_ship_data_' + x.id));

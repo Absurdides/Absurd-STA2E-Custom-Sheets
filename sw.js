@@ -6,7 +6,7 @@ self.addEventListener('install', e => {
         const res = await fetch('index.html', { cache: 'reload' });
         const html = await res.clone().text();
         await c.put('index.html', res);
-        const urls = new Set(['manifest.webmanifest', 'toolkit.html', 'manual.html', 'roster.html']);
+        const urls = new Set(['manifest.webmanifest', 'toolkit.html', 'manual.html', 'roster.html', 'bridge/layouts.js', 'bridge/main-bridge.svg', 'bridge/main-bridge-colour.png']);
         html.replace(/(?:src|href)="([^"#]+)"/g, (m, u) => { if (!/^[a-z]+:|^\/\/|^data:/i.test(u)) urls.add(u); return m; });
         const list = Array.from(urls);
         await Promise.all(list.map(u => c.add(new Request(u, { cache: 'reload' })).catch(() => {})));
