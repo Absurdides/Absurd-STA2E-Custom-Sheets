@@ -118,7 +118,7 @@ function norm(d){var o={chars:d.chars||[],bridges:Array.isArray(d.bridges)?d.bri
  if(!o.bridges.length&&d.seats)o.bridges=[{id:'main',seats:d.seats}];
  o.bridges.forEach(function(b,i){if(!b.id)b.id=i?'b'+i:'main';b.seats=b.seats||{}});
  LAY.slice().reverse().forEach(function(L){var b=o.bridges.filter(function(x){return x.id===L.id})[0];if(!b){b={id:L.id,seats:{}};o.bridges.unshift(b)}b.builtin=true;b.name=L.name;if(!Array.isArray(b.st)||!b.st.length)b.st=defSt(L)});
- o.bridges.forEach(function(b){if(!b.name)b.name='Bridge';if(!Array.isArray(b.st))b.st=[]});
+ o.bridges.forEach(function(b){if(!b.name)b.name='Bridge';if(!Array.isArray(b.st))b.st=[];Object.keys(b.seats).forEach(function(k){if(!b.st.some(function(z){return z.n===+k}))delete b.seats[k]})});
  o.bridges=LAY.map(function(L){return o.bridges.filter(function(x){return x.id===L.id})[0]}).concat(o.bridges.filter(function(x){return !lay(x.id)}));
  if(!o.bridges.some(function(b){return b.id===o.act}))o.act=o.bridges[0].id;return o}
 try{var d0=JSON.parse(localStorage.getItem(K));if(d0&&Array.isArray(d0.chars))D=norm(d0)}catch(e){}
@@ -131,8 +131,8 @@ function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'
 function uid(){return 'c'+Date.now().toString(36)+Math.random().toString(36).slice(2,5)}
 function byId(id){return D.chars.filter(function(c){return c.id===id})[0]}
 function lab(c){return [c.rank,c.name].filter(Boolean).join(' ')||'Unnamed'}
-function seatElse(id){for(var i=0;i<D.bridges.length;i++){var b=D.bridges[i];if(b.id===D.act)continue;for(var n in b.seats)if(b.seats[n].id===id){var q=b.st.filter(function(z){return z.n===+n})[0];return b.name+': '+(q?q.name:'Stn '+n)}}return ''}
-function seatOf(id){for(var n in BR().seats)if(BR().seats[n].id===id)return +n;return 0}
+function seatElse(id){for(var i=0;i<D.bridges.length;i++){var b=D.bridges[i];if(b.id===D.act)continue;for(var n in b.seats){var q=b.st.filter(function(z){return z.n===+n})[0];if(b.seats[n].id===id&&q)return b.name+': '+q.name}}return ''}
+function seatOf(id){for(var n in BR().seats)if(BR().seats[n].id===id&&stn(+n))return +n;return 0}
 function stats(c){if(!c.stats||!c.stats.some(Boolean))return '';return c.stats.map(function(v,i){return '<span style="color:'+SC[i]+'">'+SL[i]+' '+esc(v||'-')+'</span>'}).join(' ')}
 function foc(c){return (c.foc||[]).filter(Boolean).map(function(f){return String(f).split(/\s+-\s+|:|\s*\(/)[0].trim()}).join(' \u00B7 ')}
 function players(){var o={};D.chars.forEach(function(c){if(c.player)o[c.player]=1});return Object.keys(o).sort()}
@@ -246,7 +246,7 @@ document.addEventListener('click',function(e){var t=e.target,x;
  else if(t.dataset.delst){var dq=stn(+t.dataset.delst),dw=dq&&occ(dq.n);if(dq&&confirm('Delete station '+dq.n+' '+dq.name+'?'+(dw?'\n'+dw.t+' will be unseated.':''))){delete BR().seats[dq.n];BR().st=BR().st.filter(function(z){return z!==dq});save();render()}}
  else if(t.dataset.rst&&!lay(BR().id))alert('This bridge has no default layout to restore.');
  else if(t.dataset.rst)modal('<div class="dh"><span>RESET LAYOUT</span><button type="button" data-x="1">&times;</button></div><div>Restore the default stations and pin positions for this bridge. Stations you added (numbers not in the defaults) can be kept or removed. Seating is not changed.</div><button type="button" class="btn o" data-rstk="1">Restore, keep my added stations</button><button type="button" class="btn r" data-rstk="0">Restore, remove added stations</button>')
- else if(t.dataset.rstk){var keep=t.dataset.rstk==='1',df=defSt(lay(BR().id)),nums=df.map(function(q){return q.n}),extra=keep?BR().st.filter(function(q){return nums.indexOf(q.n)<0}):[];BR().st=df.concat(extra);save();render();closeM()}
+ else if(t.dataset.rstk){var keep=t.dataset.rstk==='1',df=defSt(lay(BR().id)),nums=df.map(function(q){return q.n}),extra=keep?BR().st.filter(function(q){return nums.indexOf(q.n)<0}):[];BR().st=df.concat(extra);Object.keys(BR().seats).forEach(function(k){if(!stn(+k))delete BR().seats[k]});save();render();closeM()}
  else if((x=t.closest('[data-stn]'))){if(!(EDIT&&x.classList.contains('pin')))seat(+x.dataset.stn)}
  else if((x=t.closest('[data-tab]'))){var b=x.dataset.tab==='bridge';$('#t-roster').hidden=b;$('#t-bridge').hidden=!b;$('#ttl').textContent=b?'Bridge Duty Stations':'Campaign Roster';if(b)bridge();barTxt();fitF();
   document.querySelectorAll('[data-tab]').forEach(function(q){q.className='btn '+(q===x?'on':'s')})}});
